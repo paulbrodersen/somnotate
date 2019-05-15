@@ -1,0 +1,14 @@
+# ignore everything...cc
+*
+
+# ...apart from:
+!.gitignore
+!*/
+!*.py
+# !*.svg
+# !*.pdf
+!*.tex
+!*.csv
+!*.ini
+!*.mako
+!*.org
