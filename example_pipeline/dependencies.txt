@@ -1,0 +1,7 @@
+somnotate
+numpy
+scipy
+matplotlib
+pandas
+pyedflib
+six
