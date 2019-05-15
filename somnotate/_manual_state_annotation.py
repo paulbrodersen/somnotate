@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgba_array
 from matplotlib.collections import LineCollection
 
+DEBUG = False
 STATE_LINE_WIDTH = 5
 EPS = 1e-9
 
@@ -261,7 +262,8 @@ class TimeSeriesAnnotator(object):
 
 
     def _on_key_press(self, event):
-        print(event.key)
+        if DEBUG:
+            print(event.key)
 
         if event.key in self.basic_movement_keys:
             self._basic_navigation(event)
