@@ -5,6 +5,7 @@ User defined variables and functions.
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.signal import (
     sosfilt,
     iirfilter,
@@ -57,7 +58,6 @@ state_annotation_signals = [
 # --------------------------------------------------------------------------------
 # define visual appearance of core plots
 
-import matplotlib.pyplot as plt
 plt.rcParams['figure.figsize'] = (30, 15)
 plt.rcParams['ytick.labelsize'] = 'large'
 plt.rcParams['xtick.labelsize'] = 'large'
@@ -155,7 +155,6 @@ def _chebychev_bandpass(lowcut, highcut, fs, rs, order=5):
 signal_labels = ['frontal\nEEG', 'occipital\nEEG', 'EMG']
 frequency_bands = [(0.5, 30.), (0.5, 30), (10., 45.)]
 plot_raw_signals = partial(plot_raw_signals, frequency_bands=frequency_bands, signal_labels=signal_labels)
-
 
 state_to_color = {
     'awake'               : 'crimson',
