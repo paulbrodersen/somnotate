@@ -22,12 +22,6 @@ pip install -r ./sonotate/requirements.txt
 pip install -r ./example_pipeline/requirements.txt
 ```
 
-Using anaconda:
-``` shell
-conda install --file ./somnotate/requirements.txt
-conda install --file ./example_pipeline/requirements.txt
-```
-
 The example pipeline has one optional dependency, `lspopt`, which is
 used to compute multitaper spectrograms. At the time of writing, the
 module is not avalaible on the PIPy or anaconda servers, so please
