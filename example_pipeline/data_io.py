@@ -6,22 +6,14 @@ TODO:
 """
 
 import numpy as np
+import pandas
 
 from argparse import ArgumentParser
-from pandas import read_csv, DataFrame
 from collections import Iterable
-from pandas.api.types import is_string_dtype # , is_numeric_dtype
 from pyedflib import EdfReader
 from six import ensure_str
 
 from somnotate._utils import convert_state_intervals_to_state_vector
-
-
-# TODO link documentation from pandas
-def load_dataframe(file_path, *args, **kwargs):
-    # Ultra-thin wrapper around pandas.read_csv to decouple function
-    # implementation from pipeline.
-    return read_csv(file_path, *args, **kwargs)
 
 
 def check_dataframe(df, columns, column_to_dtype=None):
@@ -62,7 +54,7 @@ def check_dataframe(df, columns, column_to_dtype=None):
             # pandas encodes all strings as objects,
             # which is not very helpful for type checking;
             # here we set the actual dtype to str, if the object is string-like.
-            if is_string_dtype(df[column]):
+            if pandas.api.types.is_string_dtype(df[column]):
                 actual_dtype = str
             else:
                 actual_dtype = df[column].dtype
@@ -83,10 +75,6 @@ def check_dataframe(df, columns, column_to_dtype=None):
             for entry in wrong_types:
                 error_msg += "\n{}: dtype is {} but should be {};".format(*entry)
             raise Exception(error_msg)
-
-
-def load_raw_signals(file_path, signal_labels=None):
-    return _load_edf_file(file_path, signal_labels)
 
 
 def _load_edf_file(file_path, signal_labels=None):
@@ -131,18 +119,6 @@ def _load_edf_channels(signal_labels, edf_reader):
     return output_array.transpose()
 
 
-def load_preprocessed_signals(file_path):
-    # Ultra-thin wrapper around numpy.load to decouple function
-    # implementation from pipeline.
-    return np.load(file_path)
-
-
-def export_preprocessed_signals(file_path, arr):
-    # Ultra-thin wrapper around numpy.save to decouple function
-    # implementation from pipeline.
-    np.save(file_path, arr)
-
-
 def load_state_vector(file_path, mapping, time_resolution=1.):
     """
     Load hypnogram given in visbrain Stage-duration format, and convert to a state vector.
@@ -177,7 +153,7 @@ def load_state_vector(file_path, mapping, time_resolution=1.):
     return state_vector
 
 
-def load_hypnogram(file_path):
+def _load_visbrain_hypnogram(file_path):
     """
     Load hypnogram given in visbrain Stage-duration format.
 
@@ -206,7 +182,7 @@ def load_hypnogram(file_path):
     return states, intervals
 
 
-def export_hypnogram(file_path, states, intervals, total_time=None, data_file=None):
+def _export_visbrain_hypnogram(file_path, states, intervals, total_time=None, data_file=None):
     """
     Export hypnogram to visbrain Stage-duration format.
 
@@ -297,12 +273,22 @@ def export_review_intervals(file_path, intervals, scores=None, notes=None):
     if not (notes is None):
         data['note'] = notes
 
-    df = DataFrame.from_dict(data)
+    df = pandas.DataFrame.from_dict(data)
     df.to_csv(file_path)
 
 
 def load_review_intervals(file_path):
-    df = read_csv(file_path)
+    df = pandas.read_csv(file_path)
     intervals = np.c_[df['start'].values, df['stop'].values]
     scores = df['score'].values
     return intervals, scores
+
+# --------------------------------------------------------------------------------
+# aliases
+
+load_dataframe = pandas.read_csv
+load_raw_signals = _load_edf_file
+load_preprocessed_signals = np.load
+export_preprocessed_signals = np.save
+load_hypnogram = _load_visbrain_hypnogram
+export_hypnogram = _export_visbrain_hypnogram
