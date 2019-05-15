@@ -53,12 +53,14 @@ if __name__ == '__main__':
                         'file_path_raw_signals',
                         'sampling_frequency_in_hz',
                         'file_path_automated_state_annotation',
+                        'file_path_refined_state_annotation',
                         'file_path_review_intervals',
                     ] + state_annotation_signals,
                     column_to_dtype = {
                         'file_path_raw_signals' : str,
                         'sampling_frequency_in_hz' : (int, float, np.int, np.float, np.int64, np.float64),
                         'file_path_automated_state_annotation' : str,
+                        'file_path_refined_state_annotation' : str,
                         'file_path_review_intervals' : str,
                     }
     )
