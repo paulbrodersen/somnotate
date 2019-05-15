@@ -15,19 +15,6 @@ from data_io import (
     export_hypnogram,
 )
 
-KEY_TO_STATE = {
-    'w' : 'awake',
-    'W' : 'awake (artefact)',
-    'n' : 'non-REM',
-    'N' : 'non-REM (artefact)',
-    'r' : 'REM',
-    'R' : 'REM (artefact)',
-    'x' : 'undefined',
-    'X' : 'undefined (artefact)',
-    'm' : 'sleep movement',
-    'M' : 'sleep movement (artefact)',
-}
-
 
 if __name__ == '__main__':
 
@@ -38,6 +25,7 @@ if __name__ == '__main__':
         plot_raw_signals,
         state_to_color,
         state_display_order,
+        keymap,
     )
 
     parser = ArgumentParser()
@@ -94,7 +82,7 @@ if __name__ == '__main__':
         )
 
         # initialise annotator
-        annotator = TimeSeriesAnnotator(data_axis, state_axis, KEY_TO_STATE,
+        annotator = TimeSeriesAnnotator(data_axis, state_axis, keymap,
                                         interval_to_state   = zip(predicted_intervals, predicted_states),
                                         regions_of_interest = regions_of_interest,
                                         state_to_color      = state_to_color,

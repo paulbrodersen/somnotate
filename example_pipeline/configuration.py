@@ -55,6 +55,22 @@ state_annotation_signals = [
 #     'lfp_signal_label',
 # ]
 
+#--------------------------------------------------------------------------------
+# define a keymap for the manual annotation
+
+keymap = {
+    'w' : 'awake',
+    'W' : 'awake (artefact)',
+    'n' : 'non-REM',
+    'N' : 'non-REM (artefact)',
+    'r' : 'REM',
+    'R' : 'REM (artefact)',
+    'x' : 'undefined',
+    'X' : 'undefined (artefact)',
+    'm' : 'sleep movement',
+    'M' : 'sleep movement (artefact)',
+}
+
 # --------------------------------------------------------------------------------
 # define visual appearance of core plots
 
