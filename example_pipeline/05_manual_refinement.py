@@ -68,7 +68,7 @@ if __name__ == '__main__':
         regions_of_interest = review_intervals[order]
 
         # initialise figure
-        fig = plt.figure(constrained_layout=True)
+        fig = plt.figure()
         gs = GridSpec(4, 1)
         data_axis  = fig.add_subplot(gs[:3, 0])
         state_axis = fig.add_subplot(gs[3, 0], sharex=data_axis)
