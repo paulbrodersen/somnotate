@@ -12,4 +12,5 @@
 !*.ini
 !*.mako
 !*.org
+!*.md
 !*.txt
