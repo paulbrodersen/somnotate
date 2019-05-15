@@ -1,4 +1,3 @@
-somnotate
 numpy
 scipy
 matplotlib
