@@ -191,7 +191,6 @@ state_to_color = {
 state_display_order = [
     'awake',
     'awake (artefact)',
-    'sleep movement',
     'non-REM',
     'non-REM (artefact)',
     'REM',
