@@ -94,17 +94,27 @@ The currently available scripts are:
 
 2. `01_preprocess.py`
 
-    Convert the EEG and EMG signals into features to use in the state inference.
+    Convert the EEG and EMG signals into features to use in the state
+    inference.  Currently, we simply (1) compute the spectrogram for
+    each "raw" signal (i.e. the EEG, LFP, or EMG trace), (2)
+    renormalize the data, such that within each frequency band, the
+    power is approximately normally distributed, and (3) trim the
+    spectrogram to exclude frequencies for which our estimate is very
+    noisy, i.e. frequencies near the Nyquist limit and frequencies
+    around 50 Hz. Finally, we concatenate the spectrograms into one
+    set of features over time.
 
 3. `02_test_automated_state_annotion.py`
 
-   Test the performance of the pipeline in a hold-one-out fashion on a
-   given set of training data sets (i.e. preprocessed data with manually
-   created state annotations).
+   Test the performance of the automated state annotation in a
+   hold-one-out fashion on a given set of training data sets
+   (i.e. preprocessed data with corresponding manually created state
+   annotations).
 
 4. `03_train_automated_state_annotion.py`
 
-   Train a model using a set of training data sets and export it for later use.
+   Train a model (LDA + HMM) using a set of training data sets and
+   export it for later use.
 
 5. `04_annotate_states.py`
 
