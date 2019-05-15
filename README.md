@@ -27,3 +27,12 @@ used to compute multitaper spectrograms. At the time of writing, the
 module is not avalaible on the PIPy or anaconda servers, so please
 follow the installation instructions on [the github homepage of the
 lspopt project](https://github.com/hbldh/lspopt).
+
+If you are using Anaconda, you also have to add the somnotate top
+directory to your PYTHONPATH environment variable, if you want to use
+the pipeline (it uses relative imports):
+
+``` shell
+conda develop /path/to/somnotate
+```
+
