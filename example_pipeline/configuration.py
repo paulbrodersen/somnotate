@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-User defined variables and functions.
+User defined variables and functions that are used across all scripts.
 """
 
 import numpy as np
@@ -19,29 +19,8 @@ from somnotate._utils import (
 )
 
 # --------------------------------------------------------------------------------
-# define variables
+# Raw signals used in the automated state annotation and their visual display
 # --------------------------------------------------------------------------------
-
-# desired time resolution of the automated annotation (in seconds)
-time_resolution = 1
-
-# Define a mapping of state labels (as they occur in the hypnograms) to integers.
-# States with positive integers are used for training the LDA.
-# When training the HMM, the sign of the state integer representation is ignored,
-# such that artefacts have no influence on the computed state transition probabilities.
-state_to_int = dict([
-    ('awake'              ,  1),
-    ('awake (artefact)'   , -1),
-    ('sleep movement'     ,  1),
-    ('non-REM'            ,  2),
-    ('non-REM (artefact)' , -2),
-    ('REM'                ,  3),
-    ('REM (artefact)'     , -3),
-    ('undefined'          ,  0),
-])
-
-# construct inverse mapping
-int_to_state = {ii : state for state, ii in state_to_int.items() if state != 'sleep movement'}
 
 # define which columns in the spreadsheet/dataframe are to be used for state inference
 state_annotation_signals = [
@@ -50,36 +29,21 @@ state_annotation_signals = [
     'emg_signal_label',
 ]
 
-# # define which columns in the spreadsheet/dataframe are to be used for artefact inference
-# movement_artefact_annotation_signals = [
-#     'lfp_signal_label',
-# ]
+# define the corresponding labels when plotting these signals
+state_annotation_signal_labels = [
+    'frontal\nEEG',
+    'occipital\nEEG',
+    'EMG'
+]
 
-#--------------------------------------------------------------------------------
-# define a keymap for the manual annotation
+# define frequency bands to display when plotting (has no effect on signal processing and state inference)
+state_annotation_signal_frequency_bands = [
+    (0.5, 30.), # Frontal EEG
+    (0.5, 30.), # Occipital EEG
+    (10., 45.), # EMG
+]
 
-keymap = {
-    'w' : 'awake',
-    'W' : 'awake (artefact)',
-    'n' : 'non-REM',
-    'N' : 'non-REM (artefact)',
-    'r' : 'REM',
-    'R' : 'REM (artefact)',
-    'x' : 'undefined',
-    'X' : 'undefined (artefact)',
-    'm' : 'sleep movement',
-    'M' : 'sleep movement (artefact)',
-}
-
-# --------------------------------------------------------------------------------
-# define visual appearance of core plots
-
-plt.rcParams['figure.figsize'] = (30, 15)
-plt.rcParams['ytick.labelsize'] = 'large'
-plt.rcParams['xtick.labelsize'] = 'large'
-plt.rcParams['axes.labelsize']  = 'large'
-
-
+# define a function that plots the raw signals
 def plot_raw_signals(raw_signals, frequency_bands, sampling_frequency, *args, **kwargs):
     """
     Thin wrapper around `plot_signals` that applies a Chebychev bandpass filter
@@ -167,11 +131,48 @@ def _chebychev_bandpass(lowcut, highcut, fs, rs, order=5):
     # sos = cheby1(order, [low, high], rs=rs, analog=False, btype='band')
     return sos
 
+plot_raw_signals = partial(plot_raw_signals,
+                           frequency_bands=state_annotation_signal_frequency_bands,
+                           signal_labels=state_annotation_signal_labels)
 
-signal_labels = ['frontal\nEEG', 'occipital\nEEG', 'EMG']
-frequency_bands = [(0.5, 30.), (0.5, 30), (10., 45.)]
-plot_raw_signals = partial(plot_raw_signals, frequency_bands=frequency_bands, signal_labels=signal_labels)
+# --------------------------------------------------------------------------------
+# States and their visual display
+# --------------------------------------------------------------------------------
 
+# Define a mapping of state labels (as they occur in a hypnogram) to integers.
+# States with positive integers are used for training the LDA.
+# When training the HMM, the sign of the state integer representation is ignored,
+# such that artefacts have no influence on the computed state transition probabilities.
+# TODO: explain the mapping of `sleep movement`.
+state_to_int = dict([
+    ('awake'              ,  1),
+    ('awake (artefact)'   , -1),
+    ('sleep movement'     ,  1),
+    ('non-REM'            ,  2),
+    ('non-REM (artefact)' , -2),
+    ('REM'                ,  3),
+    ('REM (artefact)'     , -3),
+    ('undefined'          ,  0),
+])
+
+# Construct the inverse mapping to convert back from state predictions to human readabe labels.
+int_to_state = {ii : state for state, ii in state_to_int.items() if state != 'sleep movement'}
+
+# define the keymap used for the manual annotation
+keymap = {
+    'w' : 'awake',
+    'W' : 'awake (artefact)',
+    'n' : 'non-REM',
+    'N' : 'non-REM (artefact)',
+    'r' : 'REM',
+    'R' : 'REM (artefact)',
+    'x' : 'undefined',
+    'X' : 'undefined (artefact)',
+    'm' : 'sleep movement',
+    'M' : 'sleep movement (artefact)',
+}
+
+# define the visual display of states
 state_to_color = {
     'awake'               : 'crimson',
     'awake (artefact)'    : 'coral',
@@ -203,3 +204,19 @@ plot_states = partial(plot_states,
                       unique_states=state_display_order,
                       state_to_color=state_to_color,
                       mode='lines')
+
+# --------------------------------------------------------------------------------
+# Figure formatting
+# --------------------------------------------------------------------------------
+
+plt.rcParams['figure.figsize'] = (30, 15)
+plt.rcParams['ytick.labelsize'] = 'medium'
+plt.rcParams['xtick.labelsize'] = 'medium'
+plt.rcParams['axes.labelsize']  = 'medium'
+
+# --------------------------------------------------------------------------------
+# Miscellaneous
+# --------------------------------------------------------------------------------
+
+# desired time resolution of the automated annotation (in seconds)
+time_resolution = 1
