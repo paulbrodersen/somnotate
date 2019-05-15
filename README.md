@@ -81,3 +81,92 @@ and optional arguments can be accessed using the `--help` argument:
 python /path/to/somnotate/example_pipeline/script.py --help
 ```
 
+## The pipeline
+
+### Contents
+
+The currently available scripts are:
+
+1. `00_convert_sleepsign_files.py`
+
+    Extract the hypnogram from SleepSign FFT files (created in SleepSign
+    via: Analysis -> FFT-Text Output -> Continuous FFT).
+
+2. `01_preprocess.py`
+
+    Convert the EEG and EMG signals into features to use in the state inference.
+
+3. `02_test_automated_state_annotion.py`
+
+   Test the performance of the pipeline in a hold-one-out fashion on a
+   given set of training data sets (i.e. preprocessed data with manually
+   created state annotations).
+
+4. `03_train_automated_state_annotion.py`
+
+   Train a model using a set of training data sets and export it for later use.
+
+5. `04_annotate_states.py`
+
+   Use a previously trained model to automatically annotate the states in
+   a given set of un-annotated data sets.
+
+6. `05_manual_refinement.py`
+
+   Manually check (and refine where necessary) the automatically generated state annotations.
+
+Apart from these scripts, there are two additional files, `data_io.py` and `configuration.py`
+
+- `data_io.py`
+
+    provides a set of functions for data import and export.
+
+- `configuration.py`
+
+    defines a set of variables shared across all scripts. Most of
+    these pertain to the states and their representation in the
+    hypnograms, their represantation internally in the pipeline, and
+    their visualisation in the plots created by the pipeline.
+
+
+### Customization
+
+Most pipeline customisations should only require changes in either `data_io.py` or `configuration.py`.
+
+#### Changes in input or output data formats
+
+Most function definitions in `data_io.py` are just aliases for other
+functions. In many cases, changes in the format of the input or the
+output files can hence be achieved by simply rebinding the aliases to
+different functions.
+
+For example, the aforementioned spreadsheet is loaded into memory by a
+function called `load_dataframe`. However, `load_dataframe` is just an
+alias to `read_csv` in the `pandas` module. To import spreadsheets in
+Excel format instead, simply rebind `load_dataframe` to a function
+that reads Excel files. Conveniently, such a function is also
+available in `pandas` with `read_excel`. Therefor, it is sufficient to
+replace the line
+
+
+``` python
+load_dataframe = pandas.read_csv
+```
+
+with
+
+``` python
+load_dataframe = pandas.read_excel
+```
+
+The function `load_dataframe` continues to be available, and can be
+used by all scripts in the pipeline just as before.
+
+
+#### Other changes
+
+Most other changes can be made by changing the values of variables in
+`configuration.py`. Please refer to the extensive comments in
+`configuration.py` for further guidance.
+
+
