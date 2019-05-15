@@ -1,6 +1,8 @@
 # somnotate
 
-Automatically annotate vigilance states using LFP, EEG, or EMG data.
+Automatically annotate vigilance states by applying linear
+discriminant analysis (LDA) and hidden Markov models (HMM) to
+timeseries data from EEGs, EMGs, or LFPs.
 
 ## Installation instructions
 
