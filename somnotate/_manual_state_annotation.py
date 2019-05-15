@@ -161,9 +161,6 @@ class TimeSeriesAnnotator(object):
         General
         -------
         ?         -- display this help
-        s         -- save figure           (from matplotlib)
-        q         -- quit                  (from matplotlib)
-        f         -- toggle fullscreen     (from matplotlib)
 
         Basic navigation:
         -----------------
