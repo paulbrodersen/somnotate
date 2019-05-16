@@ -30,7 +30,7 @@ timeseries data from EEGs, EMGs, or LFPs.
     servers, so please follow the installation instructions on [the
     github homepage of the lspopt project](https://github.com/hbldh/lspopt).
 
-4. Ensure that the somnotate folder in in your PYTHONPATH environment variable.
+4. Ensure that the somnotate folder is in your PYTHONPATH environment variable.
 
     In most python environments, it suffices to change the working
     directory to the somnotate root folder. If you are using Anaconda,
