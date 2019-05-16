@@ -40,6 +40,18 @@ conda develop /path/to/somnotate
 
 ## Quickstart guide
 
+Execute in order:
+
+
+``` shell
+python /path/to/somnotate/example_pipeline/00_convert_sleepsign_files.py /path/to/spreadsheet.csv
+python /path/to/somnotate/example_pipeline/01_preprocess.py /path/to/spreadsheet.csv
+python /path/to/somnotate/example_pipeline/02_test_automated_state_annotion.py /path/to/spreadsheet.csv
+python /path/to/somnotate/example_pipeline/03_train_automated_state_annotion.py /path/to/spreadsheet.csv /path/to/model.pickle
+python /path/to/somnotate/example_pipeline/04_annotate_states.py /path/to/spreadsheet.csv /path/to/model.pickle
+python /path/to/somnotate/example_pipeline/05_manual_refinement.py /path/to/spreadsheet.csv
+```
+
 ## Documentation
 
 This repository comes in two parts, the core library, `somnotate`, and
