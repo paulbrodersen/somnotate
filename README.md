@@ -42,14 +42,13 @@ conda develop /path/to/somnotate
 
 Execute in order:
 
-
 ``` shell
 python /path/to/somnotate/example_pipeline/00_convert_sleepsign_files.py /path/to/spreadsheet.csv
-python /path/to/somnotate/example_pipeline/01_preprocess.py /path/to/spreadsheet.csv
-python /path/to/somnotate/example_pipeline/02_test_automated_state_annotion.py /path/to/spreadsheet.csv
-python /path/to/somnotate/example_pipeline/03_train_automated_state_annotion.py /path/to/spreadsheet.csv /path/to/model.pickle
-python /path/to/somnotate/example_pipeline/04_annotate_states.py /path/to/spreadsheet.csv /path/to/model.pickle
-python /path/to/somnotate/example_pipeline/05_manual_refinement.py /path/to/spreadsheet.csv
+python /path/to/somnotate/example_pipeline/01_preprocess_signals.py      /path/to/spreadsheet.csv
+python /path/to/somnotate/example_pipeline/02_test_state_annotation.py   /path/to/spreadsheet.csv
+python /path/to/somnotate/example_pipeline/03_train_state_annotation.py  /path/to/spreadsheet.csv /path/to/model.pickle
+python /path/to/somnotate/example_pipeline/04_run_state_annotation.py    /path/to/spreadsheet.csv /path/to/model.pickle
+python /path/to/somnotate/example_pipeline/05_manual_refinement.py       /path/to/spreadsheet.csv
 ```
 
 ## Documentation
@@ -67,7 +66,7 @@ testing. For most users, this is the part of the code base they will interact wi
 
 ### The pipeline
 
-#### Usage
+#### Examples
 
 Each script in the pipeline expects as mandatory input argument a path
 to a spreadsheet in CSV format. This spreadsheet contains a number of
@@ -83,12 +82,12 @@ python /path/to/somnotate/example_pipeline/00_convert_sleepsign_files.py /path/t
 ```
 
 Some scripts (specifically, scripts
-`03_train_automated_state_annotation.py` and `04_annotate_states.py`)
+`03_train_state_annotation.py` and `04_run_state_annotation.py`)
 have an additional mandatory argument, namely the path to the trained
 model:
 
 ``` shell
-python /path/to/somnotate/example_pipeline/03_train_automated_state_annotion.py /path/to/spreadsheet.csv /path/to/model.pickle
+python /path/to/somnotate/example_pipeline/03_train_state_annotation.py /path/to/spreadsheet.csv /path/to/model.pickle
 ```
 
 Some scripts produce output plots if the optional argument `--show` is
@@ -108,7 +107,7 @@ Currently available scripts are:
     Extract the hypnogram from SleepSign FFT files (created in SleepSign
     via: Analysis -> FFT-Text Output -> Continuous FFT).
 
-2. `01_preprocess.py`
+2. `01_preprocess_signals.py`
 
     Convert the raw signals into features to use in the state
     inference. Currently, we simply (1) compute the spectrogram for
@@ -120,19 +119,19 @@ Currently available scripts are:
     Hz. Finally, we concatenate the spectrograms into one set of
     features over time.
 
-3. `02_test_automated_state_annotion.py`
+3. `02_test_state_annotation.py`
 
    Test the performance of the automated state annotation in a
    hold-one-out fashion on a given set of preprocessed training data
    sets (i.e. preprocessed data with corresponding manually created
    state annotations).
 
-4. `03_train_automated_state_annotion.py`
+4. `03_train_state_annotation.py`
 
    Train a model (LDA + HMM) using a set of preprocessed training data
    sets and export it for later use.
 
-5. `04_annotate_states.py`
+5. `04_run_state_annotation.py`
 
    Use a previously trained model to automatically annotate the states in
    a given set of preprocessed data sets.
