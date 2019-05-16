@@ -40,6 +40,8 @@ conda develop /path/to/somnotate
 
 ## Quickstart guide
 
+## Documentation
+
 This repository comes in two parts, the core library, `somnotate`, and
 an example pipeline. The core library implements the functionality to
 automatically (or manually) annotate states using any type of time
@@ -50,6 +52,10 @@ the code base.
 The example pipeline is a collection of functions and scripts that
 additionally manage data import/export, data preprocessing, and
 testing. For most users, this is the part of the code base they will interact with.
+
+### The pipeline
+
+#### Usage
 
 Each script in the pipeline expects as mandatory input argument a path
 to a spreadsheet in CSV format. This spreadsheet contains a number of
@@ -81,11 +87,9 @@ and optional arguments can be accessed using the `--help` argument:
 python /path/to/somnotate/example_pipeline/script.py --help
 ```
 
-## The pipeline
+#### Scope / Content
 
-### Contents
-
-The currently available scripts are:
+Currently available scripts are:
 
 1. `00_convert_sleepsign_files.py`
 
@@ -139,11 +143,11 @@ Apart from these scripts, there are two additional files, `data_io.py` and `conf
     their visualisation in the plots created by the pipeline.
 
 
-### Customization
+#### Customization
 
 Most pipeline customisations should only require changes in either `data_io.py` or `configuration.py`.
 
-#### Changes in input or output data formats
+##### Changes in input or output data formats
 
 Most function definitions in `data_io.py` are just aliases for other
 functions. In many cases, changes in the format of the input or the
@@ -173,10 +177,8 @@ The function `load_dataframe` continues to be available, and can be
 used by all scripts in the pipeline just as before.
 
 
-#### Other changes
+##### Other changes
 
 Most other changes can be made by changing the values of variables in
 `configuration.py`. Please refer to the extensive comments in
 `configuration.py` for further guidance.
-
-
