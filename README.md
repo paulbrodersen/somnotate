@@ -159,6 +159,47 @@ and optional arguments can be accessed using the `--help` argument:
 python /path/to/somnotate/example_pipeline/script.py --help
 ```
 
+#### The spreadsheet
+
+For each data set, the spreadsheet details a number of properties, as
+well as the paths to the corresponding input and output files. By
+accessing these parameters via a spreadsheet, the user does not have
+to manually provide these arguments repeatedly to each script in the
+pipeline. Furthermore, it ensures that the arguments remain consistent
+across tasks.
+
+Not all arguments, i.e. columns in the spreadsheet, are required for
+each script. However, it is often convenient to have a single
+spreadsheet for a given set of data that are processed together that
+details all parameters, i.e. contains all columns. These are:
+
+-  `file_path_raw_signals`:
+  path to the EDF file containing the raw signals (i.e. the EEG/EMG or LFP traces)
+- `file_path_preprocessed_signals`;
+  (desired) path to the file containing the corresponding preprocessed signal array
+- `file_path_manual_state_annotation`:
+  path to the file containing the manually created state annotation (hypnogram) in visbrain stage-duration format (only required for training data sets)
+- `file_path_automated_state_annotation`:
+  (desired) path to the file containing the automated state annotion (hypnogram)
+- `file_path_refined_state_annotation`:
+  (desired) path to the file containing the automated state annotion (hypnogram) that has subsequently been manually refined
+- `file_path_review_intervals`:
+  (desired) file path for the time intervals highlighted for manual review
+- `sampling_frequency_in_hz`:
+  sampling frequency of the raw signal(s)
+
+Additionally, the variable `state_annotation_signals` in
+`configuration.py` defines another set of columns in the spreadsheet
+(that can be arbitrarily named) that contain the indices to the
+relevant raw signals in the file at `file_path_raw_signals`.
+
+Each time you run a script, the spreadsheet is inspected if it
+contains all relevant columns, and if the entries in the columns have
+the correct type. Should the spreadsheet not contain the required
+columns with entries in the required format, an error will be raised
+detailing the missing columns or misrepresented column entries.
+
+
 #### Customization
 
 Most pipeline customisations should only require changes in either `data_io.py` or `configuration.py`.
