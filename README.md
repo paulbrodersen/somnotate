@@ -239,3 +239,7 @@ used by all scripts in the pipeline just as before.
 Most other changes can be made by changing the values of variables in
 `configuration.py`. Please refer to the extensive comments in
 `configuration.py` for further guidance.
+
+If you cannot change an important aspect of the pipeline by changing
+either `data_io.py` or `configuration.py`, please raise an issue on
+the github issue tracker. Pull requests are -- of course -- very welcome.
