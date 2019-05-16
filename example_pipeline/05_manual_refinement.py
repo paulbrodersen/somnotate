@@ -16,6 +16,20 @@ from data_io import (
 )
 
 
+from scipy.signal import welch
+
+
+class VladsTimeSeriesAnnotator(TimeSeriesAnnotator):
+
+    def __init__(self, callback, *args, **kwargs):
+        self._callback = callback
+        TimeSeriesAnnotator.__init__(self, *args, **kwargs)
+
+    def _update_selection(self, *args, **kwargs):
+        TimeSeriesAnnotator._update_selection(self, *args, **kwargs)
+        self._callback(self.selection_lower_bound, self.selection_upper_bound)
+
+
 if __name__ == '__main__':
 
     from matplotlib.gridspec import GridSpec
@@ -58,10 +72,29 @@ if __name__ == '__main__':
         print("{} ({}/{})".format(dataset['file_path_raw_signals'], ii+1, len(datasets)))
 
         # load data
+        total_raw_signals = len(state_annotation_signals)
         signal_labels = [dataset[column_name] for column_name in state_annotation_signals]
         raw_signals = load_raw_signals(dataset['file_path_raw_signals'], signal_labels)
         predicted_states, predicted_intervals = load_hypnogram(dataset['file_path_automated_state_annotation'])
         review_intervals, review_scores = load_review_intervals(dataset['file_path_review_intervals'])
+
+        # callback
+        psd_fig, axes = plt.subplots(1, total_raw_signals, sharex=True, sharey=True)
+        lines = []
+        for ii, (signal, ax) in enumerate(zip(raw_signals.T, axes)):
+            frequencies, psd = welch(signal, dataset['sampling_frequency_in_hz'])
+            line, = ax.plot(frequencies, psd)
+            lines.append(line)
+            ax.set_xlabel("Frequency [Hz]")
+        axes[0].set_ylabel("Power")
+
+        def callback(selection_lower_bound, selection_upper_bound):
+            start = int(dataset['sampling_frequency_in_hz'] * selection_lower_bound)
+            stop  = int(dataset['sampling_frequency_in_hz'] * selection_upper_bound)
+            for ii, (signal, line) in enumerate(zip(raw_signals.T, lines)):
+                frequencies, psd = welch(signal[start:stop], dataset['sampling_frequency_in_hz'])
+                line.set_data(frequencies, psd)
+            psd_fig.canvas.draw()
 
         # compute order for regions of interest
         order = np.argsort(review_scores)[::-1]
@@ -82,7 +115,7 @@ if __name__ == '__main__':
         )
 
         # initialise annotator
-        annotator = TimeSeriesAnnotator(data_axis, state_axis, keymap,
+        annotator = VladsTimeSeriesAnnotator(callback, data_axis, state_axis, keymap,
                                         interval_to_state   = zip(predicted_intervals, predicted_states),
                                         regions_of_interest = regions_of_interest,
                                         state_to_color      = state_to_color,
