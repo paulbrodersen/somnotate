@@ -92,8 +92,11 @@ Currently available scripts are:
 
 1. `00_convert_sleepsign_files.py`
 
-    Extract the hypnogram from SleepSign FFT files (created in SleepSign
-    via: Analysis -> FFT-Text Output -> Continuous FFT).
+    Extract the hypnogram from SleepSign FFT files (created in
+    SleepSign via: Analysis -> FFT-Text Output -> Continuous FFT), and
+    convert them to hypnogram in the [visbrain stage-duration
+    format](http://visbrain.org/sleep.html#hypnogram). If you already
+    have hypnograms in this format, this step is not necessary.
 
 2. `01_preprocess_signals.py`
 
@@ -126,7 +129,10 @@ Currently available scripts are:
 
 6. `05_manual_refinement.py`
 
-   Manually check (and refine where necessary) the automatically generated state annotations.
+   This script launches a simple GUI that facilitates manual quality
+   control and refinement of the automatically generated state
+   annotations. Press the key "?" to read the documentation for all
+   available commands.
 
 Apart from these scripts, there are two additional files, `data_io.py` and `configuration.py`
 
