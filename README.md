@@ -53,8 +53,7 @@ robust to mislabelled training data, artefacts, and other outliers.
     In most python environments, it suffices to change the working
     directory to the somnotate root folder. If you are using Anaconda,
     you have to add the somnotate root directory to your PYTHONPATH
-    environment variable, if you want to use the pipeline (it uses
-    relative imports):
+    environment variable:
 
     ``` shell
     conda develop /path/to/somnotate
@@ -65,7 +64,6 @@ robust to mislabelled training data, artefacts, and other outliers.
 In the shell of your choice, execute in order:
 
 ``` shell
-python /path/to/somnotate/example_pipeline/00_convert_sleepsign_files.py /path/to/spreadsheet.csv
 python /path/to/somnotate/example_pipeline/01_preprocess_signals.py      /path/to/spreadsheet.csv
 python /path/to/somnotate/example_pipeline/02_test_state_annotation.py   /path/to/spreadsheet.csv
 python /path/to/somnotate/example_pipeline/03_train_state_annotation.py  /path/to/spreadsheet.csv /path/to/model.pickle
@@ -160,10 +158,9 @@ For example:
 python /path/to/somnotate/example_pipeline/00_convert_sleepsign_files.py /path/to/spreadsheet.csv
 ```
 
-Some scripts (specifically, scripts
-`03_train_state_annotation.py` and `04_run_state_annotation.py`)
-have an additional mandatory argument, namely the path to the trained
-model:
+Some scripts (specifically, `03_train_state_annotation.py` and
+`04_run_state_annotation.py`) have an additional mandatory argument,
+namely the path to the trained model:
 
 ``` shell
 python /path/to/somnotate/example_pipeline/03_train_state_annotation.py /path/to/spreadsheet.csv /path/to/model.pickle
@@ -211,11 +208,16 @@ Additionally, the variable `state_annotation_signals` in
 (that can be arbitrarily named) that contain the indices to the
 relevant raw signals in the file at `file_path_raw_signals`.
 
-Each time you run a script, the spreadsheet is inspected if it
-contains all relevant columns, and if the entries in the columns have
-the correct type. Should the spreadsheet not contain the required
-columns with entries in the required format, an error will be raised
-detailing the missing columns or misrepresented column entries.
+The order of columns in the spreadsheet is arbitrary.
+However, you should avoid having empty rows, as these will be
+interpreted as datasets for which all parameters are missing.
+
+Each time you run a script, the spreadsheet is checked for the
+existence of all relevant columns, and it is asserted that the entries
+in the columns have the correct type. Should the spreadsheet not
+contain the required columns with entries in the required format, an
+error will be raised detailing the missing columns or misrepresented
+column entries.
 
 
 #### Customization
