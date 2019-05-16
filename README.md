@@ -1,8 +1,26 @@
 # somnotate
 
-Automatically annotate vigilance states by applying linear
-discriminant analysis (LDA) and hidden Markov models (HMM) to
-timeseries data from EEGs, EMGs, or LFPs.
+Automatically annotate vigilance states from timeseries data such
+electroencephalograms (EEGs), electromyograph (EMG), or local field
+potentials (LFPs).
+
+The approach here consists of two parts: linear discriminant analysis
+(LDA) and a hidden Markov model (HMM). Linear discriminant analysis
+(LDA) performs automatic feature selection by projecting the
+high-dimensional time series data to a lower dimensional feature space
+that is optimal for state classification using hard, linear decision
+boundaries. However, instead of applying these decision boundaries
+immediately, the transformed time series data is annotated using a
+hidden Markov model. This allows for "soft" decision boundaries that
+apart from the feature values of each sample also take contextual
+information into account. This contextual information includes the
+surrounding state sequence and the previously learnt state transition
+frequencies.
+
+The combination of these two algorithms results in a fast, automated
+state annotation that has a high accuracy compared to a human
+consensus state sequence. Furthermore the algorithm is remarkably
+robust to mislabelled training data, artefacts, and other outliers.
 
 ## Installation instructions
 
