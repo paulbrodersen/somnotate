@@ -81,15 +81,15 @@ Currently available scripts are:
 
 2. `01_preprocess_signals.py`
 
-    Convert the raw signals into features to use in the state
-    inference. Currently, we simply (1) compute the spectrogram for
-    each raw signal (i.e. the EEG, LFP, or EMG trace), (2) renormalize
-    the data, such that within each frequency band, the power is
-    approximately normally distributed, and (3) trim the spectrogram
-    to exclude frequencies for which our estimate is very noisy,
-    i.e. frequencies near the Nyquist limit and frequencies around 50
-    Hz. Finally, we concatenate the spectrograms into one set of
-    features over time.
+    Convert the raw signals into features that are useful for the
+    state inference. Currently, we simply (1) compute the spectrogram
+    for each raw signal (i.e. the EEG, LFP, or EMG trace), (2)
+    renormalize the data, such that within each frequency band, the
+    power is approximately normally distributed, and (3) trim the
+    spectrogram to exclude frequencies for which our estimate is very
+    noisy, i.e. frequencies near the Nyquist limit and frequencies
+    around 50 Hz. Finally, we concatenate the spectrograms into one
+    set of features.
 
 3. `02_test_state_annotation.py`
 
