@@ -70,38 +70,6 @@ testing. For most users, this is the part of the code base they will interact wi
 
 ### The pipeline
 
-#### Examples
-
-Each script in the pipeline expects as mandatory input argument a path
-to a spreadsheet in CSV format. This spreadsheet contains a number of
-columns detailing the paths to the file pertaining to each dataset,
-the properties of the dataset, such as e.g. the sampling frequency of
-the EEG/EMG data, and the (desired) paths for the files created by the
-pipeline. An example CSV file is provided with the test data.
-
-For example:
-
-``` shell
-python /path/to/somnotate/example_pipeline/00_convert_sleepsign_files.py /path/to/spreadsheet.csv
-```
-
-Some scripts (specifically, scripts
-`03_train_state_annotation.py` and `04_run_state_annotation.py`)
-have an additional mandatory argument, namely the path to the trained
-model:
-
-``` shell
-python /path/to/somnotate/example_pipeline/03_train_state_annotation.py /path/to/spreadsheet.csv /path/to/model.pickle
-```
-
-Some scripts produce output plots if the optional argument `--show` is
-added to the list of arguments. For each script, a list of mandatory
-and optional arguments can be accessed using the `--help` argument:
-
-``` shell
-python /path/to/somnotate/example_pipeline/script.py --help
-```
-
 #### Scope / Content
 
 Currently available scripts are:
@@ -157,6 +125,39 @@ Apart from these scripts, there are two additional files, `data_io.py` and `conf
     hypnograms, their represantation internally in the pipeline, and
     their visualisation in the plots created by the pipeline.
 
+
+#### Examples
+
+Each script in the pipeline expects as mandatory command line argument
+a path to a spreadsheet in CSV format. The exact format of the
+spreadsheet is detailed below but basically it contains a number of
+columns detailing the paths to the files pertaining to each data set,
+the properties of the data set (e.g. the sampling frequency of the
+EEG/EMG data), and the (desired) paths for the files created by the
+pipeline. An example CSV file is provided with the test data.
+
+For example:
+
+``` shell
+python /path/to/somnotate/example_pipeline/00_convert_sleepsign_files.py /path/to/spreadsheet.csv
+```
+
+Some scripts (specifically, scripts
+`03_train_state_annotation.py` and `04_run_state_annotation.py`)
+have an additional mandatory argument, namely the path to the trained
+model:
+
+``` shell
+python /path/to/somnotate/example_pipeline/03_train_state_annotation.py /path/to/spreadsheet.csv /path/to/model.pickle
+```
+
+Some scripts produce output plots if the optional argument `--show` is
+added to the list of arguments. For each script, a list of mandatory
+and optional arguments can be accessed using the `--help` argument:
+
+``` shell
+python /path/to/somnotate/example_pipeline/script.py --help
+```
 
 #### Customization
 
