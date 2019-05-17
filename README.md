@@ -52,8 +52,8 @@ robust to mislabelled training data, artefacts, and other outliers.
 
     In most python environments, it suffices to change the working
     directory to the somnotate root folder. If you are using Anaconda,
-    you have to add the somnotate root directory to your PYTHONPATH
-    environment variable:
+    you have to explicitly add the somnotate root directory to your
+    PYTHONPATH environment variable:
 
     ``` shell
     conda develop /path/to/somnotate
