@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 """
 Simple tool for manual state annotation.
+
+TODO:
+- automatically add user defined keybindings to the help string
 """
 
 import warnings
