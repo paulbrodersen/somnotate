@@ -4,9 +4,9 @@ Automatically annotate vigilance states from timeseries data such
 electroencephalograms (EEGs), electromyograph (EMG), or local field
 potentials (LFPs).
 
-The approach here consists of two parts: linear discriminant analysis
-(LDA) and a hidden Markov model (HMM). Linear discriminant analysis
-(LDA) performs automatic feature selection by projecting the
+The approach taken here consists of two parts: linear discriminant
+analysis (LDA) and a hidden Markov model (HMM). Linear discriminant
+analysis (LDA) performs automatic feature selection by projecting the
 high-dimensional time series data to a lower dimensional feature space
 that is optimal for state classification using hard, linear decision
 boundaries. However, instead of applying these decision boundaries
@@ -19,7 +19,7 @@ frequencies.
 
 The combination of these two algorithms results in a fast, automated
 state annotation that has a high accuracy compared to a human
-consensus state sequence. Furthermore the algorithm is remarkably
+consensus state sequence. Furthermore, this approach is remarkably
 robust to mislabelled training data, artefacts, and other outliers.
 
 ## Installation instructions
@@ -217,23 +217,23 @@ spreadsheet for a given set of data that are processed together that
 details all parameters, i.e. contains all columns. These are:
 
 -  `file_path_raw_signals`:
-  path to the EDF file containing the raw signals (i.e. the EEG/EMG or LFP traces)
+  the path to the EDF file containing the raw signals (i.e. the EEG/EMG or LFP traces)
 - `file_path_preprocessed_signals`;
-  (desired) path to the file containing the corresponding preprocessed signal array
+  the (desired) path to the file containing the corresponding preprocessed signal array
 - `file_path_manual_state_annotation`:
-  path to the file containing the manually created state annotation (hypnogram) in visbrain stage-duration format (only required for training data sets)
+  the path to the file containing the manually created state annotation (hypnogram) in visbrain stage-duration format (only required for training data sets)
 - `file_path_automated_state_annotation`:
-  (desired) path to the file containing the automated state annotion (hypnogram)
+  the (desired) path to the file containing the automated state annotion (hypnogram)
 - `file_path_refined_state_annotation`:
-  (desired) path to the file containing the automated state annotion (hypnogram) that has subsequently been manually refined
+  the (desired) path to the file containing the automated state annotion (hypnogram) that has subsequently been manually refined
 - `file_path_review_intervals`:
-  (desired) file path for the time intervals highlighted for manual review
+  the (desired) path for the file containing the time intervals highlighted by the automated annotation for manual review
 - `sampling_frequency_in_hz`:
-  sampling frequency of the raw signal(s)
+  the sampling frequency of the raw signal(s)
 
 Additionally, the variable `state_annotation_signals` in
 `configuration.py` defines another set of columns in the spreadsheet
-(that can be arbitrarily named) that contain the indices to the
+(which can be arbitrarily named) that contain the indices to the
 relevant raw signals in the file at `file_path_raw_signals`.
 
 The order of columns in the spreadsheet is arbitrary.
