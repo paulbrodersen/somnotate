@@ -90,7 +90,7 @@ python /path/to/somnotate/example_pipeline/01_preprocess_signals.py /path/to/spr
 python /path/to/somnotate/example_pipeline/04_run_state_annotation.py /path/to/spreadsheet_B.csv /path/to/model.pickle
 
 # Manually check intervals in the predicted state annotations that have been flagged as ambiguous.
-python /path/to/somnotate/example_pipeline/05_manual_refinement.py /path/to/spreadsheet.csv
+python /path/to/somnotate/example_pipeline/05_manual_refinement.py /path/to/spreadsheet_B.csv
 ```
 
 ## Documentation
