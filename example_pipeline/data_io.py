@@ -175,8 +175,8 @@ def _load_visbrain_hypnogram(file_path):
     http://visbrain.org/sleep.html#save-hypnogram
     """
     dtype = [('Stage', '|S30'), ('stop', float)]
-    data = np.genfromtxt(file_path, skip_header=2, dtype=dtype)
-    states = [state.astype(str) for state in data['Stage']]
+    data = np.genfromtxt(file_path, skip_header=2, dtype=dtype, delimiter='\t')
+    states = [state.astype(str).strip() for state in data['Stage']]
     transitions = np.r_[0, data['stop']]
     intervals = list(zip(transitions[:-1], transitions[1:]))
     return states, intervals
