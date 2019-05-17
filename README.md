@@ -61,14 +61,36 @@ robust to mislabelled training data, artefacts, and other outliers.
 
 ## Quickstart guide
 
-In the shell of your choice, execute in order:
+Assuming you have two sets of data sets, a set of previously
+(manually) annotated data sets for training of the pipeline (data sets
+A) and an un-annotated set of data sets that you would like to apply
+the pipeline to (data sets B).
+
+First, prepare two spreadsheets, spreadsheet A and spreadsheet B,
+providing the paths to the files pertaining to each data set, and a
+few other data sets properties.  Detailed instructions regarding the
+spreadsheet format can be found below.
+
+Then, in the shell of your choice, execute in order:
 
 ``` shell
-python /path/to/somnotate/example_pipeline/01_preprocess_signals.py      /path/to/spreadsheet.csv
-python /path/to/somnotate/example_pipeline/02_test_state_annotation.py   /path/to/spreadsheet.csv
-python /path/to/somnotate/example_pipeline/03_train_state_annotation.py  /path/to/spreadsheet.csv /path/to/model.pickle
-python /path/to/somnotate/example_pipeline/04_run_state_annotation.py    /path/to/spreadsheet.csv /path/to/model.pickle
-python /path/to/somnotate/example_pipeline/05_manual_refinement.py       /path/to/spreadsheet.csv
+# Preprocess the training data sets.
+python /path/to/somnotate/example_pipeline/01_preprocess_signals.py /path/to/spreadsheet_A.csv
+
+# Test the performance of the pipeline on the training data sets to ensure that everything is in working order.
+python /path/to/somnotate/example_pipeline/02_test_state_annotation.py /path/to/spreadsheet_A.csv
+
+# Train a model and save it for later use.
+python /path/to/somnotate/example_pipeline/03_train_state_annotation.py /path/to/spreadsheet_A.csv /path/to/model.pickle
+
+# Preprocess the un-annotated data sets.
+python /path/to/somnotate/example_pipeline/01_preprocess_signals.py /path/to/spreadsheet_B.csv
+
+# Apply the trained model to your un-annotated data.
+python /path/to/somnotate/example_pipeline/04_run_state_annotation.py /path/to/spreadsheet_B.csv /path/to/model.pickle
+
+# Manually check intervals in the predicted state annotations that have been flagged as ambiguous.
+python /path/to/somnotate/example_pipeline/05_manual_refinement.py /path/to/spreadsheet.csv
 ```
 
 ## Documentation
