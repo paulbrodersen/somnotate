@@ -32,7 +32,22 @@ robust to mislabelled training data, artefacts, and other outliers.
     cd /path/to/somnotate
     ```
 
-2. Optionally, create a new virtual environment.
+2. Optionally, create a clean virtual environment.
+
+   For example, to create a clean virtual environment in anaconda, open the anaconda prompt and enter:
+   ``` shell
+   conda create --no-default-packages -n my_somnotate_virtual_environment_name python
+   ```
+
+   Then activate the environment, and install `pip`, which we will use
+   to install the dependencies as not all packages are available via
+   the default anaconda channels.
+   ``` shell
+   conda activate my_somnotate_virtual_environment_name
+   conda install -n my_somnotate_virtual_environment_name pip
+   ```
+
+   You will need to re-activate the environment each time you want to use somnotate.
 
 3. Install all relevant dependencies.
 
