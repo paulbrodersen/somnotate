@@ -113,13 +113,16 @@ python /path/to/somnotate/example_pipeline/05_manual_refinement.py /path/to/spre
 This repository comes in two parts, the core library, `somnotate`, and
 an example pipeline. The core library implements the functionality to
 automatically (or manually) annotate states using any type of time
-series data "emitted" by these states, and visualize the
-results. There is nothing specific to sleep staging in this part of
-the code base.
+series data "emitted" by these states, and visualize the results. The
+core library supports (and is designed for) interactive use. However,
+there is nothing specific to sleep staging in this part of the code
+base.
 
 The example pipeline is a collection of functions and scripts that
 additionally manage data import/export, data preprocessing, and
-testing. For most users, this is the part of the code base they will interact with.
+testing. The pipeline supports (and is designed for) batch processing
+of multiple files. **For most users, the pipeline is the part of the
+code base they will interact with.**
 
 ### The pipeline
 
