@@ -19,7 +19,7 @@ from data_io import (
 from scipy.signal import welch
 
 
-class VladsTimeSeriesAnnotator(TimeSeriesAnnotator):
+class TSAnnotatorWithSelectionCallback(TimeSeriesAnnotator):
     """Add a callback to `update_selection`.  We use this to plot the
     power spectral density of the raw signals in the selected time
     interval.
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         )
 
         # initialise annotator
-        annotator = VladsTimeSeriesAnnotator(update_psd_figure, data_axis, state_axis, keymap,
+        annotator = TSAnnotatorWithSelectionCallback(update_psd_figure, data_axis, state_axis, keymap,
                                         interval_to_state   = zip(predicted_intervals, predicted_states),
                                         regions_of_interest = regions_of_interest,
                                         state_to_color      = state_to_color,
