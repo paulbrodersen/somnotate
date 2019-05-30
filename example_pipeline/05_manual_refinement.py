@@ -86,10 +86,10 @@ if __name__ == '__main__':
         # plot power in each frequency band and define callback
         # that updates figure based on the selection
         frequency_bands = [
-            (r'$\delta$' , 0.,   4., 'limegreen'),
-            (r'$\theta$' , 4.,   8., 'turquoise'),
-            (r'$\alpha$' , 8.,  12., 'cornflowerblue'),
-            (r'$\beta$' , 12.,  30., 'mediumorchid'),
+            (r'$\delta$' , 0.,   4., 'aqua'),
+            (r'$\theta$' , 4.,   8., 'seagreen'),
+            (r'$\alpha$' , 8.,  12., 'limegreen'),
+            (r'$\beta$' , 12.,  30., 'darkorchid'),
             (r'$\gamma$', 30., 100., 'crimson'),
         ]
         psd_figure, axes = plt.subplots(1, total_raw_signals,
