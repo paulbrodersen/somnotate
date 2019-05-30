@@ -117,11 +117,15 @@ if __name__ == '__main__':
             while psd_collections:
                 collection = psd_collections.pop()
                 collection.remove()
+            psd_max = 0
             for signal, ax in zip(raw_signals.T, psd_figure.get_axes()):
                 frequencies, psd = welch(signal[start:stop], fs)
                 for _, fmin, fmax, color in frequency_bands:
                     mask = (frequencies >= fmin) & (frequencies <= fmax)
                     psd_collections.append(ax.fill_between(frequencies[mask], psd[mask], color=color))
+                if psd_max < np.max(psd):
+                    psd_max = np.max(psd)
+                    ax.set_ylim(0, psd_max)
             psd_figure.canvas.draw_idle()
 
         # compute order for regions of interest
