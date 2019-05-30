@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import welch
 
 from somnotate._manual_state_annotation import TimeSeriesAnnotator
 
@@ -14,9 +15,6 @@ from data_io import (
     load_review_intervals,
     export_hypnogram,
 )
-
-
-from scipy.signal import welch
 
 
 class TSAnnotatorWithSelectionCallback(TimeSeriesAnnotator):
