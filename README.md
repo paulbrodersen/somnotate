@@ -24,7 +24,7 @@ robust to mislabelled training data, artefacts, and other outliers.
 
 ## Installation instructions
 
-1. Download this repository.
+1. Clone or download this repository.
 
 2. Open a console and change to the root folder of the repository.
 
@@ -268,7 +268,7 @@ column entries.
 
 #### Customization
 
-Most pipeline customisations should only require changes in either `data_io.py` or `configuration.py`.
+Many pipeline customisations will only require changes in either `data_io.py` or `configuration.py`.
 
 ##### Changes in input or output data formats
 
