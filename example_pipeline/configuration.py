@@ -32,8 +32,8 @@ state_annotation_signals = [
 
 # define the corresponding labels when plotting these signals
 state_annotation_signal_labels = [
-    'frontal\nEEG',
-    'occipital\nEEG',
+    'frontal EEG',
+    'occipital EEG',
     'EMG'
 ]
 

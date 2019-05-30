@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import welch
 
 from somnotate._manual_state_annotation import TimeSeriesAnnotator
 
@@ -16,12 +17,28 @@ from data_io import (
 )
 
 
+class TSAnnotatorWithSelectionCallback(TimeSeriesAnnotator):
+    """Add a callback to `update_selection`.  We use this to plot the
+    power spectral density of the raw signals in the selected time
+    interval.
+    """
+
+    def __init__(self, callback, *args, **kwargs):
+        self._callback = callback
+        TimeSeriesAnnotator.__init__(self, *args, **kwargs)
+
+    def _update_selection(self, *args, **kwargs):
+        TimeSeriesAnnotator._update_selection(self, *args, **kwargs)
+        self._callback(self.selection_lower_bound, self.selection_upper_bound)
+
+
 if __name__ == '__main__':
 
     from matplotlib.gridspec import GridSpec
 
     from configuration import (
         state_annotation_signals,
+        state_annotation_signal_labels,
         plot_raw_signals,
         state_to_color,
         state_display_order,
@@ -58,17 +75,63 @@ if __name__ == '__main__':
         print("{} ({}/{})".format(dataset['file_path_raw_signals'], ii+1, len(datasets)))
 
         # load data
+        total_raw_signals = len(state_annotation_signals)
         signal_labels = [dataset[column_name] for column_name in state_annotation_signals]
         raw_signals = load_raw_signals(dataset['file_path_raw_signals'], signal_labels)
         predicted_states, predicted_intervals = load_hypnogram(dataset['file_path_automated_state_annotation'])
         review_intervals, review_scores = load_review_intervals(dataset['file_path_review_intervals'])
+
+        # plot power in each frequency band and define callback
+        # that updates figure based on the selection
+        frequency_bands = [
+            (r'$\delta$' , 0.,   4., 'aqua'),
+            (r'$\theta$' , 4.,   8., 'seagreen'),
+            (r'$\alpha$' , 8.,  12., 'limegreen'),
+            (r'$\beta$' , 12.,  30., 'darkorchid'),
+            (r'$\gamma$', 30., 100., 'crimson'),
+        ]
+        psd_figure, axes = plt.subplots(1, total_raw_signals,
+                                     sharex=True, sharey=True,
+                                     figsize=(total_raw_signals * 4, 4))
+        psd_collections = []
+        for ii, (signal, ax, label) in enumerate(zip(raw_signals.T, axes, state_annotation_signal_labels)):
+            frequencies, psd = welch(signal, dataset['sampling_frequency_in_hz'])
+            for _, fmin, fmax, color in frequency_bands:
+                mask = (frequencies >= fmin) & (frequencies <= fmax)
+                psd_collections.append(ax.fill_between(frequencies[mask], psd[mask], color=color))
+            ax.set_title(label)
+            ax.set_xlabel("Frequency [Hz]")
+            ax.set_xlim(0, 30)
+        axes[0].set_ylabel("Power")
+
+        def update_psd_figure(selection_lower_bound, selection_upper_bound):
+            fs = dataset['sampling_frequency_in_hz']
+            start = int(fs * selection_lower_bound)
+            stop  = int(fs * selection_upper_bound)
+            # The function `fill_between` returns a collection of patches.
+            # It would be a lot of work to cycle through each patch and recompute
+            # re-compute the path coordinates;
+            # Instead, we remove the obsolete artists and draw new ones.
+            while psd_collections:
+                collection = psd_collections.pop()
+                collection.remove()
+            psd_max = 0
+            for signal, ax in zip(raw_signals.T, psd_figure.get_axes()):
+                frequencies, psd = welch(signal[start:stop], fs)
+                for _, fmin, fmax, color in frequency_bands:
+                    mask = (frequencies >= fmin) & (frequencies <= fmax)
+                    psd_collections.append(ax.fill_between(frequencies[mask], psd[mask], color=color))
+                if psd_max < np.max(psd):
+                    psd_max = np.max(psd)
+                    ax.set_ylim(0, psd_max)
+            psd_figure.canvas.draw_idle()
 
         # compute order for regions of interest
         order = np.argsort(review_scores)[::-1]
         regions_of_interest = review_intervals[order]
 
         # initialise state annotation figure
-        fig = plt.figure(constrained_layout=True, figsize=(30,16))
+        fig = plt.figure()
         gs = GridSpec(4, 1)
         data_axis  = fig.add_subplot(gs[:3, 0])
         state_axis = fig.add_subplot(gs[3, 0], sharex=data_axis)
@@ -85,7 +148,7 @@ if __name__ == '__main__':
         )
 
         # initialise annotator
-        annotator = TimeSeriesAnnotator(data_axis, state_axis, keymap,
+        annotator = TSAnnotatorWithSelectionCallback(update_psd_figure, data_axis, state_axis, keymap,
                                         interval_to_state   = zip(predicted_intervals, predicted_states),
                                         regions_of_interest = regions_of_interest,
                                         state_to_color      = state_to_color,
