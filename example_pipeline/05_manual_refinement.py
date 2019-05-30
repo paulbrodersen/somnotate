@@ -67,11 +67,13 @@ if __name__ == '__main__':
         order = np.argsort(review_scores)[::-1]
         regions_of_interest = review_intervals[order]
 
-        # initialise figure
-        fig = plt.figure()
+        # initialise state annotation figure
+        fig = plt.figure(constrained_layout=True, figsize=(30,16))
         gs = GridSpec(4, 1)
         data_axis  = fig.add_subplot(gs[:3, 0])
         state_axis = fig.add_subplot(gs[3, 0], sharex=data_axis)
+        fig.set_tight_layout({'rect': [0, 0, 1, 0.95], 'pad': 1.5, 'h_pad': 1.5})
+
         state_axis.set_xlabel('Time [s]')
 
         # plot signals
@@ -88,7 +90,6 @@ if __name__ == '__main__':
                                         state_to_color      = state_to_color,
                                         state_display_order = state_display_order,
         )
-        fig.tight_layout()
         plt.show()
 
         refined_intervals = list(annotator.interval_to_state.keys())
