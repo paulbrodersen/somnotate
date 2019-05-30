@@ -81,6 +81,7 @@ if __name__ == '__main__':
             raw_signals,
             sampling_frequency = dataset['sampling_frequency_in_hz'],
             ax                 = data_axis,
+            linewidth          = 1.,
         )
 
         # initialise annotator
