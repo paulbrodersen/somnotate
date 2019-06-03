@@ -53,7 +53,7 @@ robust to mislabelled training data, artefacts, and other outliers.
 
     Using pip:
     ``` shell
-    pip install -r ./sonotate/requirements.txt
+    pip install -r ./somnotate/requirements.txt
     pip install -r ./example_pipeline/requirements.txt
     ```
 
