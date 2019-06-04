@@ -17,13 +17,67 @@ STATE_LINE_WIDTH = 5
 EPS = 1e-9
 
 class TimeSeriesAnnotator(object):
+    """
+    Simple GUI to annotate time series data with non-overlapping state intervals.
+
+    Arguments:
+    ----------
+    data_axis : matplotlib axis instance
+        Axis displaying the time series data.
+    state_axis : matplotlib axis instance
+        Axis used to display the state annotations.
+    key_to_state : dict char : state id (str or int)
+        Keyboard keys corresponding to each state.
+    state_to_color : dict state id : matplotlib color argument (optional)
+        Colors to use for each state in the state annotation plot.
+    state_display_order : list of state ids (optional)
+        Order of states on the y-axis in state annotation plot.
+    default_selection_length : int/float (optional, default 4)
+        Default x interval length for a selection.
+    default_view_length : int/float (optional, default 60)
+        Default x-limit width (i.e. number of time points displayed at any point in time).
+    interval_to_state : dict (float start, float stop) : state id (optional, default None)
+        Predefined state annotation.
+    regions_of_interest: list of (float start, float stop) tuples
+        Predefined regions of interest. Press 'h' to see how to quickly navigate these regions.
+    disable_matplotlib_keybindings : bool (default True)
+        If True, default matplotlib keybindings are disabled.
+        This minimizes conflicts with user defined keybindings.
+    verbose : bool (default True)
+        If False, warnings are suppressed.
+
+    Example:
+    --------
+    ```
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from _manual_state_annotation import TimeSeriesAnnotator
+
+    # initialise annotator object
+    fig, (data_axis, state_axis) = plt.subplots(2, 1)
+    data_axis.plot(np.random.rand(1000))
+    keymap = {'a' : 'state A', 'b' : 'state B'}
+    annotator = TimeSeriesAnnotator(data_axis, state_axis, keymap)
+    plt.show()
+
+    # annotate states by pressing 'a' or 'b'
+
+    # retrieve annotation
+    annotation = annotator.interval_to_state
+    ```
+
+    Notes:
+    ------
+    Press 'h' to display the interactive help.
+    A summary of all navigation and selection commands can be found there.
+    """
 
     def __init__(self, data_axis, state_axis, key_to_state,
+                 state_to_color                 = None,
+                 state_display_order            = None,
                  default_selection_length       = 4,
                  default_view_length            = 60,
                  interval_to_state              = None,
-                 state_to_color                 = None,
-                 state_display_order            = None,
                  regions_of_interest            = None,
                  disable_matplotlib_keybindings = True,
                  verbose                        = True,
