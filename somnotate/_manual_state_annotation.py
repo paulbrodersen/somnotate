@@ -742,11 +742,16 @@ class TimeSeriesAnnotator(object):
 
         # print(start, stop, state)
 
+        def _is_overlapping(start, stop, start_, stop_):
+            # return (start_ <= stop) and (stop_ >= start)
+            # return not ((start_ > stop) or (stop_ < start))
+            return np.invert(np.bitwise_or((start_ > stop), (stop_ < start)))
+
         # determine enclosed, enclosing, and overlapping intervals
         if self.interval_to_state:
             intervals = np.array(list(self.interval_to_state.keys()))
             start_, stop_ = intervals.T
-            is_affected = np.invert(np.bitwise_or((start_ > stop), (stop_ < start)))
+            is_affected = _is_overlapping(start, stop, start_, stop_)
             affected_intervals = intervals[is_affected]
 
         else: # no intervals defined yet
@@ -756,49 +761,101 @@ class TimeSeriesAnnotator(object):
         # for interval in affected_intervals:
         #     print(interval)
 
-        create_new_interval = True
+        # delete old intervals enclosed by new interval
+        if len(affected_intervals) > 0:
+            start_, stop_ = affected_intervals.T
+            is_enclosed = np.logical_and(start_ >= start, stop_ <= stop)
+            if np.any(is_enclosed):
+                for ii, (start_, stop_) in enumerate(affected_intervals[is_enclosed]):
+                    if (start_ >= start) and (stop_ <= stop):
+                        # print("New interval is enclosing.")
+                        self._delete_interval(start_, stop_)
+                affected_intervals = affected_intervals[~is_enclosed]
 
-        for start_, stop_ in affected_intervals:
-            state_ = self.interval_to_state[(start_, stop_)]
-            if (start_ < start) and (stop_ > stop) and (state_ == state):
-                # print('The region to update is enclosed by an interval with the same state; i.e. there is nothing that actually needs doing.')
-                return
+        # exhaustive list of cases
+        total_affected_intervals = len(affected_intervals)
 
-            else:
-                if (start_ >= start) and (stop_ <= stop):
-                    # print("New interval is enclosing.")
-                    self._delete_interval(start_, stop_)
-
-                elif (start_ < start) and (stop_ > stop):
-                    # print("New interval is enclosed.")
-                    self._delete_interval(start_, stop_)
-                    self._create_interval(start_, start, state_)
-                    self._create_interval(stop, stop_, state_)
-
-                elif ((start_ < start) and (stop_ <= stop)) or (start == stop_): # and (stop_ > start):
-                    # print("New interval overlaps end of existing interval")
-                    if state != state_:
-                        self._update_interval(start_, stop_, start_, start)
-                    else: # we just need to extend the existing interval
-                        create_new_interval = False
-                        self._update_interval(start_, stop_, start_, stop)
-
-                elif ((start_ >= start) and (stop_ > stop)) or (stop == start_): # and (start_ < stop):
-                    # print("New interval overlaps start of existing interval")
-                    if state != state_:
-                        self._update_interval(start_, stop_, stop, stop_)
-                    else: # we just need to extend the existing interval
-                        create_new_interval = False
-                        self._update_interval(start_, stop_, start, stop_)
-
-                else:
-                    # print("Interval should be affected but is untouched ({}, {})".format(start_, stop_))
-                    pass
-
-        if create_new_interval and not (state is None):
+        if total_affected_intervals == 0:
             self._create_interval(start, stop, state)
 
-        self.figure.canvas.draw()
+        elif total_affected_intervals == 1:
+            start_, stop_ = affected_intervals[0]
+            state_ = self.interval_to_state[(start_, stop_)]
+
+            if (start_ < start) and (stop_ > stop):
+                # print("New interval is enclosed.")
+                if state != state_:
+                    self._delete_interval(start_, stop_)
+                    self._create_interval(start_, start, state_)
+                    self._create_interval(start, stop, state)
+                    self._create_interval(stop, stop_, state_)
+                else:
+                    # print('The region to update is enclosed by an interval with the same state; i.e. there is nothing that actually needs doing.')
+                    pass
+
+            elif ((start_ < start) and (stop_ <= stop)) or (start == stop_): # and (stop_ > start):
+                # print("New interval overlaps end of existing interval")
+                if state != state_:
+                    self._update_interval(start_, stop_, start_, start)
+                    self._create_interval(start, stop, state)
+                else: # we just need to extend the existing interval
+                    self._update_interval(start_, stop_, start_, stop)
+
+            elif ((start_ >= start) and (stop_ > stop)) or (stop == start_): # and (start_ < stop):
+                # print("New interval overlaps start of existing interval")
+                if state != state_:
+                    self._create_interval(start, stop, state)
+                    self._update_interval(start_, stop_, stop, stop_)
+                else: # we just need to extend the existing interval
+                    self._update_interval(start_, stop_, start, stop_)
+
+        elif total_affected_intervals == 2:
+
+            states = [self.interval_to_state[(start_, stop_)] for start_, stop_ in affected_intervals]
+
+            if len(set(states) | {state}) == 1: # case {A, A}; A
+                for start_, stop_ in affected_intervals:
+                    self._delete_interval(start_, stop_)
+                start = np.min(affected_intervals[:, 0], axis=0)
+                stop  = np.max(affected_intervals[:, 1], axis=0)
+                self._create_interval(start, stop, state)
+
+            else: # case {A, B}; A, {A, A}; B or {A, B}; C
+
+                for start_, stop_ in affected_intervals:
+                    state_ = self.interval_to_state[(start_, stop_)]
+
+                    self._delete_interval(start_, stop_)
+
+                    if ((start_ < start) and (stop_ <= stop)) or (start == stop_): # and (stop_ > start):
+                        # print("New interval overlaps end of existing interval")
+                        if state != state_:
+                            self._create_interval(start_, start, state_)
+                        else:
+                            self._create_interval(start_, stop, state_)
+
+                    elif ((start_ >= start) and (stop_ > stop)) or (stop == start_): # and (start_ < stop):
+                        # print("New interval overlaps start of existing interval")
+                        if state != state_:
+                            self._create_interval(stop, stop_, state_)
+                        else:
+                            self._create_interval(start, stop_, state_)
+
+                if len(set(states)) < len(set(states) | {state}):
+                    # case {A, A}; B or {A, B}; C
+                    self._create_interval(start, stop, state)
+                else:
+                    # case {A, B}; A
+                    pass
+
+        else:
+            error_msg = "Expected <= 2 intervals to handle but got {}!".format(total_affected_intervals)
+            error_msg += "Excluding intervals that are enclosed by the new interval, intervals are:"
+            for start_, stop_ in affected_intervals:
+                error_msg += "\n{}, {}".format(start_, stop_)
+            raise ValueError(error_msg)
+
+        self.figure.canvas.draw_idle()
 
 
     def _initialize_transitions(self):
