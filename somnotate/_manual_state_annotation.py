@@ -102,7 +102,7 @@ class TimeSeriesAnnotator(object):
         self.figure = self.data_axis.get_figure()
         self.data_min, self.data_max = self.data_axis.dataLim.intervalx
         self._initialize_selection(self.data_min, self.data_min+default_selection_length)
-        self._initialize_view(self.data_min, self.data_min+default_view_length)
+        self._set_view(self.data_min, self.data_min+default_view_length)
 
         # initialise callbacks
         self.figure.canvas.mpl_connect('button_press_event'  , self._on_button_press)
@@ -382,7 +382,7 @@ class TimeSeriesAnnotator(object):
                                self.selection_upper_bound + self.default_selection_length)
         # if necessary, jump to next view
         if self.selection_lower_bound >= self.view_upper_bound: # NOTE: this is the old selection_upper_bound!
-            self._update_view(self.view_upper_bound,
+            self._set_view(self.view_upper_bound,
                               self.view_upper_bound + self.default_view_length)
 
 
@@ -391,7 +391,7 @@ class TimeSeriesAnnotator(object):
                                self.selection_lower_bound)
         # if necessary, jump to previous view
         if self.selection_upper_bound <= self.view_lower_bound: # NOTE: this is the old selection_lower_bound!
-            self._update_view(self.view_lower_bound - self.default_view_length,
+            self._set_view(self.view_lower_bound - self.default_view_length,
                               self.view_lower_bound)
 
 
@@ -399,7 +399,7 @@ class TimeSeriesAnnotator(object):
         self._update_selection(self.selection_lower_bound,
                                self.selection_upper_bound + self.default_selection_length)
         if self.selection_upper_bound > self.view_upper_bound:
-            self._update_view(self.view_upper_bound,
+            self._set_view(self.view_upper_bound,
                               self.view_upper_bound + self.default_view_length)
 
 
@@ -407,32 +407,32 @@ class TimeSeriesAnnotator(object):
         self._update_selection(self.selection_lower_bound - self.default_selection_length,
                                self.selection_upper_bound)
         if self.selection_lower_bound < self.view_lower_bound:
-            self._update_view(self.view_lower_bound - self.default_view_length,
+            self._set_view(self.view_lower_bound - self.default_view_length,
                               self.view_lower_bound)
 
 
     def _move_to_next_view(self):
         self._update_selection(self.view_upper_bound,
                                self.view_upper_bound + self.default_selection_length)
-        self._update_view(self.view_upper_bound,
+        self._set_view(self.view_upper_bound,
                             self.view_upper_bound + self.default_view_length)
 
 
     def _move_to_previous_view(self):
         self._update_selection(self.view_lower_bound - self.default_selection_length,
                                self.view_lower_bound)
-        self._update_view(self.view_lower_bound - self.default_view_length,
+        self._set_view(self.view_lower_bound - self.default_view_length,
                             self.view_lower_bound)
 
 
     def _move_to_last_view(self):
         self._update_selection(self.data_max - self.default_selection_length, self.data_max)
-        self._update_view(self.data_max - self.default_view_length, self.data_max)
+        self._set_view(self.data_max - self.default_view_length, self.data_max)
 
 
     def _move_to_first_view(self):
         self._update_selection(self.data_min, self.data_min + self.default_selection_length)
-        self._update_view(self.data_min, self.data_min + self.default_view_length)
+        self._set_view(self.data_min, self.data_min + self.default_view_length)
 
 
     def _select_next_roi(self):
@@ -483,7 +483,7 @@ class TimeSeriesAnnotator(object):
             self._center_view_on_selection()
         else:
             padding = 0.1 * delta
-            self._update_view(start-padding, stop+padding)
+            self._set_view(start-padding, stop+padding)
 
 
     def _move_to_interval_start(self):
@@ -492,7 +492,7 @@ class TimeSeriesAnnotator(object):
             start, stop = interval
             self._update_selection(start, start + self.default_selection_length)
             if self.selection_lower_bound < self.view_lower_bound:
-                # self._update_view(start, start + self.default_view_length)
+                # self._set_view(start, start + self.default_view_length)
                 self._center_view_on_selection()
         else:
             print('No interval to go to!')
@@ -504,7 +504,7 @@ class TimeSeriesAnnotator(object):
             start, stop = interval
             self._update_selection(stop - self.default_selection_length, stop)
             if self.selection_upper_bound > self.view_upper_bound:
-                # self._update_view(stop - self.default_view_length, stop)
+                # self._set_view(stop - self.default_view_length, stop)
                 self._center_view_on_selection()
         else:
             print('No interval to go to!')
@@ -516,7 +516,7 @@ class TimeSeriesAnnotator(object):
             start, stop = interval
             self._update_selection(start, self.selection_upper_bound)
             if self.selection_lower_bound < self.view_lower_bound:
-                # self._update_view(start, start + self.default_view_length)
+                # self._set_view(start, start + self.default_view_length)
                 self._center_view_on(start)
         else:
             print('No interval to go to!')
@@ -528,7 +528,7 @@ class TimeSeriesAnnotator(object):
             start, stop = interval
             self._update_selection(self.selection_lower_bound, stop)
             if self.selection_upper_bound > self.view_upper_bound:
-                # self._update_view(stop - self.default_view_length, stop)
+                # self._set_view(stop - self.default_view_length, stop)
                 self._center_view_on(stop)
         else:
             print('No interval to go to!')
@@ -543,7 +543,7 @@ class TimeSeriesAnnotator(object):
             selection_length = min([stop-start, self.default_selection_length])
             self._update_selection(stop - selection_length, stop)
             if self.selection_lower_bound < self.view_lower_bound:
-                # self._update_view(stop - self.default_view_length, stop)
+                # self._set_view(stop - self.default_view_length, stop)
                 self._center_view_on_selection()
         else:
             print("No interval to go to!")
@@ -558,7 +558,7 @@ class TimeSeriesAnnotator(object):
             selection_length = min([stop-start, self.default_selection_length])
             self._update_selection(start, start + selection_length)
             if self.selection_upper_bound > self.view_upper_bound:
-                # self._update_view(start, start + self.default_view_length)
+                # self._set_view(start, start + self.default_view_length)
                 self._center_view_on_selection()
         else:
             print("No interval to go to!")
@@ -576,16 +576,12 @@ class TimeSeriesAnnotator(object):
         #                           self.key_to_state[event.key.replace('alt+', '')])
 
 
-    def _initialize_view(self, view_lower_bound, view_upper_bound):
+    def _set_view(self, view_lower_bound, view_upper_bound):
         self.view_lower_bound = view_lower_bound
         self.view_upper_bound = view_upper_bound
         self.data_axis.set_xlim(self.view_lower_bound, self.view_upper_bound)
         self.state_axis.set_xlim(self.view_lower_bound, self.view_upper_bound)
         self.figure.canvas.draw_idle()
-
-
-    def _update_view(self, view_lower_bound, view_upper_bound):
-        self._initialize_view(view_lower_bound, view_upper_bound)
 
 
     def _initialize_selection(self, selection_lower_bound, selection_upper_bound):
@@ -622,8 +618,8 @@ class TimeSeriesAnnotator(object):
 
 
     def _center_view_on(self, x):
-        self._update_view(x - 0.5 * self.default_view_length,
-                          x + 0.5 * self.default_view_length)
+        self._set_view(x - 0.5 * self.default_view_length,
+                       x + 0.5 * self.default_view_length)
 
 
     def _initialize_state_annotation(self, interval_to_state,
