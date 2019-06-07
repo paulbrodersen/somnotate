@@ -11,7 +11,7 @@ matplotlib.rcParams['agg.path.chunksize'] = 10000
 # import matplotlib.style as mplstyle
 # mplstyle.use('fast')
 
-from somnotate._manual_state_annotation import TimeSeriesAnnotator
+from somnotate._manual_state_annotation import TimeSeriesStateAnnotator
 
 from data_io import (
     ArgumentParser,
@@ -24,7 +24,7 @@ from data_io import (
 )
 
 
-class TSAnnotatorWithSelectionCallback(TimeSeriesAnnotator):
+class TSAnnotatorWithSelectionCallback(TimeSeriesStateAnnotator):
     """Add a callback to `update_selection`.  We use this to plot the
     power spectral density of the raw signals in the selected time
     interval.
@@ -32,10 +32,10 @@ class TSAnnotatorWithSelectionCallback(TimeSeriesAnnotator):
 
     def __init__(self, callback, *args, **kwargs):
         self._callback = callback
-        TimeSeriesAnnotator.__init__(self, *args, **kwargs)
+        super(TSAnnotatorWithSelectionCallback, self).__init__(*args, **kwargs)
 
     def _update_selection(self, *args, **kwargs):
-        TimeSeriesAnnotator._update_selection(self, *args, **kwargs)
+        super(TSAnnotatorWithSelectionCallback, self)._update_selection(*args, **kwargs)
         self._callback(self.selection_lower_bound, self.selection_upper_bound)
 
 

@@ -16,7 +16,8 @@ DEBUG = False
 STATE_LINE_WIDTH = 5
 EPS = 1e-9
 
-class TimeSeriesAnnotator(object):
+
+class TimeSeriesStateViewer(object):
     """
     Simple GUI to annotate time series data with non-overlapping state intervals.
 
@@ -26,8 +27,6 @@ class TimeSeriesAnnotator(object):
         Axis displaying the time series data.
     state_axis : matplotlib axis instance
         Axis used to display the state annotations.
-    key_to_state : dict char : state id (str or int)
-        Keyboard keys corresponding to each state.
     state_to_color : dict state id : matplotlib color argument (optional)
         Colors to use for each state in the state annotation plot.
     state_display_order : list of state ids (optional)
@@ -40,11 +39,6 @@ class TimeSeriesAnnotator(object):
         Predefined state annotation.
     regions_of_interest: list of (float start, float stop) tuples
         Predefined regions of interest. Press 'h' to see how to quickly navigate these regions.
-    disable_matplotlib_keybindings : bool (default True)
-        If True, default matplotlib keybindings are disabled.
-        This minimizes conflicts with user defined keybindings.
-    verbose : bool (default True)
-        If False, warnings are suppressed.
 
     Example:
     --------
@@ -72,26 +66,14 @@ class TimeSeriesAnnotator(object):
     A summary of all navigation and selection commands can be found there.
     """
 
-    def __init__(self, data_axis, state_axis, key_to_state,
+    def __init__(self, data_axis, state_axis,
                  state_to_color                 = None,
                  state_display_order            = None,
                  default_selection_length       = 4,
                  default_view_length            = 60,
                  interval_to_state              = None,
                  regions_of_interest            = None,
-                 disable_matplotlib_keybindings = True,
-                 verbose                        = True,
     ):
-
-        if disable_matplotlib_keybindings:
-            if verbose:
-                import warnings
-                msg =  "Disabling all native matplotlib keyboard shortcuts to minimise conflicts with user-defined keys."
-                msg += "\nIf you would like to retain these keybindings, initialise the class with `disable_matplotlib_keybindings` set to False."
-                msg += "\nTo supress this warning, initialise the class with `verbose` set to False."
-                warnings.warn(msg)
-            _disable_matplotlib_keybindings()
-
         # define navigation keys
         self.basic_movement_keys = [
             'right',
@@ -126,11 +108,7 @@ class TimeSeriesAnnotator(object):
                              + self.interval_movement_keys \
                              + self.goto_navigation_keys
 
-        # check that supplied state annotation keys do not conflict with existing key bindings
-        self._check_keybindings(key_to_state)
-
         # bookkeeping
-        self.key_to_state             = key_to_state
         self.data_axis                = data_axis
         self.state_axis               = state_axis
         self.default_selection_length = default_selection_length
@@ -143,9 +121,6 @@ class TimeSeriesAnnotator(object):
             state_to_color      = state_to_color,
             state_display_order = state_display_order
         )
-
-        # initialize state transition markers
-        self._initialize_transitions()
 
         # initialize ROIs
         if not (self.rois is None):
@@ -165,13 +140,9 @@ class TimeSeriesAnnotator(object):
         self.figure.canvas.mpl_connect('key_press_event'     , self._on_key_press)
         #  self.figure.canvas.mpl_connect('key_release_event'   , self._on_key_release)
         self.figure.canvas.mpl_connect('motion_notify_event' , self._on_motion)
-        self.figure.canvas.mpl_connect('pick_event'          , self._on_pick)
         self.button_press_start = None
 
         self.memory = ''
-
-        # force show
-        plt.show()
 
 
     def _check_keybindings(self, key_to_state):
@@ -275,11 +246,6 @@ class TimeSeriesAnnotator(object):
                     self._handle_click(event)
                 self.button_press_start = None
 
-        if event.inaxes is self.state_axis:
-            if self.picked_transition:
-                self._update_transition(self.picked_transition)
-                self.picked_transition = None
-
 
     def _handle_click(self, event):
 
@@ -307,16 +273,6 @@ class TimeSeriesAnnotator(object):
             if self.button_press_start:
                 self._handle_hold_click(event)
 
-        if event.inaxes is self.state_axis:
-            if self.picked_transition:
-                self._move_transition(event)
-
-
-    def _on_pick(self, event):
-        if (event.mouseevent.inaxes is self.state_axis) \
-           and (event.artist in self.transition_artist_to_interval):
-            self.picked_transition = event.artist
-
 
     def _on_key_press(self, event):
         if DEBUG:
@@ -339,9 +295,6 @@ class TimeSeriesAnnotator(object):
 
         elif event.key in self.goto_navigation_keys:
             self._goto_navigation(event)
-
-        elif event.key in self.key_to_state:
-            self._annotate(event)
 
         elif event.key == '?':
             self._display_help()
@@ -618,18 +571,6 @@ class TimeSeriesAnnotator(object):
             print("No interval to go to!")
 
 
-    def _annotate(self, event):
-        if event.key in self.key_to_state:
-            self._update_annotation(self.selection_lower_bound,
-                                    self.selection_upper_bound,
-                                    self.key_to_state[event.key])
-
-        # elif ('alt+' in event.key) and (event.key.replace('alt+', '') in self.key_to_state):
-        #     self._update_annotation(self.view_lower_bound,
-        #                           self.view_upper_bound,
-        #                           self.key_to_state[event.key.replace('alt+', '')])
-
-
     def _set_view(self, view_lower_bound, view_upper_bound):
         self.view_lower_bound = view_lower_bound
         self.view_upper_bound = view_upper_bound
@@ -714,28 +655,147 @@ class TimeSeriesAnnotator(object):
         self.state_axis.set_yticklabels(yticklabels)
 
 
-    def _delete_interval(self, start, stop):
-        del self.interval_to_state[(start, stop)]
-        self.line_artists[(start, stop)].remove()
-        del self.line_artists[(start, stop)]
-        self._delete_transition(start, stop)
+    def _get_interval_at(self, x):
+        intervals = np.array(list(self.interval_to_state.keys()))
+        is_within = np.logical_and(x >= intervals[:, 0], x < intervals[:, 1])
+        if np.any(is_within):
+            (start, stop), = intervals[is_within]
+            return (start, stop)
+        else:
+            return None
 
 
-    def _create_interval(self, start, stop, state):
-        self.interval_to_state[(start, stop)] = state
-        self.line_artists[(start, stop)], = self.state_axis.plot(
-            (start, stop),
-            (self.state_to_yvalue[state], self.state_to_yvalue[state]),
-            color     = self.state_to_color[state],
-            linewidth = STATE_LINE_WIDTH,
-        )
-        self._create_transition(start, stop)
+def _disable_matplotlib_keybindings(keep=[]):
+    for k, v in list(plt.rcParams.items()):
+        if ('keymap.' in k) and not (k in keep):
+            plt.rcParams[k] = ""
 
 
-    def _update_interval(self, old_start, old_stop, new_start, new_stop):
-        state = self.interval_to_state[(old_start, old_stop)]
-        self._delete_interval(old_start, old_stop)
-        self._create_interval(new_start, new_stop, state)
+class TimeSeriesStateAnnotator(TimeSeriesStateViewer):
+    """
+    Simple GUI to annotate time series data with non-overlapping state intervals.
+
+    Arguments:
+    ----------
+    data_axis : matplotlib axis instance
+        Axis displaying the time series data.
+    state_axis : matplotlib axis instance
+        Axis used to display the state annotations.
+    key_to_state : dict char : state id (str or int)
+        Keyboard keys corresponding to each state.
+    state_to_color : dict state id : matplotlib color argument (optional)
+        Colors to use for each state in the state annotation plot.
+    state_display_order : list of state ids (optional)
+        Order of states on the y-axis in state annotation plot.
+    default_selection_length : int/float (optional, default 4)
+        Default x interval length for a selection.
+    default_view_length : int/float (optional, default 60)
+        Default x-limit width (i.e. number of time points displayed at any point in time).
+    interval_to_state : dict (float start, float stop) : state id (optional, default None)
+        Predefined state annotation.
+    regions_of_interest: list of (float start, float stop) tuples
+        Predefined regions of interest. Press 'h' to see how to quickly navigate these regions.
+    disable_matplotlib_keybindings : bool (default True)
+        If True, default matplotlib keybindings are disabled.
+        This minimizes conflicts with user defined keybindings.
+    verbose : bool (default True)
+        If False, warnings are suppressed.
+
+    Example:
+    --------
+    ```
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from _manual_state_annotation import TimeSeriesAnnotator
+
+    # initialise annotator object
+    fig, (data_axis, state_axis) = plt.subplots(2, 1)
+    data_axis.plot(np.random.rand(1000))
+    keymap = {'a' : 'state A', 'b' : 'state B'}
+    annotator = TimeSeriesAnnotator(data_axis, state_axis, keymap)
+    plt.show()
+
+    # annotate states by pressing 'a' or 'b'
+
+    # retrieve annotation
+    annotation = annotator.interval_to_state
+    ```
+
+    Notes:
+    ------
+    Press 'h' to display the interactive help.
+    A summary of all navigation and selection commands can be found there.
+    """
+
+    def __init__(self, data_axis, state_axis, key_to_state,
+                 disable_matplotlib_keybindings = True,
+                 verbose                        = True,
+                 *args, **kwargs):
+
+        super(TimeSeriesStateAnnotator, self).__init__(data_axis, state_axis, *args, **kwargs)
+
+        if disable_matplotlib_keybindings:
+            if verbose:
+                import warnings
+                msg =  "Disabling all native matplotlib keyboard shortcuts to minimise conflicts with user-defined keys."
+                msg += "\nIf you would like to retain these keybindings, initialise the class with `disable_matplotlib_keybindings` set to False."
+                msg += "\nTo supress this warning, initialise the class with `verbose` set to False."
+                warnings.warn(msg)
+            _disable_matplotlib_keybindings()
+
+        # check that supplied state annotation keys do not conflict with existing key bindings
+        self._check_keybindings(key_to_state)
+
+        self.key_to_state = key_to_state
+
+        # initialize state transition markers
+        self._initialize_transitions()
+
+        self.figure.canvas.mpl_connect('pick_event', self._on_pick)
+
+
+    def _on_motion(self, event):
+        super(TimeSeriesStateAnnotator, self)._on_motion(event)
+
+        if event.inaxes is self.state_axis:
+            if self.picked_transition:
+                self._move_transition(event)
+
+
+    def _on_button_release(self, event):
+        super(TimeSeriesStateAnnotator, self)._on_button_release(event)
+
+        if event.inaxes is self.state_axis:
+            if self.picked_transition:
+                self._update_transition(self.picked_transition)
+                self.picked_transition = None
+
+
+    def _on_pick(self, event):
+        if (event.mouseevent.inaxes is self.state_axis) \
+           and (event.artist in self.transition_artist_to_interval):
+            self.picked_transition = event.artist
+
+
+    def _on_key_press(self, event):
+        # potentially, don.t inherit from parent but copy and extend method instead
+        # (if we inherit, we don't have a clean switch/case pattern)
+        super(TimeSeriesStateAnnotator, self)._on_key_press(event)
+
+        if event.key in self.key_to_state:
+            self._annotate(event)
+
+
+    def _annotate(self, event):
+        if event.key in self.key_to_state:
+            self._update_annotation(self.selection_lower_bound,
+                                    self.selection_upper_bound,
+                                    self.key_to_state[event.key])
+
+        # elif ('alt+' in event.key) and (event.key.replace('alt+', '') in self.key_to_state):
+        #     self._update_annotation(self.view_lower_bound,
+        #                           self.view_upper_bound,
+        #                           self.key_to_state[event.key.replace('alt+', '')])
 
 
     def _update_annotation(self, start, stop, state):
@@ -858,6 +918,30 @@ class TimeSeriesAnnotator(object):
         self.figure.canvas.draw_idle()
 
 
+    def _delete_interval(self, start, stop):
+        del self.interval_to_state[(start, stop)]
+        self.line_artists[(start, stop)].remove()
+        del self.line_artists[(start, stop)]
+        self._delete_transition(start, stop)
+
+
+    def _create_interval(self, start, stop, state):
+        self.interval_to_state[(start, stop)] = state
+        self.line_artists[(start, stop)], = self.state_axis.plot(
+            (start, stop),
+            (self.state_to_yvalue[state], self.state_to_yvalue[state]),
+            color     = self.state_to_color[state],
+            linewidth = STATE_LINE_WIDTH,
+        )
+        self._create_transition(start, stop)
+
+
+    def _update_interval(self, old_start, old_stop, new_start, new_stop):
+        state = self.interval_to_state[(old_start, old_stop)]
+        self._delete_interval(old_start, old_stop)
+        self._create_interval(new_start, new_stop, state)
+
+
     def _initialize_transitions(self):
         self.picked_transition = None
         self.transition_artist_to_interval = dict()
@@ -905,19 +989,3 @@ class TimeSeriesAnnotator(object):
             return self.interval_to_state[interval]
         else:
             return None
-
-
-    def _get_interval_at(self, x):
-        intervals = np.array(list(self.interval_to_state.keys()))
-        is_within = np.logical_and(x >= intervals[:, 0], x < intervals[:, 1])
-        if np.any(is_within):
-            (start, stop), = intervals[is_within]
-            return (start, stop)
-        else:
-            return None
-
-
-def _disable_matplotlib_keybindings(keep=[]):
-    for k, v in list(plt.rcParams.items()):
-        if ('keymap.' in k) and not (k in keep):
-            plt.rcParams[k] = ""
