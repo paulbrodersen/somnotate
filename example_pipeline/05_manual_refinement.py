@@ -159,10 +159,10 @@ if __name__ == '__main__':
 
         # initialise annotator
         annotator = TSAnnotatorWithSelectionCallback(update_psd_figure, data_axis, state_axis, keymap,
-                                        interval_to_state   = zip(predicted_intervals, predicted_states),
-                                        regions_of_interest = regions_of_interest,
-                                        state_to_color      = state_to_color,
-                                        state_display_order = state_display_order,
+                                                     interval_to_state   = zip(predicted_intervals, predicted_states),
+                                                     regions_of_interest = regions_of_interest,
+                                                     state_to_color      = state_to_color,
+                                                     state_display_order = state_display_order,
         )
         plt.show()
 
