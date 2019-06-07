@@ -4,6 +4,7 @@
 Convert hypnograms to matlab array.
 """
 
+import numpy as np
 from scipy.io import savemat
 
 from data_io import (
@@ -29,8 +30,18 @@ if __name__ == '__main__':
     # --------------------------------------------------------------------------------
     # parse and check inputs
 
-    parser = ArgumentParser()
+    parser = ArgumentParser(description="Convert hypnograms in visbrain stage-duration format to matlab state vectors.")
     parser.add_argument("spreadsheet_file_path", help="Use datasets specified in /path/to/spreadsheet.csv")
+    parser.add_argument('--type',
+                    default = 'automated',
+                    choices = ['automated', 'refined', 'manual'],
+                    help    = 'The hypnogram type to export (default: %(default)s).'
+    )
+    parser.add_argument('--only',
+                        nargs = '+',
+                        type  = int,
+                        help  = 'Indices corresponding to the rows to use (default: all). Indexing starts at zero.'
+    )
     args = parser.parse_args()
 
     # load spreadsheet / data frame
@@ -39,17 +50,20 @@ if __name__ == '__main__':
     # check contents of spreadsheet
     check_dataframe(datasets,
                     columns = [
-                        'file_path_automated_state_annotation',
-                        'file_path_automated_state_annotation_mat'
+                        'file_path_{}_state_annotation'.format(args.type),
+                        'file_path_{}_state_annotation_mat'.format(args.type)
                     ],
                     column_to_dtype = {
-                        'file_path_automated_state_annotation' : str,
-                        'file_path_automated_state_annotation_mat' : str,
+                        'file_path_{}_state_annotation'.format(args.type) : str,
+                        'file_path_{}_state_annotation_mat'.format(args.type) : str,
                     }
     )
 
+    if args.only:
+        datasets = datasets.loc[np.in1d(range(len(datasets)), args.only)]
+
     for ii, dataset in datasets.iterrows():
-        print("{} ({}/{})".format(dataset['file_path_automated_state_annotation'], ii+1, len(datasets)))
-        old_file_path = dataset['file_path_automated_state_annotation']
-        new_file_path = dataset['file_path_automated_state_annotation_mat']
+        print("{} ({}/{})".format(dataset['file_path_{}_state_annotation'.format(args.type)], ii+1, len(datasets)))
+        old_file_path = dataset['file_path_{}_state_annotation'.format(args.type)]
+        new_file_path = dataset['file_path_{}_state_annotation_mat'.format(args.type)]
         convert_hypnogram_to_mat(old_file_path, new_file_path, mapping=state_to_int, time_resolution=1)
