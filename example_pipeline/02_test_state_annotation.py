@@ -34,6 +34,12 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("spreadsheet_file_path", help="Use datasets specified in /path/to/spreadsheet.csv")
     parser.add_argument("-s", "--show", action="store_true", help="Plot the output figures of the script.")
+    parser.add_argument('--only',
+                        nargs = '+',
+                        type  = int,
+                        help  = 'Indices corresponding to the rows to use (default: all). Indexing starts at zero.'
+    )
+
     args = parser.parse_args()
 
     # load spreadsheet / data frame
@@ -50,6 +56,9 @@ if __name__ == '__main__':
                         'file_path_manual_state_annotation' : str,
                     }
     )
+
+    if args.only:
+        datasets = datasets.loc[np.in1d(range(len(datasets)), args.only)]
 
     # --------------------------------------------------------------------------------
     print("Loading data sets...")

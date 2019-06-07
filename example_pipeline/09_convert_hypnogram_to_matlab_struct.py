@@ -4,6 +4,7 @@
 Convert hypnograms to matlab array.
 """
 
+import numpy as np
 from scipy.io import savemat
 
 from data_io import (
@@ -36,6 +37,11 @@ if __name__ == '__main__':
                     choices = ['automated', 'refined', 'manual'],
                     help    = 'The hypnogram type to export (default: %(default)s).'
     )
+    parser.add_argument('--only',
+                        nargs = '+',
+                        type  = int,
+                        help  = 'Indices corresponding to the rows to use (default: all). Indexing starts at zero.'
+    )
     args = parser.parse_args()
 
     # load spreadsheet / data frame
@@ -52,6 +58,9 @@ if __name__ == '__main__':
                         'file_path_{}_state_annotation_mat'.format(args.type) : str,
                     }
     )
+
+    if args.only:
+        datasets = datasets.loc[np.in1d(range(len(datasets)), args.only)]
 
     for ii, dataset in datasets.iterrows():
         print("{} ({}/{})".format(dataset['file_path_{}_state_annotation'.format(args.type)], ii+1, len(datasets)))
