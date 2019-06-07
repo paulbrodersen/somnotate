@@ -145,7 +145,7 @@ if __name__ == '__main__':
         gs = GridSpec(4, 1)
         data_axis  = fig.add_subplot(gs[:3, 0])
         state_axis = fig.add_subplot(gs[3, 0], sharex=data_axis)
-        fig.set_tight_layout({'rect': [0, 0, 1, 0.95], 'pad': 1.5, 'h_pad': 1.5})
+        fig.tight_layout(**{'rect': [0.05, 0, 1, 1], 'pad': 2., 'h_pad': 0.})
 
         state_axis.set_xlabel('Time [s]')
 
