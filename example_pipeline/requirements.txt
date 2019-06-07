@@ -1,6 +1,6 @@
+six
 numpy
 scipy
 matplotlib
 pandas
 pyedflib
-six

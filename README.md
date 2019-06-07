@@ -24,46 +24,81 @@ robust to mislabelled training data, artefacts, and other outliers.
 
 ## Installation instructions
 
-1. Clone or download this repository.
+1. Clone this repository. Git is available
+   [here](https://git-scm.com/downloads).
 
-2. Open a console and change to the root folder of the repository.
+    ```shell
+    git clone https://github.com/paulbrodersen/somnotate.git
+    ```
 
-    ``` shell
+    Alternatively, you can just download the repository as a zip file,
+    and unzip it. However, you will have to repeat this process each
+    time a new version is released. If you use git, you can update the
+    repository simply by changing to anywhere in the somnotate
+    directory and running `git pull`.
+
+    ```shell
     cd /path/to/somnotate
+    git pull
     ```
 
 2. Optionally, create a clean virtual environment.
 
-   For example, to create a clean virtual environment in anaconda, open the anaconda prompt and enter:
+   For example, to create a clean virtual environment using conda
+   (available
+   [here](https://www.anaconda.com/distribution/#download-section)),
+   open a terminal (on Windows: Anaconda Prompt), and enter:
+
    ``` shell
    conda create --no-default-packages -n my_somnotate_virtual_environment_name python
    ```
 
-   Then activate the environment, and install `pip`, which we will use
-   to install the dependencies as not all packages are available via
-   the default anaconda channels.
+    Then activate the environment:
    ``` shell
    conda activate my_somnotate_virtual_environment_name
-   conda install -n my_somnotate_virtual_environment_name pip
    ```
 
-   You will need to re-activate the environment each time you want to use somnotate.
+   You will need to re-activate the environment each time you want to
+   use somnotate.
 
-3. Install all relevant dependencies.
+3. Install all required dependencies.
+
+    Using conda:
+    ```shell
+    cd /path/to/somnotate
+    conda install --file ./somnotate/requirements.txt
+    conda install -c conda-forge pyedflib
+    conda install --file ./example_pipeline/requirements.txt
+    ```
 
     Using pip:
     ``` shell
+    cd /path/to/somnotate
     pip install -r ./somnotate/requirements.txt
     pip install -r ./example_pipeline/requirements.txt
     ```
+
+    However, if you use `pip` and you don't have a C++ compiler, the
+    installation will fail for `pyedflib`, which is used in the
+    pipeline to load EDF files.  On Windows, you will need to install
+    the "Build tools for Visual Studio"; on MacOS, you will need to
+    install the "Command Line Tools for Xcode". Then rerun the last
+    command.
+
+4.  Install all optional dependencies.
 
     The example pipeline has one optional dependency, `lspopt`, which
     is used to compute multitaper spectrograms. At the time of
     writing, the module is not avalaible on the PIPy or anaconda
     servers, so please follow the installation instructions on [the
     github homepage of the lspopt project](https://github.com/hbldh/lspopt).
+    Currently, the easiest way is to use pip and git:
 
-4. Ensure that the somnotate folder is in your PYTHONPATH environment variable.
+    ```shell
+    pip install git+https://github.com/hbldh/lspopt.git#egg=lspopt
+    ```
+
+5. Ensure that the somnotate folder is in your PYTHONPATH environment variable.
 
     In most python environments, it suffices to change the working
     directory to the somnotate root folder. If you are using Anaconda,
