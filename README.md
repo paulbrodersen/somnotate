@@ -209,6 +209,14 @@ Currently available scripts are:
    annotations. Press the key "?" to read the documentation for all
    available commands.
 
+7. `06_compare_state_annotations.py`
+
+   This script launches a simple GUI that facilitates manual checking
+   of all differences between two state annotations, e.g. the a manual
+   state annotation and a corresponding automated state annotation.
+   Press the key "?" to read the documentation for all
+   available commands.
+
 Apart from these scripts, there are two additional files, `data_io.py` and `configuration.py`
 
 - `data_io.py`
@@ -245,6 +253,14 @@ namely the path to the trained model:
 
 ``` shell
 python /path/to/somnotate/example_pipeline/03_train_state_annotation.py /path/to/spreadsheet.csv /path/to/model.pickle
+```
+
+If the script is supposed to run for only a subset of datasets in the spreadsheet,
+the `--only` flag can be used to supply the indices for the corresponding rows.
+For example, to train a model using only the first, third and fourth dataset, use:
+
+``` shell
+/path/to/somnotate/example_pipeline/03_train_state_annotation.py /path/to/spreadsheet.csv /path/to/model.pickle --only 0 2 3
 ```
 
 Some scripts produce output plots if the optional argument `--show` is
