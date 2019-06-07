@@ -210,7 +210,7 @@ plot_states = partial(plot_states,
 # Figure formatting
 # --------------------------------------------------------------------------------
 
-plt.rcParams['figure.figsize'] = (30, 15)
+plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['ytick.labelsize'] = 'medium'
 plt.rcParams['xtick.labelsize'] = 'medium'
 plt.rcParams['axes.labelsize']  = 'medium'
