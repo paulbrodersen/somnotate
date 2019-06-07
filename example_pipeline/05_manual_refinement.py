@@ -24,21 +24,6 @@ from data_io import (
 )
 
 
-class TSAnnotatorWithSelectionCallback(TimeSeriesStateAnnotator):
-    """Add a callback to `update_selection`.  We use this to plot the
-    power spectral density of the raw signals in the selected time
-    interval.
-    """
-
-    def __init__(self, callback, *args, **kwargs):
-        self._callback = callback
-        super(TSAnnotatorWithSelectionCallback, self).__init__(*args, **kwargs)
-
-    def _update_selection(self, *args, **kwargs):
-        super(TSAnnotatorWithSelectionCallback, self)._update_selection(*args, **kwargs)
-        self._callback(self.selection_lower_bound, self.selection_upper_bound)
-
-
 if __name__ == '__main__':
 
     from matplotlib.gridspec import GridSpec
@@ -158,11 +143,12 @@ if __name__ == '__main__':
         )
 
         # initialise annotator
-        annotator = TSAnnotatorWithSelectionCallback(update_psd_figure, data_axis, state_axis, keymap,
-                                                     interval_to_state   = zip(predicted_intervals, predicted_states),
-                                                     regions_of_interest = regions_of_interest,
-                                                     state_to_color      = state_to_color,
-                                                     state_display_order = state_display_order,
+        annotator = TimeSeriesStateAnnotator(data_axis, state_axis, keymap,
+                                             interval_to_state   = zip(predicted_intervals, predicted_states),
+                                             regions_of_interest = regions_of_interest,
+                                             state_to_color      = state_to_color,
+                                             state_display_order = state_display_order,
+                                             selection_callback  = update_psd_figure,
         )
         plt.show()
 

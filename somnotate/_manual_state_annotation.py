@@ -39,6 +39,9 @@ class TimeSeriesStateViewer(object):
         Predefined state annotation.
     regions_of_interest: list of (float start, float stop) tuples
         Predefined regions of interest. Press 'h' to see how to quickly navigate these regions.
+    selection_callback: function or None (default None)
+        Function that is called upon each new selection with selection lower bound
+        and selection upper bound as arguments.
 
     Example:
     --------
@@ -73,6 +76,7 @@ class TimeSeriesStateViewer(object):
                  default_view_length            = 60,
                  interval_to_state              = None,
                  regions_of_interest            = None,
+                 selection_callback             = None,
     ):
         # define navigation keys
         self.basic_movement_keys = [
@@ -114,6 +118,7 @@ class TimeSeriesStateViewer(object):
         self.default_selection_length = default_selection_length
         self.default_view_length      = default_view_length
         self.rois                     = regions_of_interest
+        self._selection_callback      = selection_callback
 
         # initialize state annotation and plot
         self._initialize_state_annotation(
@@ -606,6 +611,9 @@ class TimeSeriesStateViewer(object):
         self.selection_upper_bound = selection_upper_bound
         self.figure.canvas.draw_idle()
 
+        if self._selection_callback:
+            self._selection_callback(self.selection_lower_bound, self.selection_upper_bound)
+
 
     def _center_view_on_selection(self):
         midpoint = self.selection_lower_bound + 0.5 * (self.selection_upper_bound - self.selection_lower_bound)
@@ -695,6 +703,9 @@ class TimeSeriesStateAnnotator(TimeSeriesStateViewer):
         Predefined state annotation.
     regions_of_interest: list of (float start, float stop) tuples
         Predefined regions of interest. Press 'h' to see how to quickly navigate these regions.
+    selection_callback: function or None (default None)
+        Function that is called upon each new selection with selection lower bound
+        and selection upper bound as arguments.
     disable_matplotlib_keybindings : bool (default True)
         If True, default matplotlib keybindings are disabled.
         This minimizes conflicts with user defined keybindings.
