@@ -142,7 +142,7 @@ def plot_states(states, intervals,
 
             x = data[unique_state]
             y = np.full_like(x, ii)
-            ax.plot(x, y, linewidth=3, color=state_to_color[unique_state], *args, **kwargs)
+            ax.plot(x, y, color=state_to_color[unique_state], *args, **kwargs)
 
             yticks.append(ii)
             ytick_labels.append(unique_state)
