@@ -184,11 +184,6 @@ class TimeSeriesStateViewer(object):
         hold left and drag -- make arbitrary selection
         shift + left click -- expand selection to point
 
-        On state axis:
-        --------------
-        hold left click on state transition marker -- move state transition
-
-
         Keybindings:
         ============
 
@@ -763,6 +758,71 @@ class TimeSeriesStateAnnotator(TimeSeriesStateViewer):
         self._initialize_transitions()
 
         self.figure.canvas.mpl_connect('pick_event', self._on_pick)
+
+
+    def _display_help(self):
+        help_string = """
+        Mouse behaviour:
+        ================
+
+        On data axis:
+        -------------
+        left click         -- select epoch
+        hold left and drag -- make arbitrary selection
+        shift + left click -- expand selection to point
+
+        On state axis:
+        --------------
+        hold left click on state transition marker -- move state transition
+
+
+        Keybindings:
+        ============
+
+        General
+        -------
+        ?         -- display this help
+
+        Basic navigation:
+        -----------------
+        left       -- move backward by one epoch length (`default_selection_length`)
+        right      -- move forward  by one epoch length
+        ctrl+left  -- move to the preceding view (fast scroll backward)
+        ctrl+right -- move to the following view (fast scroll forward)
+        Home       -- move to the start of the time series
+        End        -- move to the end of the time series
+        alt+left   -- expand selection backward by one epoch length
+        alt+right  -- expand selection forward  by one epoch length
+
+        Regions of interest (ROI) navigation:
+        -------------------------------------
+        up         -- move to the previous ROI
+        down       -- move to the next ROI
+        ctrl+up    -- move backward in the list of ROIs by 10% (fast scroll backward)
+        ctrl+down  -- move forward  in the list of ROIs by 10% (fast scroll forward)
+        PageUp     -- move to first ROI
+        PageDown   -- move to last ROI
+
+        State interval navigation:
+        --------------------------
+        [          -- move to the start of the current state interval (or of the preceding state if already at the start)
+        ]          -- move to the end   of the current state interval (or of the following state if already at the end)
+        ctrl+[     -- move to the end   of the preceding interval with the same state as the current state
+        ctrl+]     -- move to the start of the following interval with the same state as the current state
+        alt+[      -- expand selection to the start of the current state interval (or of the preceding state if already at the start)
+        alt+]      -- expand selection to the end   of the current state interval (or of the following state if already at the end)
+
+        GOTO navigaton:
+        ---------------
+        Enter valid float and press enter; backspace to clear memory.
+
+        Contact:
+        ========
+        Please raise any issues you encounter at:
+        www.github.com/paulbrodersen/time_series_annotator/issues
+
+        """
+        print(help_string)
 
 
     def _on_motion(self, event):
