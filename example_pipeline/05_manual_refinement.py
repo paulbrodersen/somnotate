@@ -44,6 +44,11 @@ if __name__ == '__main__':
                         type  = int,
                         help  = 'Indices corresponding to the rows to use (default: all). Indexing starts at zero.'
     )
+    parser.add_argument('--annotation_type',
+                    default = 'automated',
+                    choices = ['automated', 'refined', 'manual'],
+                    help    = 'The annotation type to export (default: %(default)s).'
+    )
 
     args = parser.parse_args()
 
@@ -55,14 +60,14 @@ if __name__ == '__main__':
                     columns = [
                         'file_path_raw_signals',
                         'sampling_frequency_in_hz',
-                        'file_path_automated_state_annotation',
+                        'file_path_{}_state_annotation'.format(args.annotation_type),
                         'file_path_refined_state_annotation',
                         'file_path_review_intervals',
                     ] + state_annotation_signals,
                     column_to_dtype = {
                         'file_path_raw_signals' : str,
                         'sampling_frequency_in_hz' : (int, float, np.int, np.float, np.int64, np.float64),
-                        'file_path_automated_state_annotation' : str,
+                        'file_path_{}_state_annotation'.format(args.annotation_type) : str,
                         'file_path_refined_state_annotation' : str,
                         'file_path_review_intervals' : str,
                     }
@@ -82,7 +87,7 @@ if __name__ == '__main__':
         total_raw_signals = len(state_annotation_signals)
         signal_labels = [dataset[column_name] for column_name in state_annotation_signals]
         raw_signals = load_raw_signals(dataset['file_path_raw_signals'], signal_labels)
-        predicted_states, predicted_intervals = load_hypnogram(dataset['file_path_automated_state_annotation'])
+        predicted_states, predicted_intervals = load_hypnogram(dataset['file_path_{}_state_annotation'.format(args.annotation_type)])
         review_intervals, review_scores = load_review_intervals(dataset['file_path_review_intervals'])
 
         # plot power in each frequency band and define callback
