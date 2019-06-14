@@ -233,7 +233,7 @@ def fit_hmm(signals, state_vectors,
     labels = [[str(state) for state in vec] for vec in state_vectors]
 
     # cosntruct matching state names
-    state_names = [str(state) for state in np.unique(state_vectors)]
+    state_names = [str(state) for state in np.unique(np.concatenate(state_vectors))]
 
     hmm = HiddenMarkovModel.from_samples(
         distribution=distribution,
