@@ -89,11 +89,12 @@ def read_sleepsign_hypnogram(file_path):
     with open(file_path, 'r') as f:
         lines = f.readlines()
 
-    empty_lines = [ii for ii, line in enumerate(lines) if line == '\r\n']
+    empty_lines = [ii for ii, line in enumerate(lines) if line in ('\r\n', '\n')]
 
     if len(empty_lines) <= 2: # only a linebreak at the of the header and at the end of the file
         return lines
     else:
+        import warnings
         warnings.warn("{} seems to contain multiple sets of annotations. Reading only the last set.".format(file_path))
         new_lines = lines[:empty_lines[0]] + lines[empty_lines[-2]:]
         return new_lines
