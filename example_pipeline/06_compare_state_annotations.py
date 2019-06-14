@@ -36,6 +36,8 @@ if __name__ == '__main__':
         state_display_order,
         state_to_int,
         time_resolution,
+        default_selection_length,
+        default_view_length,
     )
 
     parser = ArgumentParser(description = "For each dataset, interactively show the differences betweeen annotation type a and annotation type b. Press '?' for interactive help.")
@@ -170,11 +172,13 @@ if __name__ == '__main__':
 
         # initialise annotator
         annotator = TimeSeriesStateViewer(data_axis, state_axis,
-                                          interval_to_state   = zip(predicted_intervals, predicted_states),
-                                          regions_of_interest = regions_of_interest,
-                                          state_to_color      = state_to_color,
-                                          state_display_order = state_display_order,
-                                          selection_callback  = update_psd_figure,
+                                          interval_to_state        = zip(predicted_intervals, predicted_states),
+                                          regions_of_interest      = regions_of_interest,
+                                          state_to_color           = state_to_color,
+                                          state_display_order      = state_display_order,
+                                          selection_callback       = update_psd_figure,
+                                          default_selection_length = default_selection_length,
+                                          default_view_legnth      = default_view_length,
         )
         state_axis.set_ylabel("Automated annotation")
         state_axis.set_xlabel('Time [s]')
