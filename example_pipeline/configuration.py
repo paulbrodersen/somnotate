@@ -25,24 +25,18 @@ from somnotate._utils import (
 # define which columns in the spreadsheet/dataframe index the signals
 # in the raw signal array that are to be used for state inference
 state_annotation_signals = [
-    'frontal_eeg_signal_label',
-    'occipital_eeg_signal_label',
-    'emg_signal_label',
+    'lfp_signal_label',
 ]
 
 # define the corresponding labels when plotting these signals
 state_annotation_signal_labels = [
-    'frontal EEG',
-    'occipital EEG',
-    'EMG'
+    'LFP',
 ]
 
 # define the frequency bands to display when plotting
 # (has no effect on signal processing and state inference)
 state_annotation_signal_frequency_bands = [
-    (0.5, 30.), # Frontal EEG
-    (0.5, 30.), # Occipital EEG
-    (10., 45.), # EMG
+    (0.5, 30.),
 ]
 
 # define a function that plots the raw signals
@@ -145,60 +139,58 @@ plot_raw_signals = partial(plot_raw_signals,
 # States with positive integers are used for training the LDA.
 # When training the HMM, the sign of the state integer representation is ignored,
 # such that artefacts have no influence on the computed state transition probabilities.
-# TODO: explain the mapping of `sleep movement`.
+
 state_to_int = dict([
-    ('awake'              ,  1),
-    ('awake (artefact)'   , -1),
-    ('sleep movement'     ,  1),
-    ('non-REM'            ,  2),
-    ('non-REM (artefact)' , -2),
-    ('REM'                ,  3),
-    ('REM (artefact)'     , -3),
-    ('undefined'          ,  0),
+    ('baseline'            ,  1),
+    ('baseline_artefact'   , -1),
+    ('seizure'             ,  2),
+    ('seizure_artefact'    , -2),
+    ('interictal'          ,  3),
+    ('interictal_artefact' , -3),
+    ('lrd'                 ,  4),
+    ('lrd_artefact'        , -4),
+    ('recovery'            ,  5),
+    ('recovery_artefact'   , -5),
 ])
 
 # Construct the inverse mapping to convert back from state predictions to human readabe labels.
-int_to_state = {ii : state for state, ii in state_to_int.items() if state != 'sleep movement'}
+int_to_state = {ii : state for state, ii in state_to_int.items()}
 
 # define the keymap used for the manual annotation
 keymap = {
-    'w' : 'awake',
-    'W' : 'awake (artefact)',
-    'n' : 'non-REM',
-    'N' : 'non-REM (artefact)',
-    'r' : 'REM',
-    'R' : 'REM (artefact)',
-    'x' : 'undefined',
-    'X' : 'undefined (artefact)',
-    'm' : 'sleep movement',
-    'M' : 'sleep movement (artefact)',
+    'b' : 'baseline',
+    's' : 'seizure',
+    'i' : 'interictal',
+    'l' : 'lrd',
+    'r' : 'recovery',
+    'a' : 'artefact',
 }
 
 # define the visual display of states
 state_to_color = {
-    'awake'               : 'crimson',
-    'awake (artefact)'    : 'coral',
-    'sleep movement'      : 'violet',
-    'non-REM'             : 'blue',
-    'non-REM (artefact)'  : 'cornflowerblue',
-    'REM'                 : 'gold',
-    'REM (artefact)'      : 'yellow',
-    'sleep movement'      : 'purple',
-    'undefined'           : 'gray',
-    'undefined (artefact)': 'lightgray',
+    'baseline'            : 'blue',
+    'baseline_artefact'   : 'cornflowerblue',
+    'seizure'             : 'crimson',
+    'seizure_artefact'    : 'coral',
+    'interictal'          : 'gold',
+    'interictal_artefact' : 'yellow',
+    'lrd'                 : 'purple',
+    'lrd_artefact'        : 'pink',
+    'recovery'            : 'green',
+    'recovery_artefact'   : 'lightgreen',
 }
 
 state_display_order = [
-    'awake',
-    'awake (artefact)',
-    'non-REM',
-    'non-REM (artefact)',
-    'REM',
-    'REM (artefact)',
-    'sleep movement',
-    'sleep movement (artefact)',
-    'undefined',
-    'undefined (artefact)',
+    'baseline'            ,
+    'baseline_artefact'   ,
+    'seizure'             ,
+    'seizure_artefact'    ,
+    'interictal'          ,
+    'interictal_artefact' ,
+    'lrd'                 ,
+    'lrd_artefact'        ,
+    'recovery'            ,
+    'recovery_artefact'   ,
 ]
 
 plot_states = partial(plot_states,
