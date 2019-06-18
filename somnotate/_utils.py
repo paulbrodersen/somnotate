@@ -143,7 +143,10 @@ def convert_state_intervals_to_state_vector(states, intervals, mapping,
     if np.any([(isinstance(start, float), isinstance(stop, float)) for start, stop in intervals]):
         import warnings
         warnings.warn("Interval values are converted from floats to integers.")
-        intervals = [(int(start), int(stop)) for start, stop in intervals]
+        # # round up last interval such that the state vector is guaranteed to include the last time point
+        # last_start, last_stop = intervals[-1]
+        # intervals[-1] = (last_start, np.ceil(last_stop))
+        intervals = [(int(np.round(start)), int(np.round(stop))) for start, stop in intervals]
 
     if not length:
         length = np.max(intervals)
