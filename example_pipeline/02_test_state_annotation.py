@@ -26,6 +26,7 @@ if __name__ == '__main__':
         state_to_int,
         int_to_state,
         # plot_raw_signals,
+        plot_states,
     )
 
     # --------------------------------------------------------------------------------
@@ -106,11 +107,11 @@ if __name__ == '__main__':
 
             predicted_state_vector = annotator.predict(signal_arrays[ii])
             predicted_states, predicted_intervals = convert_state_vector_to_state_intervals(predicted_state_vector, mapping=int_to_state)
-            plot_states(predicted_states, predicted_intervals, ax=axes[1])
+            plot_states(predicted_states, predicted_intervals, ax=axes[1], linewidth=3)
             axes[1].set_ylabel("Automated annotation")
 
             states, intervals = convert_state_vector_to_state_intervals(state_vectors[ii], mapping=int_to_state)
-            plot_states(states, intervals, ax=axes[2])
+            plot_states(states, intervals, ax=axes[2], linewidth=3)
             axes[2].set_ylabel("Manual annotation")
 
             fig.tight_layout()
