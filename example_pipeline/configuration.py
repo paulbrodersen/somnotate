@@ -213,3 +213,9 @@ plt.rcParams['axes.labelsize']  = 'medium'
 
 # desired time resolution of the automated annotation (in seconds)
 time_resolution = 1
+
+# default view length when manually annotating states
+default_view_length = 60.
+
+# default selection length when manually annotating states
+default_selection_length = 4.
