@@ -116,4 +116,6 @@ if __name__ == '__main__':
             fig.tight_layout()
             fig.suptitle(dataset['file_path_preprocessed_signals'])
 
+    print("Mean accuracy +/- MSE: {:.2f}% +/- {:.2f}%".format(100*np.mean(accuracy), 100*np.std(accuracy)/np.sqrt(len(accuracy))))
+
     plt.show()
