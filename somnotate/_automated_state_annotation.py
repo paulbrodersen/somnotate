@@ -64,9 +64,13 @@ class StateAnnotator(object):
 
         self.lda = fit_lda(signal_arrays, state_vectors, solver='eigen', shrinkage='auto')
 
-        self.hmm = fit_hmm([self.lda.transform(arr) for arr in signal_arrays],
+        self.hmm = fit_hmm([self.transform(arr) for arr in signal_arrays],
                            [np.abs(vec) for vec in state_vectors],
                            state_transition_threshold = state_transition_threshold)
+
+
+    def transform(self, arr):
+        return self.lda.transform(arr)
 
 
     def predict(self, signal_array):
