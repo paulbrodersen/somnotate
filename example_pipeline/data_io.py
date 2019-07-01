@@ -119,7 +119,7 @@ def _load_edf_channels(signal_labels, edf_reader):
     return output_array.transpose()
 
 
-def load_state_vector(file_path, mapping, time_resolution=1.):
+def load_state_vector(file_path, mapping):
     """
     Load hypnogram given in visbrain Stage-duration format, and convert to a state vector.
 
@@ -131,9 +131,6 @@ def load_state_vector(file_path, mapping, time_resolution=1.):
     mapping -- dict str : int or None (default state_to_int)
         Mapping of state representations in the hypnogram to integers.
         If None, states returned by `get_hypnogram` must already be integers.
-
-    time_resolution -- float (default 1.)
-        The (desired) duration of each entry in the state vector in seconds.
 
     Returns:
     --------
