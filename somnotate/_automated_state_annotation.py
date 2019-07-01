@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
-Automated state annotation using a combination of linear discriminant analysis (LDA) and hidden Markov model (HMM).
+Automated state annotation using a combination of linear
+discriminant analysis (LDA) and hidden Markov model (HMM).
 """
 
 import pickle
@@ -18,7 +19,7 @@ class StateAnnotator(object):
     def __init__(self):
         pass
 
-    def fit(self, signal_arrays, state_vectors,
+    def fit(self, signal_arrays, state_vectors):
 
         """Given a set of signals and corresponding state annotations,
         train the annotator to predict the states based on the signals.
@@ -53,14 +54,19 @@ class StateAnnotator(object):
 
         self._check_inputs(signal_arrays, state_vectors)
 
-        self.lda = fit_lda(signal_arrays, state_vectors, solver='eigen', shrinkage='auto')
+        self.transformer = self.fit_transform(signal_arrays, state_vectors,
+                                      solver='eigen', shrinkage='auto')
 
-        self.hmm = fit_hmm([self.transform(arr) for arr in signal_arrays],
-                           [np.abs(vec) for vec in state_vectors],
+        # We want to bunch together artefact states with their
+        # corresponding "clean" states.
+        state_vectors = [np.abs(vec) for vec in state_vectors]
+
+        self.hmm = self.fit_hmm(signal_arrays, state_vectors,
+                                MultivariateGaussianDistribution)
 
 
     def transform(self, arr):
-        return self.lda.transform(arr)
+        return self.transformer.transform(arr)
 
 
     def predict(self, signal_array):
@@ -81,7 +87,7 @@ class StateAnnotator(object):
 
         self._check_signal_array(signal_array)
 
-        transformed_array = self.lda.transform(signal_array)
+        transformed_array = self.transform(signal_array)
 
         _, viterbi_path = self.hmm.viterbi([sample for sample in transformed_array])
 
@@ -124,7 +130,7 @@ class StateAnnotator(object):
         """
 
         self._check_signal_array(signal_array)
-        transformed_array = self.lda.transform(signal_array)
+        transformed_array = self.transform(signal_array)
 
         probability_array = self.hmm.predict_proba([sample for sample in transformed_array])
 
@@ -166,7 +172,14 @@ class StateAnnotator(object):
         for ii, (arr, vec) in enumerate(zip(signal_arrays, state_vectors)):
             assert len(arr) == len(vec), "The lengths of the signal array ({}) and the corresponding state vector ({}) do not match!".format(len(arr), len(vec))
 
-        signal_dimensions = [arr.shape[1] for arr in signal_arrays]
+        signal_dimensions = []
+        for arr in signal_arrays:
+            if arr.ndim == 1:
+                signal_dimensions.append(1)
+            else:
+                signal_dimensions.append(arr.shape[1])
+
+        # signal_dimensions = [arr.shape[1] if arr.ndim == 1 else 1 for arr in signal_arrays]
         assert len(set(signal_dimensions)) == 1, "The second dimension of all signal arrays need to match! Current dimensions: {}".format(signal_dimensions)
 
 
@@ -191,7 +204,7 @@ class StateAnnotator(object):
 
 
     def save(self, file_path):
-        objects = dict(lda=self.lda, hmm=self.hmm.to_json())
+        objects = dict(transformer=self.transformer, hmm=self.hmm.to_json())
         with open(file_path, 'wb') as f:
             pickle.dump(objects, f)
 
@@ -199,47 +212,51 @@ class StateAnnotator(object):
     def load(self, file_path):
         with open(file_path, 'rb') as f:
             objects = pickle.load(f)
-        self.lda = objects['lda']
+        try:
+            self.transformer = objects['transformer']
+        except KeyError: # for backwards compatibility
+            self.transformer = object['lda']
         self.hmm = HiddenMarkovModel.from_json(objects['hmm'])
 
 
-def fit_lda(signals, states, *args, **kwargs):
-    # Ultra-thin wrapper around sklearn.discriminant_analysis.LinearDiscriminantAnalysis.fit()
-    # that primarily serves to decouple the interface from the sklearn implementation.
+    def fit_transform(self, signals, states, **kwargs):
+        # Ultra-thin wrapper around sklearn.discriminant_analysis.LinearDiscriminantAnalysis.fit()
+        # that primarily serves to decouple the interface from the sklearn implementation.
 
-    # combine data sets
-    combined_signals = np.concatenate(signals, axis=0)
-    combined_states = np.concatenate(states, axis=0)
+        # combine data sets
+        combined_signals = np.concatenate(signals, axis=0)
+        combined_states = np.concatenate(states, axis=0)
 
-    # remove undefined / artefact states
-    is_valid = combined_states > 0
-    combined_signals = combined_signals[is_valid]
-    combined_states = combined_states[is_valid]
+        # remove undefined / artefact states
+        is_valid = combined_states > 0
+        combined_signals = combined_signals[is_valid]
+        combined_states = combined_states[is_valid]
 
-    return LinearDiscriminantAnalysis(*args, **kwargs).fit(combined_signals, combined_states)
+        return LinearDiscriminantAnalysis(**kwargs).fit(combined_signals, combined_states)
 
 
-def fit_hmm(signals, state_vectors,
-            distribution=MultivariateGaussianDistribution,
+    def fit_hmm(self, signal_arrays, state_vectors, distribution, **kwargs):
 
-    # pomegranate expects string labels for states
-    labels = [[str(state) for state in vec] for vec in state_vectors]
+        signals = [self.transform(arr) for arr in signal_arrays]
 
-    # cosntruct matching state names
-    state_names = [str(state) for state in np.unique(np.concatenate(state_vectors))]
+        # pomegranate expects string labels for states
+        labels = [[str(state) for state in vec] for vec in state_vectors]
 
-    hmm = HiddenMarkovModel.from_samples(
-        distribution=distribution,
-        n_components=len(state_names),
-        X=signals,
-        labels=labels,
-        algorithm='labeled',
-        state_names=state_names,
-    )
+        # cosntruct matching state names
+        state_names = [str(state) for state in np.unique(np.concatenate(state_vectors))]
 
-    # TODO:
-    # - remove state corresponding to "undefined"
-    # - remove edges below state transition threshold
-    # - adjust start probabilities based on data
+        hmm = HiddenMarkovModel.from_samples(
+            distribution = distribution,
+            n_components = len(state_names),
+            X            = signals,
+            labels       = labels,
+            algorithm    = 'labeled',
+            state_names  = state_names,
+            **kwargs)
 
-    return hmm
+        # TODO:
+        # - remove state corresponding to "undefined"
+        # - remove edges below state transition threshold
+        # - adjust start probabilities based on data
+
+        return hmm
