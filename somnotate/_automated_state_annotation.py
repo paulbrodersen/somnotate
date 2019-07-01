@@ -19,8 +19,6 @@ class StateAnnotator(object):
         pass
 
     def fit(self, signal_arrays, state_vectors,
-            state_transition_threshold = 1e-4,
-    ):
 
         """Given a set of signals and corresponding state annotations,
         train the annotator to predict the states based on the signals.
@@ -51,13 +49,6 @@ class StateAnnotator(object):
             are used in neither the training of the linear
             discriminant nor the HMM (NaNs cannot be represented by
             ndarrays of dtype int).
-
-        state_transition_threshold -- float
-            Transitions with probabilities less than the threshold are removed from the output.
-            Sink states (start / end states) are excluded from thresholding.
-            This parameter is useful to remove state transitions that are exceedingly rare,
-            for example, transitions that only occur in the training data due to misannotations.
-
         """
 
         self._check_inputs(signal_arrays, state_vectors)
@@ -66,7 +57,6 @@ class StateAnnotator(object):
 
         self.hmm = fit_hmm([self.transform(arr) for arr in signal_arrays],
                            [np.abs(vec) for vec in state_vectors],
-                           state_transition_threshold = state_transition_threshold)
 
 
     def transform(self, arr):
@@ -231,7 +221,6 @@ def fit_lda(signals, states, *args, **kwargs):
 
 def fit_hmm(signals, state_vectors,
             distribution=MultivariateGaussianDistribution,
-            state_transition_threshold=None):
 
     # pomegranate expects string labels for states
     labels = [[str(state) for state in vec] for vec in state_vectors]
