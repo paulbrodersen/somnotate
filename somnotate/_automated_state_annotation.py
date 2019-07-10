@@ -215,7 +215,7 @@ class StateAnnotator(object):
         try:
             self.transformer = objects['transformer']
         except KeyError: # for backwards compatibility
-            self.transformer = object['lda']
+            self.transformer = objects['lda']
         self.hmm = HiddenMarkovModel.from_json(objects['hmm'])
 
 
