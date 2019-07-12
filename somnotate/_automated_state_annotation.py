@@ -270,9 +270,12 @@ class StateAnnotator(object):
             state_names  = state_names,
             **kwargs)
 
-        new_hmm = _sparsify_hmm(hmm, state_transition_threshold)
+        if state_transition_threshold > 0.:
+            new_hmm = _sparsify_hmm(hmm, state_transition_threshold)
+            return new_hmm
 
-        return new_hmm
+        else:
+            return hmm
 
 
 def _sparsify_hmm(hmm, state_transition_threshold):
