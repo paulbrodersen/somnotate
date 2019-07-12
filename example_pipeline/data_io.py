@@ -106,7 +106,16 @@ def _load_edf_file(file_path, signal_labels=None):
 def _load_edf_channels(signal_labels, edf_reader):
 
     indices = [idx for idx in range(edf_reader.signals_in_file) if ensure_str(edf_reader.signal_label(idx)).strip() in signal_labels]
-    assert len(indices) == len(signal_labels), "Could not recover all given signals."
+
+    # assert len(indices) == len(signal_labels), "Could not recover all given signals."
+    if len(indices) != len(signal_labels):
+        error_msg = "Could not recover all given signals. Attempted to retrieve the following signals:\n"
+        for label in signal_labels:
+            error_msg += "- {}\n".format(label)
+        error_msg += "However, the only signals present in the file are:\n"
+        for label in edf_reader.getSignalLabels():
+            error_msg += "- {}\n".format(label)
+        raise Exception(error_msg)
 
     total_samples = [edf_reader.samples_in_file(idx) for idx in indices]
     assert len(set(total_samples)) == 1, "All signals need to have the same length! Lengths of selected signals: {}".format(total_samples)
