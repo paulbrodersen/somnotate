@@ -105,8 +105,7 @@ if __name__ == '__main__':
             fig, axes = plt.subplots(3, 1, sharex=True)
 
             # TODO plot "input" signals: either raw signals or preprocessed signals
-
-            transformed_signals = annotator.lda.transform(signal_arrays[ii])
+            transformed_signals = annotator.transform(signal_arrays[ii])
             plot_signals(transformed_signals, ax=axes[0])
             axes[0].set_ylabel("Transformed signals")
 
