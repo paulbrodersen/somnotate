@@ -74,6 +74,9 @@ def plot_signals(signals,
     offsets = np.cumsum(np.nanmax(signals, axis=0))
     signals[:, 1:] = signals[:, 1:] + offsets[:-1][None, :]
 
+    # shift median of first signal to zero
+    signals -= np.median(signals[:, 0])
+
     # create a time vector
     T, N = signals.shape
     time = np.arange(0, float(T)/sampling_frequency, 1./sampling_frequency)

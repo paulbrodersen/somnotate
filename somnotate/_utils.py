@@ -121,7 +121,7 @@ def convert_state_intervals_to_state_vector(states, intervals, mapping,
     intervals -- list of (float start, float stop) tuples
         The contiguous intervals corresponding to each state in the state vector.
 
-    mapping -- dict str : int or None (default None)
+    mapping -- dict str : int
         The mapping from states in the state vector to integers.
 
     time_resolution -- float (default 1.)

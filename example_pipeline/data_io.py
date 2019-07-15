@@ -106,7 +106,16 @@ def _load_edf_file(file_path, signal_labels=None):
 def _load_edf_channels(signal_labels, edf_reader):
 
     indices = [idx for idx in range(edf_reader.signals_in_file) if ensure_str(edf_reader.signal_label(idx)).strip() in signal_labels]
-    assert len(indices) == len(signal_labels), "Could not recover all given signals."
+
+    # assert len(indices) == len(signal_labels), "Could not recover all given signals."
+    if len(indices) != len(signal_labels):
+        error_msg = "Could not recover all given signals. Attempted to retrieve the following signals:\n"
+        for label in signal_labels:
+            error_msg += "- {}\n".format(label)
+        error_msg += "However, the only signals present in the file are:\n"
+        for label in edf_reader.getSignalLabels():
+            error_msg += "- {}\n".format(label)
+        raise Exception(error_msg)
 
     total_samples = [edf_reader.samples_in_file(idx) for idx in indices]
     assert len(set(total_samples)) == 1, "All signals need to have the same length! Lengths of selected signals: {}".format(total_samples)
@@ -119,7 +128,7 @@ def _load_edf_channels(signal_labels, edf_reader):
     return output_array.transpose()
 
 
-def load_state_vector(file_path, mapping, time_resolution=1.):
+def load_state_vector(file_path, mapping):
     """
     Load hypnogram given in visbrain Stage-duration format, and convert to a state vector.
 
@@ -131,9 +140,6 @@ def load_state_vector(file_path, mapping, time_resolution=1.):
     mapping -- dict str : int or None (default state_to_int)
         Mapping of state representations in the hypnogram to integers.
         If None, states returned by `get_hypnogram` must already be integers.
-
-    time_resolution -- float (default 1.)
-        The (desired) duration of each entry in the state vector in seconds.
 
     Returns:
     --------

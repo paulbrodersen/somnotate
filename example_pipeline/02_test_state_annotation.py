@@ -40,6 +40,7 @@ if __name__ == '__main__':
                         type  = int,
                         help  = 'Indices corresponding to the rows to use (default: all). Indexing starts at zero.'
     )
+    parser.add_argument("--model", help="Use pre-trained model saved at /path/to/trained_model.pickle. If none is provided, the test is run in a hold-one-out fashion instead.")
 
     args = parser.parse_args()
 
@@ -86,8 +87,12 @@ if __name__ == '__main__':
         training_signal_arrays = [arr for jj, arr in enumerate(signal_arrays) if jj != ii]
         training_state_vectors = [seq for jj, seq in enumerate(state_vectors) if jj != ii]
 
-        annotator = StateAnnotator()
-        annotator.fit(training_signal_arrays, training_state_vectors)
+        if args.model:
+            annotator = StateAnnotator()
+            annotator.load(args.model)
+        else:
+            annotator = StateAnnotator()
+            annotator.fit(training_signal_arrays, training_state_vectors)
 
         # The loaded state sequence denotes artefact states as negative integers.
         # However, the state annotator does not distinguish between states and their corresponding artefact states.
@@ -116,5 +121,7 @@ if __name__ == '__main__':
 
             fig.tight_layout()
             fig.suptitle(dataset['file_path_preprocessed_signals'])
+
+    print("Mean accuracy +/- MSE: {:.2f}% +/- {:.2f}%".format(100*np.mean(accuracy), 100*np.std(accuracy)/np.sqrt(len(accuracy))))
 
     plt.show()

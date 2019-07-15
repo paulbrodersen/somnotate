@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
-Automated state annotation using a combination of linear discriminant analysis (LDA) and hidden Markov model (HMM).
+Automated state annotation using a combination of linear
+discriminant analysis (LDA) and hidden Markov model (HMM).
 """
 
 import pickle
@@ -18,9 +19,7 @@ class StateAnnotator(object):
     def __init__(self):
         pass
 
-    def fit(self, signal_arrays, state_vectors,
-            state_transition_threshold = 1e-4,
-    ):
+    def fit(self, signal_arrays, state_vectors, state_transition_threshold=1e-4):
 
         """Given a set of signals and corresponding state annotations,
         train the annotator to predict the states based on the signals.
@@ -53,20 +52,25 @@ class StateAnnotator(object):
             ndarrays of dtype int).
 
         state_transition_threshold -- float
-            Transitions with probabilities less than the threshold are removed from the output.
-            Sink states (start / end states) are excluded from thresholding.
-            This parameter is useful to remove state transitions that are exceedingly rare,
-            for example, transitions that only occur in the training data due to misannotations.
+            Discard state transitions that have a probability less than threshold.
+            This typically limits the impact of mislabelled samples, and makes the
+            HMM more robust.
 
         """
 
         self._check_inputs(signal_arrays, state_vectors)
 
-        self.lda = fit_lda(signal_arrays, state_vectors, solver='eigen', shrinkage='auto')
+        self.transformer = self.fit_transform(signal_arrays, state_vectors,
+                                      solver='eigen', shrinkage='auto')
 
-        self.hmm = fit_hmm([self.lda.transform(arr) for arr in signal_arrays],
-                           [np.abs(vec) for vec in state_vectors],
-                           state_transition_threshold = state_transition_threshold)
+        self.hmm = self.fit_hmm(signal_arrays, state_vectors,
+                                MultivariateGaussianDistribution,
+                                state_transition_threshold
+        )
+
+
+    def transform(self, arr):
+        return self.transformer.transform(arr)
 
 
     def predict(self, signal_array):
@@ -87,7 +91,7 @@ class StateAnnotator(object):
 
         self._check_signal_array(signal_array)
 
-        transformed_array = self.lda.transform(signal_array)
+        transformed_array = self.transform(signal_array)
 
         _, viterbi_path = self.hmm.viterbi([sample for sample in transformed_array])
 
@@ -130,7 +134,7 @@ class StateAnnotator(object):
         """
 
         self._check_signal_array(signal_array)
-        transformed_array = self.lda.transform(signal_array)
+        transformed_array = self.transform(signal_array)
 
         probability_array = self.hmm.predict_proba([sample for sample in transformed_array])
 
@@ -172,7 +176,14 @@ class StateAnnotator(object):
         for ii, (arr, vec) in enumerate(zip(signal_arrays, state_vectors)):
             assert len(arr) == len(vec), "The lengths of the signal array ({}) and the corresponding state vector ({}) do not match!".format(len(arr), len(vec))
 
-        signal_dimensions = [arr.shape[1] for arr in signal_arrays]
+        signal_dimensions = []
+        for arr in signal_arrays:
+            if arr.ndim == 1:
+                signal_dimensions.append(1)
+            else:
+                signal_dimensions.append(arr.shape[1])
+
+        # signal_dimensions = [arr.shape[1] if arr.ndim == 1 else 1 for arr in signal_arrays]
         assert len(set(signal_dimensions)) == 1, "The second dimension of all signal arrays need to match! Current dimensions: {}".format(signal_dimensions)
 
 
@@ -197,7 +208,7 @@ class StateAnnotator(object):
 
 
     def save(self, file_path):
-        objects = dict(lda=self.lda, hmm=self.hmm.to_json())
+        objects = dict(transformer=self.transformer, hmm=self.hmm.to_json())
         with open(file_path, 'wb') as f:
             pickle.dump(objects, f)
 
@@ -205,48 +216,139 @@ class StateAnnotator(object):
     def load(self, file_path):
         with open(file_path, 'rb') as f:
             objects = pickle.load(f)
-        self.lda = objects['lda']
+        try:
+            self.transformer = objects['transformer']
+        except KeyError: # for backwards compatibility
+            self.transformer = objects['lda']
         self.hmm = HiddenMarkovModel.from_json(objects['hmm'])
 
 
-def fit_lda(signals, states, *args, **kwargs):
-    # Ultra-thin wrapper around sklearn.discriminant_analysis.LinearDiscriminantAnalysis.fit()
-    # that primarily serves to decouple the interface from the sklearn implementation.
+    def fit_transform(self, signals, states, **kwargs):
+        # Ultra-thin wrapper around sklearn.discriminant_analysis.LinearDiscriminantAnalysis.fit()
+        # that primarily serves to decouple the interface from the sklearn implementation.
 
-    # combine data sets
-    combined_signals = np.concatenate(signals, axis=0)
-    combined_states = np.concatenate(states, axis=0)
+        # combine data sets
+        combined_signals = np.concatenate(signals, axis=0)
+        combined_states = np.concatenate(states, axis=0)
 
-    # remove undefined / artefact states
-    is_valid = combined_states > 0
-    combined_signals = combined_signals[is_valid]
-    combined_states = combined_states[is_valid]
+        # remove undefined / artefact states
+        is_valid = combined_states > 0
+        combined_signals = combined_signals[is_valid]
+        combined_states = combined_states[is_valid]
 
-    return LinearDiscriminantAnalysis(*args, **kwargs).fit(combined_signals, combined_states)
+        return LinearDiscriminantAnalysis(**kwargs).fit(combined_signals, combined_states)
 
 
-def fit_hmm(signals, state_vectors,
-            distribution=MultivariateGaussianDistribution,
-            state_transition_threshold=None):
+    def fit_hmm(self, signal_arrays, state_vectors, distribution, state_transition_threshold=1e-4, **kwargs):
 
-    # pomegranate expects string labels for states
-    labels = [[str(state) for state in vec] for vec in state_vectors]
+        # We want to bunch together artefact states with their
+        # corresponding "clean" states.
+        state_vectors = [np.abs(vec) for vec in state_vectors]
 
-    # cosntruct matching state names
-    state_names = [str(state) for state in np.unique(np.concatenate(state_vectors))]
+        # remove 'undefined' samples
+        # TODO: let pomegranate handle that
+        signal_arrays = [arr[vec != 0] for arr, vec in zip(signal_arrays, state_vectors)]
+        state_vectors = [vec[vec != 0] for vec in state_vectors]
 
-    hmm = HiddenMarkovModel.from_samples(
-        distribution=distribution,
-        n_components=len(state_names),
-        X=signals,
-        labels=labels,
-        algorithm='labeled',
-        state_names=state_names,
-    )
+        # Pomegranate expects string labels for valid states and None for invalid states.
+        # labels = [[str(state) if state != 0 else None for state in vec] for vec in state_vectors]
+        labels = [[str(state) for state in vec] for vec in state_vectors]
 
-    # TODO:
-    # - remove state corresponding to "undefined"
-    # - remove edges below state transition threshold
-    # - adjust start probabilities based on data
+        # construct matching state names
+        # state_names = [str(state) for state in np.unique(np.concatenate(state_vectors)) if state != 0]
+        state_names = [str(state) for state in np.unique(np.concatenate(state_vectors))]
 
-    return hmm
+        # fit HMM states to transformed signals
+        signals = [self.transform(arr) for arr in signal_arrays]
+
+        hmm = HiddenMarkovModel.from_samples(
+            distribution = distribution,
+            n_components = len(state_names),
+            X            = signals,
+            labels       = labels,
+            algorithm    = 'labeled',
+            state_names  = state_names,
+            **kwargs)
+
+        if state_transition_threshold > 0.:
+            new_hmm = _sparsify_hmm(hmm, state_transition_threshold)
+            return new_hmm
+
+        else:
+            return hmm
+
+
+def _sparsify_hmm(hmm, state_transition_threshold):
+    new_transitions, pruned_transitions = _remove_transitions_below_threshold(hmm, state_transition_threshold)
+    new_states, pruned_states = _remove_non_ergodic_states(hmm, new_transitions, pruned_transitions)
+    new_hmm = _initialize_new_hmm(hmm, new_states, new_transitions)
+    return new_hmm
+
+
+def _remove_transitions_below_threshold(hmm, state_transition_threshold):
+    params = hmm.get_params()
+    transitions = params['edges']
+    states = params['states']
+
+    # prune transitions below probability threshold
+    new_transitions = []
+    transitions_to_remove = []
+    for source_idx, target_idx, probability, _, _ in transitions:
+        source_state = states[source_idx]
+        target_state = states[target_idx]
+
+        is_start_transition = source_state == hmm.start
+        is_end_transition = target_state == hmm.end
+        exceeds_threshold = probability > state_transition_threshold
+
+        if is_start_transition or is_end_transition or exceeds_threshold:
+            new_transitions.append((source_state, target_state, probability))
+        else:
+            transitions_to_remove.append((source_state, target_state, probability))
+            import warnings
+            warnings.warn("Removing transition from state {} to {} as the transition probability {} is below threshold ({}).".format(source_state.name,
+                                                                                                                                     target_state.name,
+                                                                                                                                     probability,
+                                                                                                                                     state_transition_threshold))
+    return new_transitions, transitions_to_remove
+
+
+def _remove_non_ergodic_states(hmm, new_transitions, pruned_transitions):
+    params = hmm.get_params()
+    states = params['states']
+
+    states_to_check = set()
+    for source_state, target_state, _ in pruned_transitions:
+        states_to_check.add(source_state)
+        states_to_check.add(target_state)
+
+    states_to_remove = []
+    for state in states_to_check:
+        is_reachable = np.any([source_state == state for source_state, _, _, in new_transitions if source_state != hmm.start])
+        is_leavable  = np.any([target_state == state for _, target_state, _, in new_transitions if target_state != hmm.end])
+        if is_reachable and is_leavable:
+            continue
+        else:
+            states_to_remove.append(state)
+
+    new_states = [state for state in states if state not in states_to_remove]
+
+    return new_states, states_to_remove
+
+
+def _initialize_new_hmm(hmm, new_states, new_transitions):
+
+    new_hmm = HiddenMarkovModel()
+    for state in new_states:
+        if state not in (hmm.start, hmm.end):
+            new_hmm.add_state(state)
+    for source_state, target_state, probability in new_transitions:
+        if source_state != hmm.start and target_state != hmm.end:
+            new_hmm.add_transition(source_state, target_state, probability)
+        elif source_state == hmm.start:
+            new_hmm.add_transition(new_hmm.start, target_state, probability)
+        elif target_state == hmm.end:
+            new_hmm.add_transition(source_state, new_hmm.end, probability)
+
+    new_hmm.bake()
+    return new_hmm
