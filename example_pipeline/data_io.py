@@ -15,7 +15,6 @@ from six import ensure_str
 
 from somnotate._utils import convert_state_intervals_to_state_vector
 
-
 def check_dataframe(df, columns, column_to_dtype=None):
     """
     This function tests if a pandas dataframe has certain columns.
@@ -77,6 +76,21 @@ def check_dataframe(df, columns, column_to_dtype=None):
             raise Exception(error_msg)
 
 
+def _handle_file_path(func):
+    def func_wrapper(file_path, *args, **kwargs):
+        pathlib_object = _get_pathlib_object(file_path)
+        output = func(pathlib_object, *args, **kwargs)
+        return output
+    func_wrapper.__name__ = func.__name__
+    func_wrapper.__doc__ = func.__doc__
+    return func_wrapper
+
+
+def _get_pathlib_object(file_path):
+    return file_path
+
+
+@_handle_file_path
 def _load_edf_file(file_path, signal_labels=None):
     """Simple wrapper around pyedflib to load LFP/EEG/EMG traces from EDF
     files and return a numpy array. Currently, only loading of signals
@@ -158,7 +172,7 @@ def load_state_vector(file_path, mapping):
 
     return state_vector
 
-
+@_handle_file_path
 def _load_visbrain_hypnogram(file_path):
     """
     Load hypnogram given in visbrain Stage-duration format.
@@ -187,7 +201,7 @@ def _load_visbrain_hypnogram(file_path):
     intervals = list(zip(transitions[:-1], transitions[1:]))
     return states, intervals
 
-
+@_handle_file_path
 def _export_visbrain_hypnogram(file_path, states, intervals, total_time=None, data_file=None):
     """
     Export hypnogram to visbrain Stage-duration format.
@@ -259,7 +273,7 @@ def _export_visbrain_hypnogram(file_path, states, intervals, total_time=None, da
     with open(file_path, 'w') as f:
         f.write(export_string)
 
-
+@_handle_file_path
 def export_review_intervals(file_path, intervals, scores=None, notes=None):
     """
     TODO: implement mode that appends data to existing file
@@ -283,11 +297,13 @@ def export_review_intervals(file_path, intervals, scores=None, notes=None):
     df.to_csv(file_path)
 
 
+@_handle_file_path
 def load_review_intervals(file_path):
     df = pandas.read_csv(file_path)
     intervals = np.c_[df['start'].values, df['stop'].values]
     scores = df['score'].values
     return intervals, scores
+
 
 # --------------------------------------------------------------------------------
 # aliases
