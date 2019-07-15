@@ -26,6 +26,7 @@ if __name__ == '__main__':
         state_to_int,
         int_to_state,
         # plot_raw_signals,
+        plot_states,
     )
 
     # --------------------------------------------------------------------------------
