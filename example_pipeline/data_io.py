@@ -172,6 +172,7 @@ def load_state_vector(file_path, mapping):
 
     return state_vector
 
+
 @_handle_file_path
 def _load_visbrain_hypnogram(file_path):
     """
@@ -200,6 +201,7 @@ def _load_visbrain_hypnogram(file_path):
     transitions = np.r_[0, data['stop']]
     intervals = list(zip(transitions[:-1], transitions[1:]))
     return states, intervals
+
 
 @_handle_file_path
 def _export_visbrain_hypnogram(file_path, states, intervals, total_time=None, data_file=None):
@@ -272,6 +274,7 @@ def _export_visbrain_hypnogram(file_path, states, intervals, total_time=None, da
 
     with open(file_path, 'w') as f:
         f.write(export_string)
+
 
 @_handle_file_path
 def export_review_intervals(file_path, intervals, scores=None, notes=None):
