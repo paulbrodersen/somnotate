@@ -25,8 +25,6 @@ if __name__ == '__main__':
     from configuration import (
         state_to_int,
         int_to_state,
-        # plot_raw_signals,
-        plot_states,
     )
 
     # --------------------------------------------------------------------------------
@@ -50,10 +48,12 @@ if __name__ == '__main__':
     # check contents of spreadsheet
     check_dataframe(datasets,
                     columns = [
+                        'file_path_raw_signals',
                         'file_path_preprocessed_signals',
                         'file_path_manual_state_annotation',
                     ],
                     column_to_dtype = {
+                        'file_path_raw_signals' : str,
                         'file_path_preprocessed_signals' : str,
                         'file_path_manual_state_annotation' : str,
                     }
@@ -102,25 +102,53 @@ if __name__ == '__main__':
 
         if args.show:
 
-            fig, axes = plt.subplots(3, 1, sharex=True)
+            from data_io import load_raw_signals
 
-            # TODO plot "input" signals: either raw signals or preprocessed signals
+            from configuration import (
+                plot_raw_signals,
+                state_annotation_signals,
+                plot_states,
+            )
 
+            fig, axes = plt.subplots(4, 1, sharex=True)
+
+            # plot raw signals
+            check_dataframe(datasets,
+                            columns = [
+                                'file_path_raw_signals',
+                                'sampling_frequency_in_hz',
+                            ] + state_annotation_signals,
+                            column_to_dtype = {
+                                'file_path_raw_signals' : str,
+                                'sampling_frequency_in_hz' : (int, float, np.int, np.float, np.int64, np.float64),
+                            }
+            )
+            signal_labels = [dataset[column_name] for column_name in state_annotation_signals]
+            raw_signals = load_raw_signals(dataset['file_path_raw_signals'], signal_labels)
+            plot_raw_signals(
+                raw_signals,
+                sampling_frequency = dataset['sampling_frequency_in_hz'],
+                ax                 = axes[0],
+            )
+
+            # LDA tranformed signals
             transformed_signals = annotator.transform(signal_arrays[ii])
-            plot_signals(transformed_signals, ax=axes[0])
+            plot_signals(transformed_signals, ax=axes[1])
             axes[0].set_ylabel("Transformed signals")
 
             predicted_state_vector = annotator.predict(signal_arrays[ii])
             predicted_states, predicted_intervals = convert_state_vector_to_state_intervals(predicted_state_vector, mapping=int_to_state)
-            plot_states(predicted_states, predicted_intervals, ax=axes[1])
+            plot_states(predicted_states, predicted_intervals, ax=axes[2])
             axes[1].set_ylabel("Automated annotation")
 
             states, intervals = convert_state_vector_to_state_intervals(state_vectors[ii], mapping=int_to_state)
-            plot_states(states, intervals, ax=axes[2])
+            plot_states(states, intervals, ax=axes[3])
             axes[2].set_ylabel("Manual annotation")
 
             fig.tight_layout()
             fig.suptitle(dataset['file_path_preprocessed_signals'])
+
+            plt.show()
 
     print("Mean accuracy +/- MSE: {:.2f}% +/- {:.2f}%".format(100*np.mean(accuracy), 100*np.std(accuracy)/np.sqrt(len(accuracy))))
 
