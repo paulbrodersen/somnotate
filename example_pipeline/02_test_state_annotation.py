@@ -130,7 +130,7 @@ if __name__ == '__main__':
                 sampling_frequency = dataset['sampling_frequency_in_hz'],
                 ax                 = axes[0],
             )
-            axes[1].set_ylabel("Raw signals")
+            axes[0].set_ylabel("Raw signals")
 
             # LDA tranformed signals
             transformed_signals = annotator.transform(signal_arrays[ii])
@@ -140,16 +140,17 @@ if __name__ == '__main__':
             predicted_state_vector = annotator.predict(signal_arrays[ii])
             predicted_states, predicted_intervals = convert_state_vector_to_state_intervals(predicted_state_vector, mapping=int_to_state)
             plot_states(predicted_states, predicted_intervals, ax=axes[2])
-            axes[2].set_ylabel("Automated annotation")
+            axes[2].set_ylabel("Automated\nannotation")
 
             states, intervals = convert_state_vector_to_state_intervals(state_vectors[ii], mapping=int_to_state)
             plot_states(states, intervals, ax=axes[3])
-            axes[3].set_ylabel("Manual annotation")
+            axes[3].set_ylabel("Manual\nannotation")
 
             axes[-1].set_xlabel('Time [seconds]')
 
+            fig.suptitle(dataset['file_path_raw_signals'])
+            fig.align_ylabels()
             fig.tight_layout()
-            fig.suptitle(dataset['file_path_preprocessed_signals'])
 
 
 
