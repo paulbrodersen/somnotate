@@ -308,11 +308,18 @@ def load_review_intervals(file_path):
     return intervals, scores
 
 
+@_handle_file_path
+def _load_actigraphy(file_path, column_name=None):
+    df = pandas.read_csv(file_path)
+    actigraphy_values = df[df.columns[1]].to_numpy() # TODO: make robust
+    return actigraphy_values
+
+
 # --------------------------------------------------------------------------------
 # aliases
 
 load_dataframe = pandas.read_csv
-load_raw_signals = _load_edf_file
+load_raw_signals = _load_actigraphy
 load_preprocessed_signals = np.load
 export_preprocessed_signals = np.save
 load_hypnogram = _load_visbrain_hypnogram

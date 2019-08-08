@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 
 from pomegranate import (
-    MultivariateGaussianDistribution,
+    ExponentialDistribution,
     HiddenMarkovModel,
 )
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -60,17 +60,10 @@ class StateAnnotator(object):
 
         self._check_inputs(signal_arrays, state_vectors)
 
-        self.transformer = self.fit_transform(signal_arrays, state_vectors,
-                                      solver='eigen', shrinkage='auto')
-
         self.hmm = self.fit_hmm(signal_arrays, state_vectors,
-                                MultivariateGaussianDistribution,
+                                ExponentialDistribution,
                                 state_transition_threshold
         )
-
-
-    def transform(self, arr):
-        return self.transformer.transform(arr)
 
 
     def predict(self, signal_array):
@@ -91,9 +84,7 @@ class StateAnnotator(object):
 
         self._check_signal_array(signal_array)
 
-        transformed_array = self.transform(signal_array)
-
-        _, viterbi_path = self.hmm.viterbi([sample for sample in transformed_array])
+        _, viterbi_path = self.hmm.viterbi([sample for sample in signal_array])
 
         # viterbi path calculation may fail -- when it does, it does so silently!
         assert viterbi_path != None, "Viterbi path calculation failed."
@@ -134,9 +125,8 @@ class StateAnnotator(object):
         """
 
         self._check_signal_array(signal_array)
-        transformed_array = self.transform(signal_array)
 
-        probability_array = self.hmm.predict_proba([sample for sample in transformed_array])
+        probability_array = self.hmm.predict_proba([sample for sample in signal_array])
 
         # convert array to dictionary
         probability_dict = dict()
@@ -208,35 +198,14 @@ class StateAnnotator(object):
 
 
     def save(self, file_path):
-        objects = dict(transformer=self.transformer, hmm=self.hmm.to_json())
+        json_string = self.hmm.to_json()
         with open(file_path, 'wb') as f:
-            pickle.dump(objects, f)
+            f.write(json_string)
 
 
     def load(self, file_path):
         with open(file_path, 'rb') as f:
-            objects = pickle.load(f)
-        try:
-            self.transformer = objects['transformer']
-        except KeyError: # for backwards compatibility
-            self.transformer = objects['lda']
-        self.hmm = HiddenMarkovModel.from_json(objects['hmm'])
-
-
-    def fit_transform(self, signals, states, **kwargs):
-        # Ultra-thin wrapper around sklearn.discriminant_analysis.LinearDiscriminantAnalysis.fit()
-        # that primarily serves to decouple the interface from the sklearn implementation.
-
-        # combine data sets
-        combined_signals = np.concatenate(signals, axis=0)
-        combined_states = np.concatenate(states, axis=0)
-
-        # remove undefined / artefact states
-        is_valid = combined_states > 0
-        combined_signals = combined_signals[is_valid]
-        combined_states = combined_states[is_valid]
-
-        return LinearDiscriminantAnalysis(**kwargs).fit(combined_signals, combined_states)
+            self.hmm = HiddenMarkovModel.from_json(f.read())
 
 
     def fit_hmm(self, signal_arrays, state_vectors, distribution, state_transition_threshold=1e-4, **kwargs):
@@ -258,13 +227,10 @@ class StateAnnotator(object):
         # state_names = [str(state) for state in np.unique(np.concatenate(state_vectors)) if state != 0]
         state_names = [str(state) for state in np.unique(np.concatenate(state_vectors))]
 
-        # fit HMM states to transformed signals
-        signals = [self.transform(arr) for arr in signal_arrays]
-
         hmm = HiddenMarkovModel.from_samples(
             distribution = distribution,
             n_components = len(state_names),
-            X            = signals,
+            X            = signal_arrays,
             labels       = labels,
             algorithm    = 'labeled',
             state_names  = state_names,
