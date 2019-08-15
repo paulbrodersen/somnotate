@@ -12,6 +12,7 @@ matplotlib.rcParams['agg.path.chunksize'] = 10000
 # mplstyle.use('fast')
 
 from somnotate._manual_state_annotation import TimeSeriesStateAnnotator
+from somnotate._plotting import subplots
 
 from data_io import (
     ArgumentParser,
@@ -101,9 +102,9 @@ if __name__ == '__main__':
             (r'$\beta$' , 12.,  30., 'darkorchid'),
             (r'$\gamma$', 30., 100., 'crimson'),
         ]
-        psd_figure, axes = plt.subplots(1, total_raw_signals,
-                                     sharex=True, sharey=True,
-                                     figsize=(total_raw_signals * 4, 4))
+        psd_figure, axes = subplots(1, total_raw_signals,
+                                    sharex=True, sharey=True,
+                                    figsize=(total_raw_signals * 4, 4))
         psd_collections = []
         for ii, (signal, ax, label) in enumerate(zip(raw_signals.T, axes, state_annotation_signal_labels)):
             frequencies, psd = welch(signal, dataset['sampling_frequency_in_hz'])
