@@ -166,7 +166,7 @@ if __name__ == '__main__':
                                              state_display_order      = state_display_order,
                                              selection_callback       = update_psd_figure,
                                              default_selection_length = default_selection_length,
-                                             default_view_legnth      = default_view_length,
+                                             default_view_length      = default_view_length,
         )
         plt.show()
 
