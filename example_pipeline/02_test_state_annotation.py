@@ -80,8 +80,11 @@ if __name__ == '__main__':
     print('Train / test in a hold-one-out fashion...')
 
     total_datasets = len(datasets)
-    accuracy = np.zeros((total_datasets))
 
+    if total_datasets < 2:
+        raise Exception("Training and testing in a hold-one-out fashion requires two or more datasets!")
+
+    accuracy = np.zeros((total_datasets))
     for ii, dataset in datasets.iterrows():
 
         training_signal_arrays = [arr for jj, arr in enumerate(signal_arrays) if jj != ii]
