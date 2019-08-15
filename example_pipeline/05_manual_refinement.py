@@ -106,7 +106,7 @@ if __name__ == '__main__':
                                     sharex=True, sharey=True,
                                     figsize=(total_raw_signals * 4, 4))
         psd_collections = []
-        for ii, (signal, ax, label) in enumerate(zip(raw_signals.T, axes, state_annotation_signal_labels)):
+        for ii, (signal, ax, label) in enumerate(zip(raw_signals.T, axes.ravel(), state_annotation_signal_labels)):
             frequencies, psd = welch(signal, dataset['sampling_frequency_in_hz'])
             for _, fmin, fmax, color in frequency_bands:
                 mask = (frequencies >= fmin) & (frequencies <= fmax)
