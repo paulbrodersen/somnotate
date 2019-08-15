@@ -157,12 +157,3 @@ def plot_states(states, intervals,
         raise ValueError("Mode one of: 'background', 'lines'. Currently: {}".format)(mode)
 
     return ax
-
-
-def subplots(nrows=1, ncols=1, *args, **kwargs):
-    """
-    Make plt.subplots return an array of axes even is there is only one axis.
-    """
-    import matplotlib.pyplot as plt
-    fig, axes = plt.subplots(nrows, ncols, *args, **kwargs)
-    return fig, np.reshape(axes, (nrows, ncols))
