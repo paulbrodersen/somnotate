@@ -114,7 +114,7 @@ if __name__ == '__main__':
             ax.set_title(label)
             ax.set_xlabel("Frequency [Hz]")
             ax.set_xlim(0, 30)
-        axes[0].set_ylabel("Power")
+        axes.ravel()[0].set_ylabel("Power")
 
         def update_psd_figure(selection_lower_bound, selection_upper_bound):
             fs = dataset['sampling_frequency_in_hz']
