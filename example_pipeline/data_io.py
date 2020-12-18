@@ -370,5 +370,5 @@ load_dataframe = pandas.read_csv
 load_raw_signals = _load_edf_file
 load_preprocessed_signals = np.load
 export_preprocessed_signals = np.save
-load_hypnogram = _load_visbrain_hypnogram
-export_hypnogram = _export_visbrain_hypnogram
+load_hypnogram = _load_edf_hypnogram
+export_hypnogram = _export_edf_hypnogram
