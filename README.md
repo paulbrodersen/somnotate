@@ -165,13 +165,9 @@ code base they will interact with.**
 
 Currently available scripts are:
 
-1. `00_convert_sleepsign_files.py`
+1. `00_truncate_edf_annotations.py`
 
-    Extract the hypnogram from SleepSign FFT files (created in
-    SleepSign via: Analysis -> FFT-Text Output -> Continuous FFT), and
-    convert them to hypnogram in the [visbrain stage-duration
-    format](http://visbrain.org/sleep.html#hypnogram). If you already
-    have hypnograms in this format, this step is not necessary.
+    Truncate the EDF annotation files to match the length of the EDF data files.
 
 2. `01_preprocess_signals.py`
 
