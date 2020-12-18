@@ -10,7 +10,7 @@ import pandas
 
 from argparse import ArgumentParser
 from collections import Iterable
-from pyedflib import EdfReader
+from pyedflib import EdfReader, EdfWriter
 from six import ensure_str
 
 from somnotate._utils import convert_state_intervals_to_state_vector
@@ -144,7 +144,7 @@ def _load_edf_channels(signal_labels, edf_reader):
 
 def load_state_vector(file_path, mapping):
     """
-    Load hypnogram given in visbrain Stage-duration format, and convert to a state vector.
+    Load hypnogram and convert to a state vector.
 
     Arguments:
     ----------
@@ -306,6 +306,61 @@ def load_review_intervals(file_path):
     intervals = np.c_[df['start'].values, df['stop'].values]
     scores = df['score'].values
     return intervals, scores
+
+
+def _load_edf_hypnogram(file_path):
+    """Load hypnogram given in "Time-stamped Annotations Lists (TALs)" in
+    EDF annotations.
+
+    Arguments:
+    ----------
+    file_path -- str
+        /path/to/hypnogram/file.edf
+
+    Returns:
+    --------
+    states -- list of str
+        List of annotated states.
+
+    intervals -- list of (float start, float stop) tuples
+        Corresponding time intervals.
+
+    Reference:
+    ----------
+    https://www.edfplus.info/specs/edfplus.html
+    """
+    with EdfReader(file_path) as reader:
+        edf_annotations = reader.read_annotation()
+
+    states = [ensure_str(state) for _, _, state in edf_annotations]
+    intervals = [(start / 10_000_000, start / 10_000_000 + int(stop)) for start, stop, _ in edf_annotations]
+    return states, intervals
+
+
+def _export_edf_hypnogram(file_path, states, intervals):
+    """Export hypnogram as "Time-stamped Annotations Lists (TALs)" in
+    EDF annotations.
+
+    Arguments:
+    ----------
+    file_path -- str
+        /path/to/EDF/file.edf
+
+    states -- list of str
+        List of annotated states.
+
+    intervals -- list of (float start, float stop) tuples
+        Corresponding time intervals.
+
+    Reference:
+    ----------
+    https://www.edfplus.info/specs/edfplus.html
+    """
+
+    with EdfWriter(file_path, 0) as writer:
+        for (start, stop), state in zip(intervals, states):
+            writer.writeAnnotation(start, stop-start, state)
+        writer.close()
 
 
 # --------------------------------------------------------------------------------
