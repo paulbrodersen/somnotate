@@ -80,25 +80,26 @@ if __name__ == '__main__':
         state_vectors.append(state_vector)
 
     # --------------------------------------------------------------------------------
-    print('Train / test in a hold-one-out fashion...')
+    print('Testing...')
 
     total_datasets = len(datasets)
 
-    if total_datasets < 2:
+    if (total_datasets < 2) and not args.model:
         raise Exception("Training and testing in a hold-one-out fashion requires two or more datasets!")
 
     accuracy = np.zeros((total_datasets))
-    for ii, dataset in datasets.iterrows():
 
-        training_signal_arrays = [arr for jj, arr in enumerate(signal_arrays) if jj != ii]
-        training_state_vectors = [seq for jj, seq in enumerate(state_vectors) if jj != ii]
     unique_states = np.unique(np.abs(state_vectors))
     confusion = np.zeros((total_datasets, np.max(unique_states)+1, np.max(unique_states)+1))
+
+    for ii, dataset in datasets.iterrows():
 
         if args.model:
             annotator = StateAnnotator()
             annotator.load(args.model)
         else:
+            training_signal_arrays = [arr for jj, arr in enumerate(signal_arrays) if jj != ii]
+            training_state_vectors = [seq for jj, seq in enumerate(state_vectors) if jj != ii]
             annotator = StateAnnotator()
             annotator.fit(training_signal_arrays, training_state_vectors)
 
