@@ -7,6 +7,8 @@ manual created state annotation exists.
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn.metrics import confusion_matrix as get_confusion_matrix
+
 from somnotate._automated_state_annotation import StateAnnotator
 from somnotate._utils import convert_state_vector_to_state_intervals
 from somnotate._plotting import plot_signals
@@ -89,6 +91,8 @@ if __name__ == '__main__':
 
         training_signal_arrays = [arr for jj, arr in enumerate(signal_arrays) if jj != ii]
         training_state_vectors = [seq for jj, seq in enumerate(state_vectors) if jj != ii]
+    unique_states = np.unique(np.abs(state_vectors))
+    confusion = np.zeros((total_datasets, np.max(unique_states)+1, np.max(unique_states)+1))
 
         if args.model:
             annotator = StateAnnotator()
@@ -102,6 +106,8 @@ if __name__ == '__main__':
         # Hence we need to remove the sign from the loaded state sequence.
         accuracy[ii] = annotator.score(signal_arrays[ii], np.abs(state_vectors[ii]))
         print("{} ({}/{}) accuracy : {:.1f}%".format(dataset['file_path_preprocessed_signals'], ii+1, len(datasets), 100 * accuracy[ii]))
+
+        confusion[ii] = get_confusion_matrix(np.abs(state_vectors[ii]), annotator.predict(signal_arrays[ii]), labels=unique_states)
 
         if args.show:
 
