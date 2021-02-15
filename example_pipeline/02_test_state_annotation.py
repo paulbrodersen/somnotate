@@ -41,6 +41,7 @@ if __name__ == '__main__':
                         help  = 'Indices corresponding to the rows to use (default: all). Indexing starts at zero.'
     )
     parser.add_argument("--model", help="Use pre-trained model saved at /path/to/trained_model.pickle. If none is provided, the test is run in a hold-one-out fashion instead.")
+    parser.add_argument("--savefile", help="If provided with a /path/to/save/file.npz, the script saves the results of the analysis to file." )
 
     args = parser.parse_args()
 
@@ -162,5 +163,8 @@ if __name__ == '__main__':
             fig.tight_layout()
 
     print("Mean accuracy +/- MSE: {:.2f}% +/- {:.2f}%".format(100*np.mean(accuracy), 100*np.std(accuracy)/np.sqrt(len(accuracy))))
+
+    if args.savefile:
+        np.savez(args.savefile, accuracy=accuracy, confusion=confusion)
 
     plt.show()
