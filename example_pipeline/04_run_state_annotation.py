@@ -27,7 +27,7 @@ from data_io import (
     export_review_intervals,
 )
 
-def export_intervals_with_state_probability_below_threshold(file_path, state_probability, threshold=0.99):
+def export_intervals_with_state_probability_below_threshold(file_path, state_probability, threshold=0.99, time_resolution=1):
     """
     Determine all intervals, in which the probability of the predicted
     state is below the given threshold, and save them out to a CSV file.
@@ -51,6 +51,7 @@ def export_intervals_with_state_probability_below_threshold(file_path, state_pro
     """
     intervals = _get_intervals(state_probability < threshold)
     scores = [_get_score(state_probability[start:stop]) for start, stop in intervals]
+    intervals = [(start * time_resolution, stop * time_resolution) for start, stop in intervals]
     notes = ['probability below threshold' for _ in intervals]
     export_review_intervals(file_path, intervals, scores, notes)
 
@@ -67,6 +68,7 @@ if __name__ == '__main__':
         plot_raw_signals,
         plot_states,
         state_annotation_signals,
+        time_resolution,
     )
 
     parser = ArgumentParser()
@@ -110,7 +112,8 @@ if __name__ == '__main__':
         print("    Annotating states...")
         signal_array = load_preprocessed_signals(dataset['file_path_preprocessed_signals'])
         predicted_state_vector = annotator.predict(signal_array)
-        predicted_states, predicted_intervals = convert_state_vector_to_state_intervals(predicted_state_vector, mapping=int_to_state)
+        predicted_states, predicted_intervals = convert_state_vector_to_state_intervals(
+            predicted_state_vector, mapping=int_to_state, time_resolution=time_resolution)
         export_hypnogram(dataset['file_path_automated_state_annotation'], predicted_states, predicted_intervals)
 
         # compute intervals for manual review

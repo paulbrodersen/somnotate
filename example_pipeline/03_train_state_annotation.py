@@ -19,7 +19,7 @@ from somnotate._automated_state_annotation import StateAnnotator
 
 if __name__ == '__main__':
 
-    from configuration import state_to_int
+    from configuration import state_to_int, time_resolution
 
     parser = ArgumentParser()
     parser.add_argument("spreadsheet_file_path", help="Use datasets specified in /path/to/spreadsheet.csv")
@@ -56,7 +56,8 @@ if __name__ == '__main__':
     for ii, dataset in datasets.iterrows():
         print("    {} ({}/{})".format(dataset['file_path_preprocessed_signals'], ii+1, len(datasets)))
         signal_array = load_preprocessed_signals(dataset['file_path_preprocessed_signals'])
-        state_vector = load_state_vector(dataset['file_path_manual_state_annotation'], mapping=state_to_int)
+        state_vector = load_state_vector(dataset['file_path_manual_state_annotation'],
+                                         mapping=state_to_int, time_resolution=time_resolution)
         signal_arrays.append(signal_array)
         state_vectors.append(state_vector)
 

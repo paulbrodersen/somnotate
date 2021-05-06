@@ -7,6 +7,8 @@ manual created state annotation exists.
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn.metrics import confusion_matrix as get_confusion_matrix
+
 from somnotate._automated_state_annotation import StateAnnotator
 from somnotate._utils import convert_state_vector_to_state_intervals
 from somnotate._plotting import plot_signals
@@ -25,6 +27,7 @@ if __name__ == '__main__':
     from configuration import (
         state_to_int,
         int_to_state,
+        time_resolution,
     )
 
     # --------------------------------------------------------------------------------
@@ -39,6 +42,7 @@ if __name__ == '__main__':
                         help  = 'Indices corresponding to the rows to use (default: all). Indexing starts at zero.'
     )
     parser.add_argument("--model", help="Use pre-trained model saved at /path/to/trained_model.pickle. If none is provided, the test is run in a hold-one-out fashion instead.")
+    parser.add_argument("--savefile", help="If provided with a /path/to/save/file.npz, the script saves the results of the analysis to file." )
 
     args = parser.parse_args()
 
@@ -71,29 +75,33 @@ if __name__ == '__main__':
         print("{} ({}/{})".format(dataset['file_path_preprocessed_signals'], ii+1, len(datasets)))
 
         signal_array = load_preprocessed_signals(dataset['file_path_preprocessed_signals'])
-        state_vector = load_state_vector(dataset['file_path_manual_state_annotation'], mapping=state_to_int)
+        state_vector = load_state_vector(dataset['file_path_manual_state_annotation'],
+                                         mapping=state_to_int, time_resolution=time_resolution)
 
         signal_arrays.append(signal_array)
         state_vectors.append(state_vector)
 
     # --------------------------------------------------------------------------------
-    print('Train / test in a hold-one-out fashion...')
+    print('Testing...')
 
     total_datasets = len(datasets)
 
-    if total_datasets < 2:
+    if (total_datasets < 2) and not args.model:
         raise Exception("Training and testing in a hold-one-out fashion requires two or more datasets!")
 
     accuracy = np.zeros((total_datasets))
-    for ii, dataset in datasets.iterrows():
 
-        training_signal_arrays = [arr for jj, arr in enumerate(signal_arrays) if jj != ii]
-        training_state_vectors = [seq for jj, seq in enumerate(state_vectors) if jj != ii]
+    unique_states = np.unique(np.abs(state_vectors))
+    confusion = np.zeros((total_datasets, np.max(unique_states)+1, np.max(unique_states)+1))
+
+    for ii, dataset in datasets.iterrows():
 
         if args.model:
             annotator = StateAnnotator()
             annotator.load(args.model)
         else:
+            training_signal_arrays = [arr for jj, arr in enumerate(signal_arrays) if jj != ii]
+            training_state_vectors = [seq for jj, seq in enumerate(state_vectors) if jj != ii]
             annotator = StateAnnotator()
             annotator.fit(training_signal_arrays, training_state_vectors)
 
@@ -102,6 +110,8 @@ if __name__ == '__main__':
         # Hence we need to remove the sign from the loaded state sequence.
         accuracy[ii] = annotator.score(signal_arrays[ii], np.abs(state_vectors[ii]))
         print("{} ({}/{}) accuracy : {:.1f}%".format(dataset['file_path_preprocessed_signals'], ii+1, len(datasets), 100 * accuracy[ii]))
+
+        confusion[ii] = get_confusion_matrix(np.abs(state_vectors[ii]), annotator.predict(signal_arrays[ii]), labels=unique_states)
 
         if args.show:
 
@@ -156,5 +166,8 @@ if __name__ == '__main__':
             fig.tight_layout()
 
     print("Mean accuracy +/- MSE: {:.2f}% +/- {:.2f}%".format(100*np.mean(accuracy), 100*np.std(accuracy)/np.sqrt(len(accuracy))))
+
+    if args.savefile:
+        np.savez(args.savefile, accuracy=accuracy, confusion=confusion)
 
     plt.show()
