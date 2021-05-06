@@ -25,6 +25,7 @@ from somnotate._utils import (
 # define which columns in the spreadsheet/dataframe index the signals
 # in the raw signal array that are to be used for state inference
 state_annotation_signals = [
+    # 'lfp_signal_label',
     'frontal_eeg_signal_label',
     'occipital_eeg_signal_label',
     'emg_signal_label',
@@ -32,6 +33,7 @@ state_annotation_signals = [
 
 # define the corresponding labels when plotting these signals
 state_annotation_signal_labels = [
+    # 'LFP',
     'frontal EEG',
     'occipital EEG',
     'EMG'
@@ -40,6 +42,7 @@ state_annotation_signal_labels = [
 # define the frequency bands to display when plotting
 # (has no effect on signal processing and state inference)
 state_annotation_signal_frequency_bands = [
+    # (0.5, 30.), # LFP
     (0.5, 30.), # Frontal EEG
     (0.5, 30.), # Occipital EEG
     (10., 45.), # EMG
