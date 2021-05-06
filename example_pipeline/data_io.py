@@ -142,7 +142,7 @@ def _load_edf_channels(signal_labels, edf_reader):
     return output_array.transpose()
 
 
-def load_state_vector(file_path, mapping):
+def load_state_vector(file_path, mapping, time_resolution=1):
     """
     Load hypnogram given in visbrain Stage-duration format, and convert to a state vector.
 
@@ -168,7 +168,8 @@ def load_state_vector(file_path, mapping):
     states, intervals = load_hypnogram(file_path)
 
     from somnotate._utils import convert_state_intervals_to_state_vector
-    state_vector = convert_state_intervals_to_state_vector(states, intervals, mapping=mapping)
+    state_vector = convert_state_intervals_to_state_vector(
+        states, intervals, mapping=mapping, time_resolution=time_resolution)
 
     return state_vector
 

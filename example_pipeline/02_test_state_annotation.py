@@ -27,6 +27,7 @@ if __name__ == '__main__':
     from configuration import (
         state_to_int,
         int_to_state,
+        time_resolution,
     )
 
     # --------------------------------------------------------------------------------
@@ -74,7 +75,8 @@ if __name__ == '__main__':
         print("{} ({}/{})".format(dataset['file_path_preprocessed_signals'], ii+1, len(datasets)))
 
         signal_array = load_preprocessed_signals(dataset['file_path_preprocessed_signals'])
-        state_vector = load_state_vector(dataset['file_path_manual_state_annotation'], mapping=state_to_int)
+        state_vector = load_state_vector(dataset['file_path_manual_state_annotation'],
+                                         mapping=state_to_int, time_resolution=time_resolution)
 
         signal_arrays.append(signal_array)
         state_vectors.append(state_vector)
