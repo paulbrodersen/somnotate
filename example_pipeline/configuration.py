@@ -24,28 +24,24 @@ from somnotate._utils import (
 
 # define which columns in the spreadsheet/dataframe index the signals
 # in the raw signal array that are to be used for state inference
-state_annotation_signals = [
-    # 'lfp_signal_label',
-    'frontal_eeg_signal_label',
-    'occipital_eeg_signal_label',
-    'emg_signal_label',
-]
+state_annotation_signals = ['ECG', 'BP', 'EEG', 'EOG', 'EMG', 'EMGamp', 'Resp', 'Tabd']
+
 
 # define the corresponding labels when plotting these signals
-state_annotation_signal_labels = [
-    # 'LFP',
-    'frontal EEG',
-    'occipital EEG',
-    'EMG'
-]
+state_annotation_signal_labels = state_annotation_signals
+
 
 # define the frequency bands to display when plotting
 # (has no effect on signal processing and state inference)
 state_annotation_signal_frequency_bands = [
-    # (0.5, 30.), # LFP
-    (0.5, 30.), # Frontal EEG
-    (0.5, 30.), # Occipital EEG
-    (10., 45.), # EMG
+    (0.5, 256), # ECG
+    (0.5, 256), # BP
+    (0.5, 256), # EEG
+    (0.5, 256), # EOG
+    (0.5, 256), # EMG
+    (0.5, 256), # EMGamp
+    (0.5, 256), # Resp
+    (0.5, 256), # Tabd
 ]
 
 # define a function that plots the raw signals
@@ -150,14 +146,13 @@ plot_raw_signals = partial(plot_raw_signals,
 # such that artefacts have no influence on the computed state transition probabilities.
 # TODO: explain the mapping of `sleep movement`.
 state_to_int = dict([
-    ('awake'              ,  1),
-    ('awake (artefact)'   , -1),
-    ('sleep movement'     ,  1),
-    ('non-REM'            ,  2),
-    ('non-REM (artefact)' , -2),
-    ('REM'                ,  3),
-    ('REM (artefact)'     , -3),
-    ('undefined'          ,  0),
+    ('Sleep stage W'           ,  1),
+    ('Sleep stage W (artefact)', -1),
+    ('Sleep stage 1'           ,  2),
+    ('Sleep stage 1 (artefact)', -2),
+    ('Sleep stage R'           ,  3),
+    ('Sleep stage R (artefact)', -3),
+    ('undefined'               ,  0),
 ])
 
 # Construct the inverse mapping to convert back from state predictions to human readabe labels.
@@ -165,43 +160,37 @@ int_to_state = {ii : state for state, ii in state_to_int.items() if state != 'sl
 
 # define the keymap used for the manual annotation
 keymap = {
-    'w' : 'awake',
-    'W' : 'awake (artefact)',
-    'n' : 'non-REM',
-    'N' : 'non-REM (artefact)',
-    'r' : 'REM',
-    'R' : 'REM (artefact)',
-    'x' : 'undefined',
-    'X' : 'undefined (artefact)',
-    'm' : 'sleep movement',
-    'M' : 'sleep movement (artefact)',
+    'w' : 'Sleep stage W'           ,
+    'W' : 'Sleep stage W (artefact)',
+    'n' : 'Sleep stage 1'           ,
+    'N' : 'Sleep stage 1 (artefact)',
+    'r' : 'Sleep stage R'           ,
+    'R' : 'Sleep stage R (artefact)',
+    'x' : 'undefined'               ,
+    'X' : 'undefined (artefact)'    ,
 }
 
 # define the visual display of states
 state_to_color = {
-    'awake'               : 'crimson',
-    'awake (artefact)'    : 'coral',
-    'sleep movement'      : 'violet',
-    'non-REM'             : 'blue',
-    'non-REM (artefact)'  : 'cornflowerblue',
-    'REM'                 : 'gold',
-    'REM (artefact)'      : 'yellow',
-    'sleep movement'      : 'purple',
-    'undefined'           : 'gray',
-    'undefined (artefact)': 'lightgray',
+    'Sleep stage W'            : 'crimson',
+    'Sleep stage W (artefact)' : 'coral',
+    'Sleep stage 1'            : 'blue',
+    'Sleep stage 1 (artefact)' : 'cornflowerblue',
+    'Sleep stage R'            : 'gold',
+    'Sleep stage R (artefact)' : 'yellow',
+    'undefined'                : 'gray',
+    'undefined (artefact)'     : 'lightgray',
 }
 
 state_display_order = [
-    'awake',
-    'awake (artefact)',
-    'non-REM',
-    'non-REM (artefact)',
-    'REM',
-    'REM (artefact)',
-    'sleep movement',
-    'sleep movement (artefact)',
-    'undefined',
-    'undefined (artefact)',
+    'Sleep stage W'            ,
+    'Sleep stage W (artefact)' ,
+    'Sleep stage 1'            ,
+    'Sleep stage 1 (artefact)' ,
+    'Sleep stage R'            ,
+    'Sleep stage R (artefact)' ,
+    'undefined'                ,
+    'undefined (artefact)'     ,
 ]
 
 plot_states = partial(plot_states,
@@ -229,4 +218,4 @@ time_resolution = 1
 default_view_length = 60.
 
 # default selection length when manually annotating states
-default_selection_length = 4.
+default_selection_length = 10.
