@@ -45,8 +45,7 @@ def preprocess(raw_signal, sampling_frequency_in_hz,
                time_resolution_in_sec   = 1,
                low_cut                  = 1.,
                high_cut                 = 90.,
-               notch_low_cut            = 45.,
-               notch_high_cut           = 55.,
+               notch_cuts               = (45., 55.)
 ):
     """Wrapper around get_spectrogram, that
     1) computes the spectrogram for the given LFP/EEG/EMG trace,
@@ -69,7 +68,7 @@ def preprocess(raw_signal, sampling_frequency_in_hz,
     low_cut, high_cut -- float (default 1.)
         The minimum/maximum frequency for which to compute the power.
 
-    notch_low_cut, notch_high_cut -- float (default 45.)
+    notch_cuts -- (float low, float high) or None (default (45, 55))
         The frequency band for which NOT to compute the power
         (to eliminate 50 Hz noise from the output signal).
 
@@ -93,9 +92,11 @@ def preprocess(raw_signal, sampling_frequency_in_hz,
 
     # exclude noise-contaminated frequencies around 50 Hz;
     # this improves performance (generally, 0.1-0.5%, but 3% in at least one case)
-    mask = (frequencies >= notch_low_cut) & (frequencies <= notch_high_cut)
-    frequencies = frequencies[~mask]
-    spectrogram = spectrogram[~mask]
+    if notch_cuts:
+        notch_low_cut, notch_high_cuts = notch_cuts
+        mask = (frequencies >= notch_low_cut) & (frequencies <= notch_high_cut)
+        frequencies = frequencies[~mask]
+        spectrogram = spectrogram[~mask]
 
     # the power in each frequency band tends to be log-normally distributed, and
     # taking the log hence transforms the distribution of power values to a normal distribution;
@@ -168,8 +169,7 @@ if __name__ == '__main__':
                                                                 time_resolution_in_sec   = time_resolution,
                                                                 low_cut                  = 1.,
                                                                 high_cut                 = 90.,
-                                                                notch_low_cut            = 45.,
-                                                                notch_high_cut           = 55.,
+                                                                notch_cuts               = None,
             )
             preprocessed_signals.append(preprocessed_signal)
 
