@@ -91,8 +91,13 @@ if __name__ == '__main__':
 
     accuracy = np.zeros((total_datasets))
 
-    unique_states = np.unique(np.abs(state_vectors))
-    confusion = np.zeros((total_datasets, np.max(unique_states)+1, np.max(unique_states)+1))
+    # unique_states = np.unique(np.abs(state_vectors))
+    unique_states = set()
+    for state_vector in state_vectors:
+        unique_states = unique_states.union(set(list(state_vector)))
+    unique_states = list(unique_states)
+    # confusion = np.zeros((total_datasets, np.max(unique_states)+1, np.max(unique_states)+1))
+    confusion = np.zeros((total_datasets, len(unique_states), len(unique_states)))
 
     for ii, dataset in datasets.iterrows():
 
