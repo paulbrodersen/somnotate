@@ -34,14 +34,14 @@ state_annotation_signal_labels = state_annotation_signals
 # define the frequency bands to display when plotting
 # (has no effect on signal processing and state inference)
 state_annotation_signal_frequency_bands = [
-    (0.5, 256), # ECG
-    (0.5, 256), # BP
-    (0.5, 256), # EEG
-    (0.5, 256), # EOG
-    (0.5, 256), # EMG
-    (0.5, 256), # EMGamp
-    (0.5, 256), # Resp
-    (0.5, 256), # Tabd
+    (0.5, 30), # ECG
+    (0.5, 30), # BP
+    (0.5, 30), # EEG
+    (0.5, 30), # EOG
+    (0.5, 30), # EMG
+    (0.5, 30), # EMGamp
+    (0.5, 30), # Resp
+    (0.5, 30), # Tabd
 ]
 
 # define a function that plots the raw signals
