@@ -24,7 +24,8 @@ from somnotate._utils import (
 
 # define which columns in the spreadsheet/dataframe index the signals
 # in the raw signal array that are to be used for state inference
-state_annotation_signals = ['ECG', 'BP', 'EEG', 'EOG', 'EMG', 'EMGamp', 'Resp', 'Tabd']
+# state_annotation_signals = ['ECG', 'BP', 'EEG', 'EOG', 'EMG', 'EMGamp', 'Resp', 'Tabd']
+state_annotation_signals = ['EEG', 'EOG']
 
 
 # define the corresponding labels when plotting these signals
