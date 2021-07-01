@@ -18,6 +18,7 @@ from data_io import (
 SLEEPSIGN_KEY = dict([
         ('w'  , 'awake'),
         ('wa' , 'awake (artefact)'),
+        ('ws' , 'awake (artefact)'),
         ('wb' , 'awake (artefact)'),
         ('m'  , 'sleep movement'),
         ('nr' , 'non-REM'),
