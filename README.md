@@ -356,3 +356,10 @@ Most other changes can be made by changing the values of variables in
 If you cannot change an important aspect of the pipeline by changing
 either `data_io.py` or `configuration.py`, please raise an issue on
 the github issue tracker. Pull requests are -- of course -- very welcome.
+
+
+## License
+
+somnotate has a dual license. It is licensed under the GPLv3 license
+for academic use only. For commercial or any other use of somnotate or
+parts thereof, please be in contact: paul.brodersen@gmail.com.
