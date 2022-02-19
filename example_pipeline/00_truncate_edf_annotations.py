@@ -51,7 +51,8 @@ if __name__ == '__main__':
         file_path_raw_signals = dataset['file_path_raw_signals']
         with EdfReader(file_path_raw_signals) as f:
             total_time_in_seconds = f.file_duration
-
+            edf_header = f.getHeader()
+            
         file_path_manual_state_annotation = dataset['file_path_manual_state_annotation']
         states, intervals = _load_edf_hypnogram(file_path_manual_state_annotation)
 
@@ -63,5 +64,5 @@ if __name__ == '__main__':
             elif (start < total_time_in_seconds) and (stop > total_time_in_seconds):
                 intervals[-1] = (start, total_time_in_seconds)
             start, stop = intervals[-1]
-
-        _export_edf_hypnogram(file_path_manual_state_annotation, states, intervals)
+          
+        _export_edf_hypnogram(file_path_manual_state_annotation, states, intervals, edf_header)

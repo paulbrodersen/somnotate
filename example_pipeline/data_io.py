@@ -9,7 +9,12 @@ import numpy as np
 import pandas
 
 from argparse import ArgumentParser
-from collections import Iterable
+try:
+    # Python <= 3.9
+    from collections import Iterable
+except ImportError:
+    # Python > 3.9
+    from collections.abc import Iterable
 from pyedflib import EdfReader, EdfWriter
 from six import ensure_str
 
@@ -338,7 +343,7 @@ def _load_edf_hypnogram(file_path):
     return states, intervals
 
 
-def _export_edf_hypnogram(file_path, states, intervals):
+def _export_edf_hypnogram(file_path, states, intervals, header=None):
     """Export hypnogram as "Time-stamped Annotations Lists (TALs)" in
     EDF annotations.
 
@@ -361,6 +366,8 @@ def _export_edf_hypnogram(file_path, states, intervals):
     with EdfWriter(file_path, 0) as writer:
         for (start, stop), state in zip(intervals, states):
             writer.writeAnnotation(start, stop-start, state)
+        if header:
+            writer.setHeader(header)
         writer.close()
 
 
