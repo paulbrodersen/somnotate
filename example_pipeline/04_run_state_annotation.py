@@ -90,13 +90,13 @@ if __name__ == '__main__':
     # check contents of spreadsheet
     check_dataframe(datasets,
                     columns = [
-                        'file_path_raw_signals',                   # ? get name of original raw file from spreadsheet
+                        'file_path_raw_signals',                   
                         'file_path_preprocessed_signals',
                         'file_path_automated_state_annotation',
                         'file_path_review_intervals',
                     ],
                     column_to_dtype = {
-                        'file_path_raw_signals' : str,             # ? get name of original raw file from spreadsheet
+                        'file_path_raw_signals' : str,             
                         'file_path_preprocessed_signals' : str,
                         'file_path_automated_state_annotation' : str,
                         'file_path_review_intervals' : str,
@@ -119,8 +119,7 @@ if __name__ == '__main__':
             predicted_state_vector, mapping=int_to_state, time_resolution=time_resolution)
         
         with EdfReader(dataset['file_path_raw_signals']) as f:
-            edf_header = f.getHeader() # ?read header from the original file
- 
+            edf_header = f.getHeader()
         export_hypnogram(dataset['file_path_automated_state_annotation'], predicted_states, predicted_intervals, edf_header)
 
         # compute intervals for manual review

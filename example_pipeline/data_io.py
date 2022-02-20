@@ -367,9 +367,9 @@ def _export_edf_hypnogram(file_path, states, intervals, header=None):
         for (start, stop), state in zip(intervals, states):
             writer.writeAnnotation(start, stop-start, state)
         if header:
-            writer.setHeader(header)
+            writer.setHeader(header)  
         writer.close()
-
+        
 
 # --------------------------------------------------------------------------------
 # aliases
