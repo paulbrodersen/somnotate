@@ -34,12 +34,12 @@ if __name__ == '__main__':
     check_dataframe(datasets,
                     columns = [
                         'file_path_raw_signals',
-                        'file_path_manual_state_annot',
+                        'file_path_manual_state_annot_orig',
                         'file_path_manual_state_annotation',
                     ],
                     column_to_dtype = {
                         'file_path_raw_signals' : str,
-                        'file_path_manual_state_annot' : str,
+                        'file_path_manual_state_annot_orig' : str,
                         'file_path_manual_state_annotation' : str,
                     }
     )
@@ -48,16 +48,16 @@ if __name__ == '__main__':
         datasets = datasets.loc[np.in1d(range(len(datasets)), args.only)]
 
     for ii, dataset in datasets.iterrows():
-        print("{} ({}/{})".format(dataset['file_path_manual_state_annot'], ii+1, len(datasets)))
+        print("{} ({}/{})".format(dataset['file_path_manual_state_annot_orig'], ii+1, len(datasets)))
 
         file_path_raw_signals = dataset['file_path_raw_signals']
         with EdfReader(file_path_raw_signals) as f:
             total_time_in_seconds = f.file_duration
              
-        file_path_manual_state_annot = dataset['file_path_manual_state_annot']
+        file_path_manual_state_annot_orig = dataset['file_path_manual_state_annot_orig']
         
 
-        states, intervals = _load_edf_hypnogram(file_path_manual_state_annot)
+        states, intervals = _load_edf_hypnogram(file_path_manual_state_annot_orig)
 
         start, stop = intervals[-1]
         while stop > total_time_in_seconds:
@@ -68,7 +68,7 @@ if __name__ == '__main__':
                 intervals[-1] = (start, total_time_in_seconds)
             start, stop = intervals[-1]
         
-        with EdfReader(file_path_manual_state_annot) as f:
+        with EdfReader(file_path_manual_state_annot_orig) as f:
             edf_header = f.getHeader()
         
         file_path_manual_state_annotation = dataset['file_path_manual_state_annotation']       
