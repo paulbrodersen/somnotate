@@ -120,6 +120,7 @@ if __name__ == '__main__':
         
         with EdfReader(dataset['file_path_raw_signals']) as f:
             edf_header = f.getHeader()
+            
         export_hypnogram(dataset['file_path_automated_state_annotation'], predicted_states, predicted_intervals, edf_header)
 
         # compute intervals for manual review

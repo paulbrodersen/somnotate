@@ -15,6 +15,10 @@ from data_io import (
 
 if __name__ == '__main__':
 
+    from configuration import (
+        time_resolution,
+    )
+
     # --------------------------------------------------------------------------------
     # parse and check inputs
 
@@ -53,7 +57,10 @@ if __name__ == '__main__':
         file_path_raw_signals = dataset['file_path_raw_signals']
         with EdfReader(file_path_raw_signals) as f:
             total_time_in_seconds = f.file_duration
-             
+        #truncate to whole number of epochs
+        total_time_in_seconds = time_resolution*(total_time_in_seconds // time_resolution) 
+
+         
         file_path_manual_state_annot_orig = dataset['file_path_manual_state_annot_orig']
         
 
