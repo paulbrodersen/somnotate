@@ -153,7 +153,8 @@ state_to_int = dict([
     ('Sleep stage 1 (artefact)', -2),
     ('Sleep stage R'           ,  3),
     ('Sleep stage R (artefact)', -3),
-    ('undefined'               ,  0),
+    ('Sleep stage ?'           ,  0), # ? = Undefined/unscorable code in Polyman 
+    ('Movement Time'           ,  0), # Just included in case M code is accidentally added to avoid exception, cannot be deleted in Polyman
 ])
 
 # Construct the inverse mapping to convert back from state predictions to human readabe labels.
@@ -167,7 +168,7 @@ keymap = {
     'N' : 'Sleep stage 1 (artefact)',
     'r' : 'Sleep stage R'           ,
     'R' : 'Sleep stage R (artefact)',
-    'x' : 'undefined'               ,
+    'x' : 'Sleep stage ?'           ,  # ? = Undefined/unscorable code in Polyman
     'X' : 'undefined (artefact)'    ,
 }
 
@@ -179,7 +180,7 @@ state_to_color = {
     'Sleep stage 1 (artefact)' : 'cornflowerblue',
     'Sleep stage R'            : 'gold',
     'Sleep stage R (artefact)' : 'yellow',
-    'undefined'                : 'gray',
+    'Sleep stage ?'            : 'gray',       # ? = Undefined/unscorable code in Polyman
     'undefined (artefact)'     : 'lightgray',
 }
 
@@ -190,7 +191,7 @@ state_display_order = [
     'Sleep stage 1 (artefact)' ,
     'Sleep stage R'            ,
     'Sleep stage R (artefact)' ,
-    'undefined'                ,
+    'Sleep stage ?'            ,       # ? = Undefined/unscorable code in Polyman
     'undefined (artefact)'     ,
 ]
 
@@ -213,7 +214,7 @@ plt.rcParams['axes.labelsize']  = 'medium'
 # --------------------------------------------------------------------------------
 
 # desired time resolution of the automated annotation (in seconds)
-time_resolution = 1
+time_resolution = 10
 
 # default view length when manually annotating states
 default_view_length = 60.

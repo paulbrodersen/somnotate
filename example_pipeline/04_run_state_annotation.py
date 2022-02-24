@@ -11,6 +11,7 @@ The latter can then be used to manually refine annotation.
 import numpy as np
 import matplotlib.pyplot as plt
 
+from pyedflib import EdfReader, EdfWriter
 from somnotate._automated_state_annotation import StateAnnotator
 from somnotate._utils import (
     convert_state_vector_to_state_intervals,
@@ -89,11 +90,13 @@ if __name__ == '__main__':
     # check contents of spreadsheet
     check_dataframe(datasets,
                     columns = [
+                        'file_path_raw_signals',                   
                         'file_path_preprocessed_signals',
                         'file_path_automated_state_annotation',
                         'file_path_review_intervals',
                     ],
                     column_to_dtype = {
+                        'file_path_raw_signals' : str,             
                         'file_path_preprocessed_signals' : str,
                         'file_path_automated_state_annotation' : str,
                         'file_path_review_intervals' : str,
@@ -114,7 +117,11 @@ if __name__ == '__main__':
         predicted_state_vector = annotator.predict(signal_array)
         predicted_states, predicted_intervals = convert_state_vector_to_state_intervals(
             predicted_state_vector, mapping=int_to_state, time_resolution=time_resolution)
-        export_hypnogram(dataset['file_path_automated_state_annotation'], predicted_states, predicted_intervals)
+        
+        with EdfReader(dataset['file_path_raw_signals']) as f:
+            edf_header = f.getHeader()
+            
+        export_hypnogram(dataset['file_path_automated_state_annotation'], predicted_states, predicted_intervals, edf_header)
 
         # compute intervals for manual review
         state_probability = annotator.predict_proba(signal_array)
