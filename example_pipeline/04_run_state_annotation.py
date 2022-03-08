@@ -107,7 +107,7 @@ if __name__ == '__main__':
     annotator = StateAnnotator()
     annotator.load(args.trained_model_file_path)
 
-    for ii, dataset in datasets.iterrows():
+    for ii, (idx, dataset) in enumerate(datasets.iterrows()):
 
         print("{} ({}/{})".format(dataset['file_path_preprocessed_signals'], ii+1, len(datasets)))
         print("    Annotating states...")

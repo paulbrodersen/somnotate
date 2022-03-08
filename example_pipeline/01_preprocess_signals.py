@@ -153,7 +153,7 @@ if __name__ == '__main__':
     # --------------------------------------------------------------------------------
     # preprocess specified files
 
-    for ii, dataset in datasets.iterrows():
+    for ii, (idx, dataset) in enumerate(datasets.iterrows()):
         print("{} ({}/{})".format(dataset['file_path_raw_signals'], ii+1, len(datasets)))
 
         # determine edf signals to load

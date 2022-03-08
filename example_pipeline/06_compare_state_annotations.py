@@ -84,7 +84,7 @@ if __name__ == '__main__':
     # turn off interactive mode if on
     plt.ioff()
 
-    for ii, dataset in datasets.iterrows():
+    for ii, (idx, dataset) in enumerate(datasets.iterrows()):
 
         print("{} ({}/{})".format(dataset['file_path_raw_signals'], ii+1, len(datasets)))
 

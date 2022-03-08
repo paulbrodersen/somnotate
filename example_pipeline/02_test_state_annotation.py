@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     signal_arrays = []
     state_vectors = []
-    for ii, dataset in datasets.iterrows():
+    for ii, (idx, dataset) in enumerate(datasets.iterrows()):
         print("{} ({}/{})".format(dataset['file_path_preprocessed_signals'], ii+1, len(datasets)))
 
         signal_array = load_preprocessed_signals(dataset['file_path_preprocessed_signals'])
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     unique_states = np.unique(np.abs(state_vectors))
     confusion = np.zeros((total_datasets, np.max(unique_states)+1, np.max(unique_states)+1))
 
-    for ii, dataset in datasets.iterrows():
+    for ii, (idx, dataset) in enumerate(datasets.iterrows()):
 
         if args.model:
             annotator = StateAnnotator()
