@@ -9,11 +9,17 @@ import numpy as np
 import pandas
 
 from argparse import ArgumentParser
-from collections import Iterable
+try:
+    # python < 3.3
+    from collections import Iterable
+except ImportError:
+    # python >= 3.3
+    from collections.abc import Iterable
 from pyedflib import EdfReader, EdfWriter
 from six import ensure_str
 
 from somnotate._utils import convert_state_intervals_to_state_vector
+
 
 def check_dataframe(df, columns, column_to_dtype=None):
     """

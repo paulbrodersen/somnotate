@@ -66,6 +66,7 @@ if __name__ == '__main__':
         state_to_int,
         int_to_state,
         plot_raw_signals,
+        plot_signals,
         plot_states,
         state_annotation_signals,
         time_resolution,
@@ -135,7 +136,7 @@ if __name__ == '__main__':
                 ax                 = axes[0],
             )
 
-            axes[1].plot(state_probability)
+            plot_signals(state_probability, sampling_frequency=1./time_resolution, ax=axes[1])
             axes[1].set_ylabel("Predicted state probability")
 
             # plot predicted states
