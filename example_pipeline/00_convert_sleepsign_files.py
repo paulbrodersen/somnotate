@@ -133,7 +133,7 @@ if __name__ == '__main__':
     if args.only:
         datasets = datasets.loc[np.in1d(range(len(datasets)), args.only)]
 
-    for ii, dataset in datasets.iterrows():
+    for ii, (idx, dataset) in enumerate(datasets.iterrows()):
         print("{} ({}/{})".format(dataset['file_path_sleepsign_state_annotation'], ii+1, len(datasets)))
         old_file_path = dataset['file_path_sleepsign_state_annotation']
         new_file_path = dataset['file_path_manual_state_annotation']

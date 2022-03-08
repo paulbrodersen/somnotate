@@ -53,7 +53,7 @@ if __name__ == '__main__':
     print("Loading data sets...")
     signal_arrays = []
     state_vectors = []
-    for ii, dataset in datasets.iterrows():
+    for ii, (idx, dataset) in enumerate(datasets.iterrows()):
         print("    {} ({}/{})".format(dataset['file_path_preprocessed_signals'], ii+1, len(datasets)))
         signal_array = load_preprocessed_signals(dataset['file_path_preprocessed_signals'])
         state_vector = load_state_vector(dataset['file_path_manual_state_annotation'],
