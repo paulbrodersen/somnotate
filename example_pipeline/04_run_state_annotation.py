@@ -10,6 +10,7 @@ The latter can then be used to manually refine annotation.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from pyedflib import EdfReader, EdfWriter
 
 from somnotate._automated_state_annotation import StateAnnotator
 from somnotate._utils import (
@@ -24,6 +25,7 @@ from data_io import (
     load_preprocessed_signals,
     load_raw_signals,
     export_hypnogram,
+    _export_edf_hypnogram,
     export_review_intervals,
 )
 
@@ -90,11 +92,13 @@ if __name__ == '__main__':
     # check contents of spreadsheet
     check_dataframe(datasets,
                     columns = [
+                        'file_path_raw_signals',
                         'file_path_preprocessed_signals',
                         'file_path_automated_state_annotation',
                         'file_path_review_intervals',
                     ],
                     column_to_dtype = {
+                        'file_path_raw_signals' : str,
                         'file_path_preprocessed_signals' : str,
                         'file_path_automated_state_annotation' : str,
                         'file_path_review_intervals' : str,
@@ -115,7 +119,15 @@ if __name__ == '__main__':
         predicted_state_vector = annotator.predict(signal_array)
         predicted_states, predicted_intervals = convert_state_vector_to_state_intervals(
             predicted_state_vector, mapping=int_to_state, time_resolution=time_resolution)
-        export_hypnogram(dataset['file_path_automated_state_annotation'], predicted_states, predicted_intervals)
+
+        if export_hypnogram is _export_edf_hypnogram:
+            with EdfReader(dataset['file_path_raw_signals']) as f:
+                edf_header = f.getHeader()
+            export_hypnogram(dataset['file_path_automated_state_annotation'],
+                             predicted_states, predicted_intervals, header=edf_header)
+        else:
+            export_hypnogram(dataset['file_path_automated_state_annotation'],
+                             predicted_states, predicted_intervals)
 
         # compute intervals for manual review
         state_probability = annotator.predict_proba(signal_array)
