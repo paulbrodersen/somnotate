@@ -153,11 +153,12 @@ state_to_int = dict([
     ('Sleep stage 1 (artefact)', -2),
     ('Sleep stage R'           ,  3),
     ('Sleep stage R (artefact)', -3),
-    ('undefined'               ,  0),
+    ('Movement Time'           ,  0), # Code for undefined/unscorable due to movement in Polyman
+    ('Sleep stage ?'           ,  0), # Code for undefined/unscorable in Polyman
 ])
 
 # Construct the inverse mapping to convert back from state predictions to human readabe labels.
-int_to_state = {ii : state for state, ii in state_to_int.items() if state != 'sleep movement'}
+int_to_state = {ii : state for state, ii in state_to_int.items() if state != 'Movement Time'}
 
 # define the keymap used for the manual annotation
 keymap = {
@@ -167,8 +168,8 @@ keymap = {
     'N' : 'Sleep stage 1 (artefact)',
     'r' : 'Sleep stage R'           ,
     'R' : 'Sleep stage R (artefact)',
-    'x' : 'undefined'               ,
-    'X' : 'undefined (artefact)'    ,
+    'x' : 'Sleep stage ?'           ,
+    'X' : 'Sleep stage ? (artefact)',
 }
 
 # define the visual display of states
@@ -179,8 +180,8 @@ state_to_color = {
     'Sleep stage 1 (artefact)' : 'cornflowerblue',
     'Sleep stage R'            : 'gold',
     'Sleep stage R (artefact)' : 'yellow',
-    'undefined'                : 'gray',
-    'undefined (artefact)'     : 'lightgray',
+    'Sleep stage ?'            : 'gray',
+    'Sleep stage ? (artefact)' : 'lightgray',
 }
 
 state_display_order = [
@@ -190,8 +191,8 @@ state_display_order = [
     'Sleep stage 1 (artefact)' ,
     'Sleep stage R'            ,
     'Sleep stage R (artefact)' ,
-    'undefined'                ,
-    'undefined (artefact)'     ,
+    'Sleep stage ?'            ,
+    'Sleep stage ? (artefact)' ,
 ]
 
 plot_states = partial(plot_states,
