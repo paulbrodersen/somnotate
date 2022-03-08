@@ -147,15 +147,18 @@ if __name__ == '__main__':
 
             # LDA tranformed signals
             transformed_signals = annotator.transform(signal_arrays[ii])
-            plot_signals(transformed_signals, ax=axes[1])
+            plot_signals(transformed_signals, sampling_frequency=1./time_resolution, ax=axes[1])
             axes[1].set_ylabel("Transformed signals")
 
             predicted_state_vector = annotator.predict(signal_arrays[ii])
-            predicted_states, predicted_intervals = convert_state_vector_to_state_intervals(predicted_state_vector, mapping=int_to_state)
+            predicted_states, predicted_intervals = \
+                convert_state_vector_to_state_intervals(
+                    predicted_state_vector, mapping=int_to_state, time_resolution=time_resolution)
             plot_states(predicted_states, predicted_intervals, ax=axes[2])
             axes[2].set_ylabel("Automated\nannotation")
 
-            states, intervals = convert_state_vector_to_state_intervals(state_vectors[ii], mapping=int_to_state)
+            states, intervals = convert_state_vector_to_state_intervals(
+                state_vectors[ii], mapping=int_to_state, time_resolution=time_resolution)
             plot_states(states, intervals, ax=axes[3])
             axes[3].set_ylabel("Manual\nannotation")
 
