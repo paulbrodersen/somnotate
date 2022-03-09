@@ -15,6 +15,8 @@ from data_io import (
 
 if __name__ == '__main__':
 
+    from configuration import time_resolution
+
     # --------------------------------------------------------------------------------
     # parse and check inputs
 
@@ -52,6 +54,9 @@ if __name__ == '__main__':
         with EdfReader(file_path_raw_signals) as f:
             total_time_in_seconds = f.file_duration
             edf_header = f.getHeader()
+
+        # truncate annotations to whole number of epochs
+        total_time_in_seconds = time_resolution * int(total_time_in_seconds / time_resolution)
 
         file_path_manual_state_annotation = dataset['file_path_manual_state_annotation']
         states, intervals = _load_edf_hypnogram(file_path_manual_state_annotation)
