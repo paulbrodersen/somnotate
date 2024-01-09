@@ -362,6 +362,26 @@ either `data_io.py` or `configuration.py`, please raise an issue on
 the github issue tracker. Pull requests are -- of course -- very welcome.
 
 
+## Citing Somnotate
+
+If you use Somnotate in your scientific work, I would appreciate citations to the following paper:
+
+Brodersen PJN, Alfonsa H, Krone LB, Duque CB, Fisk AS, Flaherty SJ, et al. Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions. bioRxiv. 2023;2021.10.06.463356.
+
+Bibtex entry:
+
+```bibtex
+@article{Brodersen2023,
+author = {Brodersen, Paul J N and Alfonsa, Hannah and Krone, Lukas B and Duque, Cristina Blanco and Fisk, Angus S and Flaherty, Sarah J and Guillaumin, Mathilde C C and Huang, Yi-Ge and Kahn, Martin C and McKillop, Laura E and Milinski, Linus and Taylor, Lewis and Thomas, Christopher W and Yamagata, Tomoko and Foster, Russell G and Vyazovskiy, Vladyslav V and Akerman, Colin J},
+journal = {bioRxiv},
+pages = {2021.10.06.463356},
+title = {{Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions}},
+url = {http://biorxiv.org/content/early/2023/06/20/2021.10.06.463356.abstract},
+year = {2023}
+}
+```
+
+
 ## License
 
 somnotate has a dual license. It is licensed under the GPLv3 license
