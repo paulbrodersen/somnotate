@@ -22,6 +22,123 @@ state annotation that has a high accuracy compared to a human
 consensus state sequence. Furthermore, this approach is remarkably
 robust to mislabelled training data, artefacts, and other outliers.
 
+You can read more about Somnotate on [bioRxiv](https://www.biorxiv.org/content/10.1101/2021.10.06.463356v3).
+
+
+## Is this software for you?
+
+*Tl;dr: if your data stems from experimental animal research (not human
+clinical research) and you only have a few annotated recordings (at
+least 5 but less than a thousand), then Somnotate is for you.*
+
+---
+
+Dozens (if not hundreds) of sleep scoring methods have been published
+in the scientific literature, and new ones are developed each
+year. About a third of these come with code that can be installed and
+made to run with low-to-moderate effort. Whilst some implementations
+are just straight-up better than others, even the good implementations
+come with trade-offs that have been selected based on the specific
+use-case of the original authors. These trade-offs are not always
+immediately obvious, such that choosing the right software for your
+own use-case can be a daunting task. The following is a very brief
+primer to help you along this decision process.
+
+
+### The good, the bad, and the ugly: contextual versus context-free inference
+
+Even short (<10 seconds) epochs of EEG/EMG/LFP data contain enough
+information to infer the correct vigilance state *in a majority of
+cases*. As a result, many methods simply classify each epoch
+independently, i.e. in a context-free manner, including decision trees
+/ forests (with or without gradient boosting) and deep neural networks
+without recurrence or without memory (LSTM units). These should
+generally be avoided, as they make about twice as many errors as
+methods that ido ncorporate contextual information (i.e. information
+from neighbouring epochs) in a principled way into their inference,
+such as hidden Markov models (HMMs) and deep neural networks with
+recurrence or LSTM units.
+
+In practice, the line between context-free and contextual inference is
+a bit blurry: the bag of features used by decision trees is often
+augmented with features that reflect neighbouring samples, and support
+vector machines and convolutional neural networks employs kernels that
+incorporate information from neighbouring epochs. While these hacks
+improve the performance the base methods, their performance typically
+remains suboptimal compared to methods that are designed for
+contextual inference. This is most directly illustrated by
+[SPINDLE](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006968#pcbi.1006968.ref009),
+which is a method that combines in series a convolutional neural
+network with a hidden Markov model: if the convolutional neural
+network was able to make full use of the available contextual
+information, then the additional Markov model (which is only supplied
+the output activations of the convolutional neural network) would be
+unable to improve inference.
+
+
+### Old-school hidden Markov models versus chic deep learning: a matter of data availability
+
+Deep neural networks with recurrence or with memory (LSTM) units are
+the cool kids on the block. They power most of modern AI applications,
+and can perform incredibly well. However, their training requires
+warehouses of data: for example,
+[MC-SleepNet](https://www.nature.com/articles/s41598-019-51269-8), a
+convolutional neural network augmented with a bi-LSTM layer, performed
+well when trained on 4200 days of mouse EEG/EMG recordings. When
+trained on "just" 500 days of annotated EEG/EMG recordings, accuracy
+dropped to an abysmal 80%, which is much lower than the accuracy of
+even simple decision trees (around 85-90% when using sensible
+features).
+
+Sufficiently large data repositories are freely available for human
+clinical data, for example the [ISRUC-SLEEP data
+base](https://sleeptight.isr.uc.pt/). If you are working with human
+data, using a deep neural network such as
+[U-sleep](https://www.nature.com/articles/s41746-021-00440-5) is hence
+probably the best option, and for standard recording configurations
+pre-trained networks are available.
+
+To the best of my knowledge, comparable databases are currently not
+(openly) available for experimental animal research, not even for
+mice. In other words, unless you are sitting on a trove of annotated
+data, you are probably better of using hidden Markov models, which are
+a bit old-school but also tried-and-tested and require very little
+data to train well. From my own experiments, 5-6 12-hour long EEG/EMG
+recordings seem to be sufficient; additional training data yields
+diminishing returns (see the supplementary information in the
+accompanying paper).
+
+
+### Hidden Markov models: the art of pre-processing
+
+Decision trees and deep neural networks can be applied to high
+dimensional signals, as they extract the task relevant information
+internally.
+
+Hidden Markov models require low dimensional input signals to work
+well, such that a lot hinges on the quality of the selected
+features. Previously published approaches using hidden Markov models
+applied them either (a) to hand-crafted features, or (b) to the
+outputs of other classification algorithms. The biases of human
+perception make the use of hand-crafted features undesirable: for
+manual sleep scoring, EEG traces are typically band-pass filtered
+between 0.5 and 30 Hz. This is likely sub-optimal, as automated
+approaches typically heavily rely on the high-frequency components of
+the EEG to distinguish between awake and REM states. Applying hidden
+Markov models to the output of other algorithms is also suboptimal, as
+the often discrete (or quasi-discrete) nature of the output of other
+classification algorithms likely removes a lot of task-relevant
+information.
+
+Somnotate uses linear discriminant analysis to compress
+high-dimensional samples into low dimensional features. This preserves
+the maximum amount of the linearly decodable, task-relevant
+information present in the original input, thus making optimal use of
+the available data. Somnotate thus likely represents a fairly optimal
+architecture for learning to extract state information from small to
+medium sized data sets.
+
+
 ## Installation instructions
 
 1. Clone this repository. Git is available
