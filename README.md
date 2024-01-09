@@ -6,7 +6,7 @@ potentials (LFPs).
 
 The approach taken here consists of two parts: linear discriminant
 analysis (LDA) and a hidden Markov model (HMM). Linear discriminant
-analysis (LDA) performs automatic feature selection by projecting the
+analysis performs automatic feature selection by projecting the
 high-dimensional time series data to a lower dimensional feature space
 that is optimal for state classification using hard, linear decision
 boundaries. However, instead of applying these decision boundaries
@@ -27,9 +27,16 @@ You can read more about Somnotate on [bioRxiv](https://www.biorxiv.org/content/1
 
 ## Is this software for you?
 
-*Tl;dr: if your data stems from experimental animal research (not human
-clinical research) and you only have a few annotated recordings (at
-least 5 but less than a thousand), then Somnotate is for you.*
+*If your data stems from experimental animal research (not human
+clinical research), and you only have a few annotated recordings (at
+least 5 but less than a thousand), then Somnotate is for you. If you
+are interested in intermediate states and/or vigilance state dynamics,
+Somnotate might still be of interest even if the availability of
+annotated training data is a non-issue. The following is an
+opinionated introduction to automated polysomnography in general and
+Somnotate in particular, which I would have liked to write in the
+accompanying paper, but that I would have struggled to get past
+peer-review.*
 
 ---
 
@@ -50,33 +57,34 @@ primer to help you along this decision process.
 Even short (<10 seconds) epochs of EEG/EMG/LFP data contain enough
 information to infer the correct vigilance state *in a majority of
 cases*. As a result, many methods simply classify each epoch
-independently, i.e. in a context-free manner, including decision trees
-/ forests (with or without gradient boosting) and deep neural networks
-without recurrence or without memory (LSTM units). These should
-generally be avoided, as they make about twice as many errors as
-methods that ido ncorporate contextual information (i.e. information
-from neighbouring epochs) in a principled way into their inference,
-such as hidden Markov models (HMMs) and deep neural networks with
-recurrence or LSTM units.
+independently, i.e. in a context-free manner. This includes decision
+trees / forests (with or without gradient boosting), but also deep
+neural networks if they do not employ recurrence or memory (i.e. LSTM
+units) to retain contextual information between successive
+inferences. These methods should generally be avoided, as they make
+about twice as many errors as methods that do incorporate contextual
+information (i.e. information from neighbouring epochs) in a
+principled way into their inference, such as hidden Markov models
+(HMMs) and deep neural networks with recurrence or LSTM units.
 
 In practice, the line between context-free and contextual inference is
 a bit blurry: the bag of features used by decision trees is often
 augmented with features that reflect neighbouring samples, and support
 vector machines and convolutional neural networks employs kernels that
-incorporate information from neighbouring epochs. While these hacks
+incorporate information from neighbouring epochs. While these "hacks"
 improve the performance the base methods, their performance typically
 remains suboptimal compared to methods that are designed for
-contextual inference. This is most directly illustrated by
+contextual inference. This is directly illustrated by
 [SPINDLE](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006968#pcbi.1006968.ref009),
 which is a method that combines in series a convolutional neural
 network with a hidden Markov model: if the convolutional neural
 network was able to make full use of the available contextual
-information, then the additional Markov model (which is only supplied
-the output activations of the convolutional neural network) would be
-unable to improve inference.
+information by itself, then the additional hidden Markov model (which
+is only supplied the output activations of the convolutional neural
+network) would be unable to improve inference.
 
 
-### Old-school hidden Markov models versus chic deep learning: a matter of data availability
+### Old-school hidden Markov models versus en vogue deep learning: a matter of data availability
 
 Deep neural networks with recurrence or with memory (LSTM) units are
 the cool kids on the block. They power most of modern AI applications,
@@ -87,11 +95,10 @@ convolutional neural network augmented with a bi-LSTM layer, performed
 well when trained on 4200 days of mouse EEG/EMG recordings. When
 trained on "just" 500 days of annotated EEG/EMG recordings, accuracy
 dropped to an abysmal 80%, which is much lower than the accuracy of
-even simple decision trees (around 85-90% when using sensible
-features).
+even very simple decision trees.
 
-Sufficiently large data repositories are freely available for human
-clinical data, for example the [ISRUC-SLEEP data
+For human clinical data, sufficiently large data repositories are
+freely available, for example the [ISRUC-SLEEP data
 base](https://sleeptight.isr.uc.pt/). If you are working with human
 data, using a deep neural network such as
 [U-sleep](https://www.nature.com/articles/s41746-021-00440-5) is hence
@@ -100,43 +107,48 @@ pre-trained networks are available.
 
 To the best of my knowledge, comparable databases are currently not
 (openly) available for experimental animal research, not even for
-mice. In other words, unless you are sitting on a trove of annotated
+mice. In other words, unless you happen to sit on a trove of annotated
 data, you are probably better of using hidden Markov models, which are
-a bit old-school but also tried-and-tested and require very little
-data to train well. From my own experiments, 5-6 12-hour long EEG/EMG
-recordings seem to be sufficient; additional training data yields
-diminishing returns (see the supplementary information in the
-accompanying paper).
+tried-and-tested (i.e. old-fashioned) and require a lot less training
+data to perform well. From my own experiments, five or six 12-hour
+long EEG/EMG recordings seem to be sufficient; additional training
+data yields diminishing returns (see the supplementary information in
+the accompanying paper). Note that this is three orders of magnitude
+less data than required to train deep neural networks such as
+MC-SleepNet.
 
 
-### Hidden Markov models: the art of pre-processing
+### Hidden Markov models and the art of pre-processing
 
 Decision trees and deep neural networks can be applied to high
 dimensional signals, as they extract the task relevant information
-internally.
-
-Hidden Markov models require low dimensional input signals to work
-well, such that a lot hinges on the quality of the selected
-features. Previously published approaches using hidden Markov models
-applied them either (a) to hand-crafted features, or (b) to the
-outputs of other classification algorithms. The biases of human
-perception make the use of hand-crafted features undesirable: for
-manual sleep scoring, EEG traces are typically band-pass filtered
-between 0.5 and 30 Hz. This is likely sub-optimal, as automated
-approaches typically heavily rely on the high-frequency components of
-the EEG to distinguish between awake and REM states. Applying hidden
-Markov models to the output of other algorithms is also suboptimal, as
-the often discrete (or quasi-discrete) nature of the output of other
-classification algorithms likely removes a lot of task-relevant
-information.
+internally. Hidden Markov models require low dimensional input signals
+to work well, such that their performance strongly depends on the
+quality of the selected features. Previously published approaches
+using hidden Markov models applied them either (a) to hand-crafted
+features, or (b) to the outputs of other classification
+algorithms. The biases of human perception make the use of
+hand-crafted features undesirable: for manual sleep scoring, EEG
+traces are typically band-pass filtered between 0.5 and 30 Hz. This is
+likely sub-optimal, as automated approaches typically heavily rely on
+the high-frequency components of the EEG to distinguish between awake
+and REM states. Applying hidden Markov models to the output of other
+algorithms is also sub-optimal, as the often discrete (or
+quasi-discrete) nature of the output of other classification
+algorithms likely removes a lot of task-relevant information.
 
 Somnotate uses linear discriminant analysis to compress
 high-dimensional samples into low dimensional features. This preserves
-the maximum amount of the linearly decodable, task-relevant
-information present in the original input, thus making optimal use of
-the available data. Somnotate thus likely represents a fairly optimal
-architecture for learning to extract state information from small to
-medium sized data sets.
+the maximum amount of the linearly decodable and task-relevant
+information present in the original inputs, and thus makes optimal use
+of the available data. Somnotate thus likely represents a fairly
+optimal classifier architecture for learning to extract state
+information from small to medium sized data sets.
+
+
+### A unique feature of Bayesian classifiers: accurate intermediate states
+
+
 
 
 ## Installation instructions
@@ -265,10 +277,8 @@ python /path/to/somnotate/example_pipeline/05_manual_refinement.py /path/to/spre
 This repository comes in two parts, the core library, `somnotate`, and
 an example pipeline. The core library implements the functionality to
 automatically (or manually) annotate states using any type of time
-series data "emitted" by these states, and visualize the results. The
-core library supports (and is designed for) interactive use. However,
-there is nothing specific to sleep staging in this part of the code
-base.
+series data, and visualize the results. However, there is nothing
+specific to sleep staging in this part of the code base.
 
 The example pipeline is a collection of functions and scripts that
 additionally manage data import/export, data preprocessing, and
@@ -299,8 +309,8 @@ Currently available scripts are:
     power is approximately normally distributed, and (3) trim the
     spectrogram to exclude frequencies for which our estimate is very
     noisy, i.e. frequencies near the Nyquist limit and frequencies
-    around 50 Hz. Finally, we concatenate the spectrograms into one
-    set of features.
+    around 50 Hz. Finally, we concatenate the spectrograms of the
+    difference signals into one set of features.
 
 3. `02_test_state_annotation.py`
 
@@ -392,7 +402,7 @@ python /path/to/somnotate/example_pipeline/script.py --help
 
 For each data set, the spreadsheet details a number of properties, as
 well as the paths to the corresponding input and output files. By
-accessing these parameters via a spreadsheet, the user does not have
+providing these parameters via a spreadsheet, the user does not have
 to manually provide these arguments repeatedly to each script in the
 pipeline. Furthermore, it ensures that the arguments remain consistent
 across tasks.
@@ -438,8 +448,6 @@ column entries.
 
 Many pipeline customisations will only require changes in either `data_io.py` or `configuration.py`.
 
-##### Changes in input or output data formats
-
 Most function definitions in `data_io.py` are just aliases for other
 functions. In many cases, changes in the format of the input or the
 output files can hence be achieved by simply rebinding the aliases to
@@ -466,9 +474,6 @@ load_dataframe = pandas.read_excel
 
 The function `load_dataframe` continues to be available, and can be
 used by all scripts in the pipeline just as before.
-
-
-##### Other changes
 
 Most other changes can be made by changing the values of variables in
 `configuration.py`. Please refer to the extensive comments in
@@ -501,6 +506,6 @@ year = {2023}
 
 ## License
 
-somnotate has a dual license. It is licensed under the GPLv3 license
-for academic use only. For commercial or any other use of somnotate or
+Somnotate has a dual license. It is licensed under the GPLv3 license
+for academic use only. For commercial or any other use of Somnotate or
 parts thereof, please be in contact: paul.brodersen@gmail.com.
