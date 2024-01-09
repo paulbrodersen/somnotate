@@ -1,4 +1,4 @@
-# somnotate
+# Somnotate
 
 Automatically annotate vigilance states from timeseries data such
 electroencephalograms (EEGs), electromyograph (EMG), or local field
