@@ -77,6 +77,58 @@ in intermediate states).
 
 ## What do I need?
 
+As a training data set, you will need manually annotated recordings
+from at least six different animals. Training on additional
+recordings further improves performance, but has strongly diminishing
+returns. The length of the recordings is not particularly important,
+as long as they are continuous and cover the full spectrum of
+vigilance and arousal states (light NREM sleep, deep NREM sleep, REM
+sleep, awake & rested, awake with high sleep pressure, etc.). For
+laboratory animals on a 12-hours light on / 12-hours light off cycle,
+12 hour long recordings covering the sleep phase and adjoining awake
+phases is probably sufficient for training, as in my tests, training
+on 24-hours recordings only marginally but not statistically
+significantly improved performance.
+
+The provided example pipeline expects the recordings to be in the
+[European data format (EDF)](https://www.edfplus.info/specs/edf.html),
+and the annotations to be in visbrain's stage-duration format. The
+latter is a very simple text file with the first line specifying the
+length of the corresponding recording in seconds, and the second line
+specifying the name of the file (or `Unspecified`). The remaining
+lines list each state and its end-point since the start of the
+recording in seconds (which is set to be 0 seconds) separated by a
+tab. In the example below, the duration of the first occurrence of
+`Awake` is 1 minute, the duration of the following `NREM` period is 2
+minutes, and the duration of the following `REM` period is 3
+minutes. The label `Undefined` should be used if no state is
+applicable, for example at the start of the recording when the
+electrodes aren't connected, yet. The last entry in the file should
+match the duration specified on the first line.
+
+```
+*Duration_sec	43200.0
+*Datafile	Unspecified
+Undefined	10.0
+Awake	70.0
+NREM	190.0
+REM	370.0
+Awake	372.0
+NREM	672.0
+...
+Awake	42000.0
+Undefined	43200.0
+```
+
+A normal laptop is sufficient to run the software. The software was
+developed under Linux but also runs on Windows and iOS. After
+pre-processing, training (and testing) should not require more than
+1-2 seconds per 24 hours of recordings on any but the most ancient
+hardware. The duration of preprocessing is highly variable and depends
+on the file format, number of signals, and their sampling
+frequency. Preprocessing recordings in EDF file format with three
+signals at 256 Hz requires about 10 seconds per 24 hours.
+
 
 ## Installation instructions
 
