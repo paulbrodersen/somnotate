@@ -1,154 +1,81 @@
 # Somnotate
 
-Automatically annotate vigilance states from timeseries data such
-electroencephalograms (EEGs), electromyograph (EMG), or local field
-potentials (LFPs).
+*Automated polysomnography for experimental animal research: annotate vigilance states from arbitrary time series data.*
 
-The approach taken here consists of two parts: linear discriminant
-analysis (LDA) and a hidden Markov model (HMM). Linear discriminant
-analysis performs automatic feature selection by projecting the
-high-dimensional time series data to a lower dimensional feature space
-that is optimal for state classification using hard, linear decision
-boundaries. However, instead of applying these decision boundaries
-immediately, the transformed time series data is annotated using a
-hidden Markov model. This allows for "soft" decision boundaries that
-apart from the feature values of each sample also take contextual
-information into account. This contextual information includes the
-surrounding state sequence and the previously learnt state transition
-frequencies.
+Somnotate combines linear discriminant analysis (LDA) with a hidden
+Markov model (HMM). Linear discriminant analysis performs automatic
+feature selection by projecting the high-dimensional time series data
+to a lower dimensional feature space that is optimal for state
+classification using hard, linear decision boundaries. However,
+instead of applying these decision boundaries immediately, the
+transformed time series data is annotated using a hidden Markov
+model. This allows for "soft" decision boundaries that in addition of
+the features of each sample also take contextual information into
+account. This approach results in a fast, fully automated state
+annotation that is typically more accurate than manual annotations by
+human experts, while being remarkably robust to mislabelled training
+data, artefacts, and other outliers.
 
-The combination of these two algorithms results in a fast, automated
-state annotation that has a high accuracy compared to a human
-consensus state sequence. Furthermore, this approach is remarkably
-robust to mislabelled training data, artefacts, and other outliers.
-
-You can read more about Somnotate on [bioRxiv](https://www.biorxiv.org/content/10.1101/2021.10.06.463356v3).
-
-
-## Is this software for you?
-
-*If your data stems from experimental animal research (not human
-clinical research), and you only have a few annotated recordings (at
-least 5 but less than a thousand), then Somnotate is for you. If you
-are interested in intermediate states and/or vigilance state dynamics,
-Somnotate might still be of interest even if the availability of
-annotated training data is a non-issue. The following is an
-opinionated introduction to automated polysomnography in general and
-Somnotate in particular, which I would have liked to write in the
-accompanying paper, but that I would have struggled to get past
-peer-review.*
-
----
-
-Dozens (if not hundreds) of sleep scoring methods have been published
-in the scientific literature, and new ones are developed each
-year. About a third of these come with code that can be installed and
-made to run with low-to-moderate effort. Whilst some implementations
-are just straight-up better than others, even the good implementations
-come with trade-offs that have been selected based on the specific
-use-case of the original authors. These trade-offs are not always
-immediately obvious, such that choosing the right software for your
-own use-case can be a daunting task. The following is a very brief
-primer to help you along this decision process.
+A journal article thoroughly describing Somnotate and characterising
+its performance has been formally accepted for publication by PLoS
+Computationally Biology. A pre-print of the article is available at
+[bioRxiv](https://doi.org/10.1101/2021.10.06.463356). The data
+underpinning the presented results is archived [at
+Zenodo](https://doi.org/10.5281/zenodo.10200481). While the article
+focuses on Somnotate's performance in polysomnography based on mouse
+EEG, EMG, and/or LFP data, Somnotate has been applied successfully to
+human clinical data, as well as telemetry data from hibernating
+Alaskan black bears. As the core components of Somnotate are
+completely agnostic to the data modality, Somnotate can also be
+applied to atypical indicators of vigilance state, such as heart rate,
+blood pressure, or actigraphy. While we have performed encouraging
+pilot tests in these directions, we lack access to annotated data
+repositories that are comprehensive enough for a proper evaluation (do
+be in touch if you have data and you would like to collaborate).
 
 
-### The good, the bad, and the ugly: contextual versus context-free inference
+## Is this software the right choice for me?
 
-Even short (<10 seconds) epochs of EEG/EMG/LFP data contain enough
-information to infer the correct vigilance state *in a majority of
-cases*. As a result, many methods simply classify each epoch
-independently, i.e. in a context-free manner. This includes decision
-trees / forests (with or without gradient boosting), but also deep
-neural networks if they do not employ recurrence or memory (i.e. LSTM
-units) to retain contextual information between successive
-inferences. These methods should generally be avoided, as they make
-about twice as many errors as methods that do incorporate contextual
-information (i.e. information from neighbouring epochs) in a
-principled way into their inference, such as hidden Markov models
-(HMMs) and deep neural networks with recurrence or LSTM units.
+Somnotate is designed to support animal experimental research, and
+hence a core assumption is that the data is peculiar in some way: the
+recording setup might be non-standard, the experimental manipulation
+might be severe, the genotype and (sleep) phenotype of the animals
+might be deviant, or the animal model might be entirely non-standard
+(such as black bears). As a consequence, machine learning models that
+have been pre-trained on other data are of limited use, and you have
+to train your own model using data annotated by yourself or your
+collaborators. Somnotate has been designed with two aims in mind (1)
+minimise the amount of manually annotated data required to surpass the
+accuracy of human experts, and (2) make model training simple enough
+that any motivated scientist can optimise and use the software to its
+fullest potential without requiring prior programming experience or
+machine learning knowledge.
 
-In practice, the line between context-free and contextual inference is
-a bit blurry: the bag of features used by decision trees is often
-augmented with features that reflect neighbouring samples, and support
-vector machines and convolutional neural networks employs kernels that
-incorporate information from neighbouring epochs. While these "hacks"
-improve the performance the base methods, their performance typically
-remains suboptimal compared to methods that are designed for
-contextual inference. This is directly illustrated by
-[SPINDLE](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006968#pcbi.1006968.ref009),
-which is a method that combines in series a convolutional neural
-network with a hidden Markov model: if the convolutional neural
-network was able to make full use of the available contextual
-information by itself, then the additional hidden Markov model (which
-is only supplied the output activations of the convolutional neural
-network) would be unable to improve inference.
+These aims motivate the use of old-fashioned hidden Markov models as
+the core classifier over and above deep neural networks, as the latter
+necessitate 2-3 orders of magnitude more data to train. A welcome side
+effect of this core design decision is that Somnotate -- unlike most
+other polysomnography software -- computes the likelihood of each
+vigilance state for each epoch (rather than just determining the most
+likely one). This allows the identification of intermediate states
+that occur around vigilance state transitions and failed transition
+attempts. Analysis of intermediate states can yield unique insights
+into the dynamics of vigilance state transitions. They may also
+provide a more sensitive readout for experimental manipulations than,
+for example, the total time spent in each vigilance state, as such
+traditional measures of sleep quality might be more strongly
+controlled by the physiological needs of the animal.
 
-
-### Old-school hidden Markov models versus en vogue deep learning: a matter of data availability
-
-Deep neural networks with recurrence or with memory (LSTM) units are
-the cool kids on the block. They power most of modern AI applications,
-and can perform incredibly well. However, their training requires
-warehouses of data: for example,
-[MC-SleepNet](https://www.nature.com/articles/s41598-019-51269-8), a
-convolutional neural network augmented with a bi-LSTM layer, performed
-well when trained on 4200 days of mouse EEG/EMG recordings. When
-trained on "just" 500 days of annotated EEG/EMG recordings, accuracy
-dropped to an abysmal 80%, which is much lower than the accuracy of
-even very simple decision trees.
-
-For human clinical data, sufficiently large data repositories are
-freely available, for example the [ISRUC-SLEEP data
-base](https://sleeptight.isr.uc.pt/). If you are working with human
-data, using a deep neural network such as
-[U-sleep](https://www.nature.com/articles/s41746-021-00440-5) is hence
-probably the best option, and for standard recording configurations
-pre-trained networks are available.
-
-To the best of my knowledge, comparable databases are currently not
-(openly) available for experimental animal research, not even for
-mice. In other words, unless you happen to sit on a trove of annotated
-data, you are probably better of using hidden Markov models, which are
-tried-and-tested (i.e. old-fashioned) and require a lot less training
-data to perform well. From my own experiments, five or six 12-hour
-long EEG/EMG recordings seem to be sufficient; additional training
-data yields diminishing returns (see the supplementary information in
-the accompanying paper). Note that this is three orders of magnitude
-less data than required to train deep neural networks such as
-MC-SleepNet.
+For annotating human clinical data, Somnotate likely is not the
+optimal choice. The acquisition of human clinical data is relatively
+standardised, and large repositories with annotated data are freely
+available. These have been used to train sophisticated machine
+learning models, such as U-Sleep and its successors, that are readily
+available and which you should use instead (unless you are interested
+in intermediate states).
 
 
-### Hidden Markov models and the art of pre-processing
-
-Decision trees and deep neural networks can be applied to high
-dimensional signals, as they extract the task relevant information
-internally. Hidden Markov models require low dimensional input signals
-to work well, such that their performance strongly depends on the
-quality of the selected features. Previously published approaches
-using hidden Markov models applied them either (a) to hand-crafted
-features, or (b) to the outputs of other classification
-algorithms. The biases of human perception make the use of
-hand-crafted features undesirable: for manual sleep scoring, EEG
-traces are typically band-pass filtered between 0.5 and 30 Hz. This is
-likely sub-optimal, as automated approaches typically heavily rely on
-the high-frequency components of the EEG to distinguish between awake
-and REM states. Applying hidden Markov models to the output of other
-algorithms is also sub-optimal, as the often discrete (or
-quasi-discrete) nature of the output of other classification
-algorithms likely removes a lot of task-relevant information.
-
-Somnotate uses linear discriminant analysis to compress
-high-dimensional samples into low dimensional features. This preserves
-the maximum amount of the linearly decodable and task-relevant
-information present in the original inputs, and thus makes optimal use
-of the available data. Somnotate thus likely represents a fairly
-optimal classifier architecture for learning to extract state
-information from small to medium sized data sets.
-
-
-### A unique feature of Bayesian classifiers: accurate intermediate states
-
-
+## What do I need?
 
 
 ## Installation instructions
