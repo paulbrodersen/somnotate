@@ -77,34 +77,73 @@ in intermediate states).
 
 ## What do I need?
 
-As a training data set, you will need manually annotated recordings
-from at least six different animals. Training on additional
-recordings further improves performance, but has strongly diminishing
-returns. The length of the recordings is not particularly important,
-as long as they are continuous and cover the full spectrum of
-vigilance and arousal states (light NREM sleep, deep NREM sleep, REM
-sleep, awake & rested, awake with high sleep pressure, etc.). For
-laboratory animals on a 12-hours light on / 12-hours light off cycle,
-12 hour long recordings covering the sleep phase and adjoining awake
-phases is probably sufficient for training, as in my tests, training
-on 24-hours recordings only marginally but not statistically
-significantly improved performance.
+### Recordings
 
-The provided example pipeline expects the recordings to be in the
-[European data format (EDF)](https://www.edfplus.info/specs/edf.html),
-and the annotations to be in visbrain's stage-duration format. The
-latter is a very simple text file with the first line specifying the
-length of the corresponding recording in seconds, and the second line
-specifying the name of the file (or `Unspecified`). The remaining
-lines list each state and its end-point since the start of the
-recording in seconds (which is set to be 0 seconds) separated by a
-tab. In the example below, the duration of the first occurrence of
+To train the classifier, you will need manually annotated recordings.
+
+The performance of the classifier depends on (1) how well it is able
+to estimate the mean and the variance of all provided features, and
+(2) how well the (selected) features match between the training and
+the test data sets.
+
+The variance between recordings from different animals is typically
+greater than the variance within one long recording from one
+animal. Training on shorter recordings from multiple animals is hence
+preferable to training on longer recordings from fewer animals. In my
+experiments, training on manually annotated recordings from five or
+six different animals represented a sweet-spot, where adding further
+training data yielded strongly diminishing returns in performance
+improvements. The length of the recordings is less important, as long
+as the recordings are continuous (splicing introduces artefacts) and
+cover the full spectrum of vigilance and arousal states (i.e. light
+NREM sleep, deep NREM sleep, REM sleep, awake & rested, awake with
+high sleep pressure, etc.). For laboratory animals on a 12-hours
+light-on / 12-hours light-off cycle, 12-hour recordings covering the
+cycle half dominated by sleep (the light-on phase in mice) is probably
+sufficient for training, as in my tests, training on 24-hours
+recordings only marginally improved performance, and not statistically
+significantly so.
+
+Do not exclusively use "clean" recordings for training. This can
+result in underestimating feature variances, and negatively impact
+feature selection, as features affected by artefacts or noise are
+weighted less during inference.
+
+Often it is sufficient to train on recordings from control
+experiments, and then apply the classifier to both, recordings from
+control experiments and recordings acquired during experimental
+manipulations. In this way, a single classifier can be applied to data
+from multiple experiments. However, if the different conditions affect
+the physiology of the animal strongly, the characteristics of the data
+may become too distinct, and it may be necessary to either (1) train
+multiple classifiers, one for each condition, or (2) train one
+classifier on data from both conditions. The first approach tends to
+work a little bit better than the second approach but requires more
+annotated data sets. If you use the second approach, ensure that both
+conditions are represented equally in the training data.
+
+The provided example pipeline expects recordings to be in the
+[European data format (EDF)](https://www.edfplus.info/specs/edf.html).
+
+### Manual Annotations
+
+Annotations are expected to be in
+[Visbrain's](https://github.com/EtienneCmb/visbrain) [stage-duration
+format](http://visbrain.org/sleep.html#hypnogram). This is a very
+simple text file with the first line specifying the length of the
+corresponding recording in seconds, and the second line specifying the
+file name of the recording (or `Unspecified`). The remaining lines
+list each state and its end-point since the start of the recording in
+seconds. In the example below, the duration of the first occurrence of
 `Awake` is 1 minute, the duration of the following `NREM` period is 2
 minutes, and the duration of the following `REM` period is 3
-minutes. The label `Undefined` should be used if no state is
-applicable, for example at the start of the recording when the
-electrodes aren't connected, yet. The last entry in the file should
-match the duration specified on the first line.
+minutes. The label `Undefined` should be used if no state assignment
+is appropriate, for example at the start of the recording when the
+electrodes aren't connected, yet; do not use `Undefined` to denote
+artefacts, as this will result in overestimates of the state
+transition frequencies. List only one state per line. Use a single tab
+separate items within a line. The last entry in the file should match
+the duration specified on the first line.
 
 ```
 *Duration_sec	43200.0
@@ -119,6 +158,8 @@ NREM	672.0
 Awake	42000.0
 Undefined	43200.0
 ```
+
+### Computational Hardware and Operating System
 
 A normal laptop is sufficient to run the software. The software was
 developed under Linux but also runs on Windows and iOS. After
