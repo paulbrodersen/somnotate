@@ -79,48 +79,54 @@ in intermediate states).
 
 ### Recordings
 
-To train the classifier, you will need manually annotated recordings.
+To train the classifier, you will need manually annotated
+recordings. With a small data set, selecting the right recordings for
+training can have a significant impact on performance. In general, the
+performance of the classifier depends on (1) how well it is able to
+estimate the mean and the variance of all provided features in the
+training data set, and (2) how well the (automatically selected)
+subset of features used for inference matches between the training and
+the test data sets. Here are a few points that spell out what that
+means in practice:
 
-The performance of the classifier depends on (1) how well it is able
-to estimate the mean and the variance of all provided features, and
-(2) how well the (selected) features match between the training and
-the test data sets.
+1. The variance between recordings from different animals is typically
+   greater than the variance within one long recording from one
+   animal. Training on shorter recordings from multiple animals is
+   hence preferable to training on longer recordings from fewer
+   animals. In my experiments, training on manually annotated
+   recordings from five or six different animals represented a
+   sweet-spot, where adding further training data yielded strongly
+   diminishing returns in performance improvements.
 
-The variance between recordings from different animals is typically
-greater than the variance within one long recording from one
-animal. Training on shorter recordings from multiple animals is hence
-preferable to training on longer recordings from fewer animals. In my
-experiments, training on manually annotated recordings from five or
-six different animals represented a sweet-spot, where adding further
-training data yielded strongly diminishing returns in performance
-improvements. The length of the recordings is less important, as long
-as the recordings are continuous (splicing introduces artefacts) and
-cover the full spectrum of vigilance and arousal states (i.e. light
-NREM sleep, deep NREM sleep, REM sleep, awake & rested, awake with
-high sleep pressure, etc.). For laboratory animals on a 12-hours
-light-on / 12-hours light-off cycle, 12-hour recordings covering the
-cycle half dominated by sleep (the light-on phase in mice) is probably
-sufficient for training, as in my tests, training on 24-hours
-recordings only marginally improved performance, and not statistically
-significantly so.
+2. The length of the recordings is less important, as long as the
+   recordings are continuous (splicing introduces artefacts) and cover
+   the full spectrum of vigilance and arousal states (i.e. light NREM
+   sleep, deep NREM sleep, REM sleep, awake & rested, awake with high
+   sleep pressure, etc.). For laboratory animals on a 12-hours
+   light-on / 12-hours light-off cycle, 12-hour recordings covering
+   the cycle half dominated by sleep (the light-on phase in mice) is
+   probably sufficient for training, as in my tests, training on
+   24-hours recordings only marginally improved performance, and not
+   statistically significantly so.
 
-Do not exclusively use "clean" recordings for training. This can
-result in underestimating feature variances, and negatively impact
-feature selection, as features affected by artefacts or noise are
-weighted less during inference.
+3. Do not exclusively use "clean" recordings for
+   training. Underestimates of feature variances can negatively impact
+   feature selection, as features affected by artefacts or noise are
+   typically weighted less during inference.
 
-Often it is sufficient to train on recordings from control
-experiments, and then apply the classifier to both, recordings from
-control experiments and recordings acquired during experimental
-manipulations. In this way, a single classifier can be applied to data
-from multiple experiments. However, if the different conditions affect
-the physiology of the animal strongly, the characteristics of the data
-may become too distinct, and it may be necessary to either (1) train
-multiple classifiers, one for each condition, or (2) train one
-classifier on data from both conditions. The first approach tends to
-work a little bit better than the second approach but requires more
-annotated data sets. If you use the second approach, ensure that both
-conditions are represented equally in the training data.
+4. Often it is sufficient to train on recordings from control
+   experiments, and then apply the classifier to both, recordings from
+   control experiments and recordings acquired during experimental
+   manipulations. In this way, a single classifier can be applied to
+   data from multiple experiments. However, if the different
+   conditions affect the physiology of the animal strongly, the
+   characteristics of the data may become too distinct. It may be
+   necessary to either (1) train multiple classifiers, one for each
+   condition, or (2) train one classifier on data from both
+   conditions. The first approach tends to work a little bit better
+   than the second approach but requires more annotated data sets. If
+   you use the second approach, ensure that both conditions are
+   represented equally in the training data.
 
 The provided example pipeline expects recordings to be in the
 [European data format (EDF)](https://www.edfplus.info/specs/edf.html).
@@ -158,6 +164,16 @@ NREM	672.0
 Awake	42000.0
 Undefined	43200.0
 ```
+
+The quality of the annotations is not particularly important, as
+Somnotate is highly robust to errors in the training data. In the
+journal article linked above, we used data sets annotated by up to 10
+experienced sleep researchers to show that Somnotate was able to match
+the human consensus better than any individual expert in
+testing. However, for the purpose of training, using a single manual
+annotation per recording is fine, as even if a large fraction of the
+data used for training is deliberately mislabelled (up to 50% of all
+epochs), Somnotate's performance during testing is unaffected.
 
 ### Computational Hardware and Operating System
 
