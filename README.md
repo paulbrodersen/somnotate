@@ -17,7 +17,7 @@ human experts, while being remarkably robust to mislabelled training
 data, artefacts, and other outliers.
 
 A journal article thoroughly describing Somnotate and characterising
-its performance has been formally accepted for publication by PLoS
+its performance has been accepted for publication by PLoS
 Computationally Biology. A pre-print of the article is available at
 [bioRxiv](https://doi.org/10.1101/2021.10.06.463356). The data
 underpinning the presented results is archived [at
@@ -51,8 +51,8 @@ that any motivated scientist can optimise and use the software to its
 fullest potential without requiring prior programming experience or
 machine learning knowledge.
 
-These aims motivate the use of old-fashioned hidden Markov models as
-the core classifier over and above deep neural networks, as the latter
+These aims motivate the use of hidden Markov models as the core
+classifier over and above deep neural networks, as the latter
 necessitate 2-3 orders of magnitude more data to train. A welcome side
 effect of this core design decision is that Somnotate -- unlike most
 other polysomnography software -- computes the likelihood of each
@@ -109,17 +109,19 @@ means in practice:
    24-hours recordings only marginally improved performance, and not
    statistically significantly so.
 
-3. Do not exclusively use "clean" recordings for
-   training. Underestimates of feature variances can negatively impact
-   feature selection, as features affected by artefacts or noise are
-   typically weighted less during inference.
+3. Do not exclusively use "clean" recordings for training.
+   Underestimates of feature variance can negatively impact feature
+   selection, as features affected by artefacts or noise are typically
+   weighted down, and as a result affect inference less. Training on
+   data sets with normal or even sub-standard signal-to-noise ratios
+   may improve the robustness of the classifier.
 
-4. Often it is sufficient to train on recordings from control
+4. It is often sufficient to train on recordings from control
    experiments, and then apply the classifier to both, recordings from
    control experiments and recordings acquired during experimental
    manipulations. In this way, a single classifier can be applied to
    data from multiple experiments. However, if the different
-   conditions affect the physiology of the animal strongly, the
+   conditions alter the physiology of the animal strongly, the
    characteristics of the data may become too distinct. It may be
    necessary to either (1) train multiple classifiers, one for each
    condition, or (2) train one classifier on data from both
@@ -195,10 +197,9 @@ signals at 256 Hz requires about 10 seconds per 24 hours.
     ```shell
     git clone https://github.com/paulbrodersen/somnotate.git
     ```
-
-    Alternatively, you can just download the repository as a zip file,
-    and unzip it. However, you will have to repeat this process each
-    time a new version is released. If you use git, you can update the
+    Alternatively, you can download the repository as a zip file, and
+    unzip it. However, you will have to repeat this process each time
+    a new version is released. If you use git, you can update the
     repository simply by changing to anywhere in the somnotate
     directory and running `git pull`.
 
@@ -210,16 +211,16 @@ signals at 256 Hz requires about 10 seconds per 24 hours.
 2. Optionally, create a clean virtual environment.
 
    For example, to create a clean virtual environment using conda
-   (available
-   [here](https://www.anaconda.com/distribution/#download-section)),
+   (available [here](https://www.anaconda.com)),
    open a terminal (on Windows: Anaconda Prompt), and enter:
 
-   ``` shell
+   ```shell
    conda create --no-default-packages -n my_somnotate_virtual_environment_name python
    ```
 
     Then activate the environment:
-   ``` shell
+
+   ```shell
    conda activate my_somnotate_virtual_environment_name
    ```
 
@@ -229,6 +230,7 @@ signals at 256 Hz requires about 10 seconds per 24 hours.
 3. Install all required dependencies.
 
     Using conda:
+
     ```shell
     cd /path/to/somnotate
     conda install --file ./somnotate/requirements.txt
@@ -237,7 +239,8 @@ signals at 256 Hz requires about 10 seconds per 24 hours.
     ```
 
     Using pip:
-    ``` shell
+
+    ```shell
     cd /path/to/somnotate
     pip install -r ./somnotate/requirements.txt
     pip install -r ./example_pipeline/requirements.txt
@@ -270,11 +273,11 @@ signals at 256 Hz requires about 10 seconds per 24 hours.
     you have to explicitly add the somnotate root directory to your
     PYTHONPATH environment variable:
 
-    ``` shell
+    ```shell
     conda develop /path/to/somnotate
     ```
 
-## Quickstart guide
+## Quickstart Guide / Cheat Sheet
 
 Assuming you have two sets of data sets, a set of previously
 (manually) annotated data sets for training of the pipeline (data sets
@@ -308,7 +311,7 @@ python /path/to/somnotate/example_pipeline/04_run_state_annotation.py /path/to/s
 python /path/to/somnotate/example_pipeline/05_manual_refinement.py /path/to/spreadsheet_B.csv
 ```
 
-## Documentation
+## Detailed Description of the Pipeline
 
 This repository comes in two parts, the core library, `somnotate`, and
 an example pipeline. The core library implements the functionality to
@@ -322,9 +325,7 @@ testing. The pipeline supports (and is designed for) batch processing
 of multiple files. **For most users, the pipeline is the part of the
 code base they will interact with.**
 
-### The pipeline
-
-#### Scope / Content
+### Scope / Content
 
 Currently available scripts are:
 
@@ -332,8 +333,7 @@ Currently available scripts are:
 
     Extract the hypnogram from SleepSign FFT files (created in
     SleepSign via: Analysis -> FFT-Text Output -> Continuous FFT), and
-    convert them to hypnogram in the [visbrain stage-duration
-    format](http://visbrain.org/sleep.html#hypnogram). If you already
+    convert them to hypnogram in the stage-duration format. If you already
     have hypnograms in this format, this step is not necessary.
 
 2. `01_preprocess_signals.py`
@@ -394,7 +394,7 @@ Apart from these scripts, there are two additional files, `data_io.py` and `conf
     their visualisation in the plots created by the pipeline.
 
 
-#### Examples
+### Examples
 
 Each script in the pipeline expects as mandatory command line argument
 a path to a spreadsheet in CSV format. The exact format of the
@@ -434,7 +434,7 @@ and optional arguments can be accessed using the `--help` argument:
 python /path/to/somnotate/example_pipeline/script.py --help
 ```
 
-#### The spreadsheet
+### The Spreadsheet
 
 For each data set, the spreadsheet details a number of properties, as
 well as the paths to the corresponding input and output files. By
