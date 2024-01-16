@@ -334,14 +334,7 @@ code base they will interact with.**
 
 Currently available scripts are:
 
-1. `00_convert_sleepsign_files.py`
-
-    Extract the hypnogram from SleepSign FFT files (created in
-    SleepSign via: Analysis -> FFT-Text Output -> Continuous FFT), and
-    convert them to hypnogram in the stage-duration format. If you already
-    have hypnograms in this format, this step is not necessary.
-
-2. `01_preprocess_signals.py`
+1. `01_preprocess_signals.py`
 
     Convert the raw signals into features that are useful for the
     state inference. Currently, we simply (1) compute the spectrogram
@@ -353,31 +346,31 @@ Currently available scripts are:
     around 50 Hz. Finally, we concatenate the spectrograms of the
     difference signals into one set of features.
 
-3. `02_test_state_annotation.py`
+2. `02_test_state_annotation.py`
 
    Test the performance of the automated state annotation in a
    hold-one-out fashion on a given set of preprocessed training data
    sets (i.e. preprocessed data with corresponding manually created
    state annotations).
 
-4. `03_train_state_annotation.py`
+3. `03_train_state_annotation.py`
 
-   Train a model (LDA + HMM) using a set of preprocessed training data
-   sets and export it for later use.
+   Train a model using a set of preprocessed training data sets and
+   export it for later use.
 
-5. `04_run_state_annotation.py`
+4. `04_run_state_annotation.py`
 
    Use a previously trained model to automatically annotate the states in
    a given set of preprocessed data sets.
 
-6. `05_manual_refinement.py`
+5. `05_manual_refinement.py`
 
    This script launches a simple GUI that facilitates manual quality
    control and refinement of the automatically generated state
    annotations. Press the key "?" to read the documentation for all
    available commands.
 
-7. `06_compare_state_annotations.py`
+6. `06_compare_state_annotations.py`
 
    This script launches a simple GUI that facilitates manual checking
    of all differences between two state annotations, e.g. the a manual
@@ -385,7 +378,7 @@ Currently available scripts are:
    Press the key "?" to read the documentation for all
    available commands.
 
-Apart from these scripts, there are two additional files, `data_io.py` and `configuration.py`
+Apart from these scripts, there are two additional files in `example_pipeline`:
 
 - `data_io.py`
 
@@ -397,6 +390,19 @@ Apart from these scripts, there are two additional files, `data_io.py` and `conf
     these pertain to the states and their representation in the
     hypnograms, their represantation internally in the pipeline, and
     their visualisation in the plots created by the pipeline.
+
+The `extensions` folder has two additional scripts to facilitate data I/O:
+
+- `convert_sleepsign_files.py`
+
+    Extract the hypnogram from SleepSign FFT files (created in
+    SleepSign via: Analysis -> FFT-Text Output -> Continuous FFT), and
+    convert them to hypnogram in the stage-duration format. If you already
+    have hypnograms in this format, this step is not necessary.
+
+- `convert_hypnogram_to_matlab_struct.py`
+
+    Convert hypnograms in stage-duration format to MATLAB structs.
 
 
 ### Examples
@@ -543,6 +549,11 @@ url = {http://biorxiv.org/content/early/2023/06/20/2021.10.06.463356.abstract},
 year = {2023}
 }
 ```
+
+## Recent changes
+
+0.2.0 Clean-up of pipeline: moved `convert_sleepsign_files.py` and `convert_hypnogram_to_matlab_struct.py` to extensions
+0.1.0 Improved README: added sections "Is this software the right choice for me?" and "What do I need?"
 
 
 ## License
