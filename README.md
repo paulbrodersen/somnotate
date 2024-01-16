@@ -27,7 +27,7 @@ EEG, EMG, and/or LFP data, Somnotate has been applied successfully to
 human clinical data, as well as telemetry data from hibernating
 Alaskan black bears. As the core components of Somnotate are
 completely agnostic to the data modality, Somnotate can also be
-applied to atypical indicators of vigilance state, such as heart rate,
+applied to other indicators of vigilance state, such as heart rate,
 blood pressure, or actigraphy. While we have performed encouraging
 pilot tests in these directions, we lack access to annotated data
 repositories that are comprehensive enough for a proper evaluation (do
@@ -44,7 +44,7 @@ might be deviant, or the animal model might be entirely non-standard
 (such as black bears). As a consequence, machine learning models that
 have been pre-trained on other data are of limited use, and you have
 to train your own model using data annotated by yourself or your
-collaborators. Somnotate has been designed with two aims in mind (1)
+colleagues. Somnotate has been designed with two aims in mind: (1)
 minimise the amount of manually annotated data required to surpass the
 accuracy of human experts, and (2) make model training simple enough
 that any motivated scientist can optimise and use the software to its
@@ -53,18 +53,20 @@ machine learning knowledge.
 
 These aims motivate the use of hidden Markov models as the core
 classifier over and above deep neural networks, as the latter
-necessitate 2-3 orders of magnitude more data to train. A welcome side
-effect of this core design decision is that Somnotate -- unlike most
-other polysomnography software -- computes the likelihood of each
-vigilance state for each epoch (rather than just determining the most
-likely one). This allows the identification of intermediate states
-that occur around vigilance state transitions and failed transition
-attempts. Analysis of intermediate states can yield unique insights
-into the dynamics of vigilance state transitions. They may also
-provide a more sensitive readout for experimental manipulations than,
-for example, the total time spent in each vigilance state, as such
-traditional measures of sleep quality might be more strongly
-controlled by the physiological needs of the animal.
+necessitate 2-3 orders of magnitude more data to train, and have a
+number of hyperparameters that have to be tailored to each data set
+for optimal results. A welcome side effect of this core design
+decision is that Somnotate -- unlike most other polysomnography
+software -- computes the likelihood of each vigilance state for each
+epoch (rather than just determining the most likely one). This allows
+the identification of intermediate states that occur around vigilance
+state transitions and failed transition attempts. Analysis of
+intermediate states can yield unique insights into the dynamics of
+vigilance state transitions. They may also provide a more sensitive
+readout for experimental manipulations than, for example, the total
+time spent in each vigilance state, as such traditional measures of
+sleep quality might be more strongly controlled by the physiological
+needs of the animal.
 
 For annotating human clinical data, Somnotate likely is not the
 optimal choice. The acquisition of human clinical data is relatively
@@ -86,14 +88,14 @@ performance of the classifier depends on (1) how well it is able to
 estimate the mean and the variance of all provided features in the
 training data set, and (2) how well the (automatically selected)
 subset of features used for inference matches between the training and
-the test data sets. Here are a few points that spell out what that
+the test data sets. Here are a few notes that spell out what that
 means in practice:
 
 1. The variance between recordings from different animals is typically
    greater than the variance within one long recording from one
    animal. Training on shorter recordings from multiple animals is
    hence preferable to training on longer recordings from fewer
-   animals. In my experiments, training on manually annotated
+   animals. In our experiments, training on manually annotated
    recordings from five or six different animals represented a
    sweet-spot, where adding further training data yielded strongly
    diminishing returns in performance improvements.
@@ -105,16 +107,16 @@ means in practice:
    sleep pressure, etc.). For laboratory animals on a 12-hours
    light-on / 12-hours light-off cycle, 12-hour recordings covering
    the cycle half dominated by sleep (the light-on phase in mice) is
-   probably sufficient for training, as in my tests, training on
-   24-hours recordings only marginally improved performance, and not
+   probably sufficient for training: in our tests, training on 24-hours
+   recordings only marginally improved performance, but not
    statistically significantly so.
 
-3. Do not exclusively use "clean" recordings for training.
-   Underestimates of feature variance can negatively impact feature
-   selection, as features affected by artefacts or noise are typically
-   weighted down, and as a result affect inference less. Training on
-   data sets with normal or even sub-standard signal-to-noise ratios
-   may improve the robustness of the classifier.
+3. Do not exclusively use "clean" recordings for training, as
+   underestimates of feature variance can negatively impact feature
+   selection. Training on data sets with normal or even sub-standard
+   signal-to-noise ratios may improve the robustness of the
+   classifier, as features affected by artefacts or noise are typically
+   weighted down, and thus affect inference less.
 
 4. It is often sufficient to train on recordings from control
    experiments, and then apply the classifier to both, recordings from
@@ -173,9 +175,10 @@ journal article linked above, we used data sets annotated by up to 10
 experienced sleep researchers to show that Somnotate was able to match
 the human consensus better than any individual expert in
 testing. However, for the purpose of training, using a single manual
-annotation per recording is fine, as even if a large fraction of the
-data used for training is deliberately mislabelled (up to 50% of all
-epochs), Somnotate's performance during testing is unaffected.
+annotation per recording is fine. When we tested Somnotate's
+robustness to errors in the training data, performance was unaffected,
+even if a large fraction of the data used for training was
+deliberately mislabelled (up to 50% of all epochs).
 
 ### Operating System and Computational Hardware Requirements
 
