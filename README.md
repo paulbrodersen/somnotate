@@ -177,16 +177,18 @@ annotation per recording is fine, as even if a large fraction of the
 data used for training is deliberately mislabelled (up to 50% of all
 epochs), Somnotate's performance during testing is unaffected.
 
-### Computational Hardware and Operating System
+### Operating System and Computational Hardware Requirements
 
-A normal laptop is sufficient to run the software. The software was
-developed under Linux but also runs on Windows and iOS. After
-pre-processing, training (and testing) should not require more than
-1-2 seconds per 24 hours of recordings on any but the most ancient
-hardware. The duration of preprocessing is highly variable and depends
-on the file format, number of signals, and their sampling
-frequency. Preprocessing recordings in EDF file format with three
-signals at 256 Hz requires about 10 seconds per 24 hours.
+Somnotate was developed under Linux but also runs on Windows and
+iOS. No dedicated hardware is required, as even a simple laptop should
+complete all tasks within a reasonable time, provided it has
+sufficient RAM to load a single recording into memory. As a rough
+guide, after pre-processing, training and testing should not require
+more than 1-2 seconds per 24 hours of recordings on any but the most
+ancient hardware. The time it takes to preprocess a data set is highly
+variable and depends on the file format, number of signals, and their
+sampling frequency. Preprocessing recordings in EDF file format with
+three signals at 256 Hz requires about 10 seconds per 24 hours.
 
 
 ## Installation instructions
