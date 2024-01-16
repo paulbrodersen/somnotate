@@ -150,8 +150,8 @@ is appropriate, for example at the start of the recording when the
 electrodes aren't connected, yet; do not use `Undefined` to denote
 artefacts, as this will result in overestimates of the state
 transition frequencies. List only one state per line. Use a single tab
-separate items within a line. The last entry in the file should match
-the duration specified on the first line.
+to separate items within a line. The last entry in the file should
+match the duration specified on the first line.
 
 ```
 *Duration_sec	43200.0
