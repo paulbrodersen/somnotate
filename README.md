@@ -330,7 +330,7 @@ testing. The pipeline supports (and is designed for) batch processing
 of multiple files. **For most users, the pipeline is the part of the
 code base they will interact with.**
 
-### Scope / Content
+### Content
 
 Currently available scripts are:
 
@@ -485,7 +485,7 @@ error will be raised detailing the missing columns or misrepresented
 column entries.
 
 
-#### Customization
+### Customization
 
 Many pipeline customisations will only require changes in either `data_io.py` or `configuration.py`.
 
