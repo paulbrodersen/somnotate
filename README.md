@@ -238,17 +238,17 @@ three signals at 256 Hz requires about 10 seconds per 24 hours.
 
     ```shell
     cd /path/to/somnotate
-    conda install --file ./somnotate/requirements.txt
+    conda install --file requirements.txt
     conda install -c conda-forge pyedflib
-    conda install --file ./example_pipeline/requirements.txt
+    conda install --file example_pipeline/requirements.txt
     ```
 
     Using pip:
 
     ```shell
     cd /path/to/somnotate
-    pip install -r ./somnotate/requirements.txt
-    pip install -r ./example_pipeline/requirements.txt
+    pip install -r requirements.txt
+    pip install -r example_pipeline/requirements.txt
     ```
 
     However, if you use `pip` and you don't have a C++ compiler, the
@@ -258,29 +258,6 @@ three signals at 256 Hz requires about 10 seconds per 24 hours.
     install the "Command Line Tools for Xcode". Then rerun the last
     command.
 
-4.  Install all optional dependencies.
-
-    The example pipeline has one optional dependency, `lspopt`, which
-    is used to compute multitaper spectrograms. At the time of
-    writing, the module is not avalaible on the PIPy or anaconda
-    servers, so please follow the installation instructions on [the
-    github homepage of the lspopt project](https://github.com/hbldh/lspopt).
-    Currently, the easiest way is to use pip and git:
-
-    ```shell
-    pip install git+https://github.com/hbldh/lspopt.git#egg=lspopt
-    ```
-
-5. Ensure that the somnotate folder is in your PYTHONPATH environment variable.
-
-    In most python environments, it suffices to change the working
-    directory to the somnotate root folder. If you are using Anaconda,
-    you have to explicitly add the somnotate root directory to your
-    PYTHONPATH environment variable:
-
-    ```shell
-    conda develop /path/to/somnotate
-    ```
 
 ## Quickstart Guide / Cheat Sheet
 
@@ -552,6 +529,7 @@ year = {2023}
 
 ## Recent changes
 
+0.3.0 Simplified installation
 0.2.0 Clean-up of pipeline: moved `convert_sleepsign_files.py` and `convert_hypnogram_to_matlab_struct.py` to extensions
 0.1.0 Improved README: added sections "Is this software the right choice for me?" and "What do I need?"
 
