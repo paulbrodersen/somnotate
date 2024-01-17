@@ -397,7 +397,7 @@ pipeline. An example CSV file is provided with the test data.
 For example:
 
 ``` shell
-python /path/to/somnotate/example_pipeline/00_convert_sleepsign_files.py /path/to/spreadsheet.csv
+python /path/to/somnotate/example_pipeline/01_preprocess_signals.py /path/to/spreadsheet.csv
 ```
 
 Some scripts (specifically, `03_train_state_annotation.py` and
