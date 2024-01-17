@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "somnotate"
+dynamic = ["version"]
+authors = [
+        {name = "Paul Brodersen", email = "paulbrodersen+somnotate@gmail.com"},
+]
+description = "Automated polysomnography for experimental animal research"
+readme = "README.md"
+keywords = [
+         "polysomnography",
+         "time-series-analysis",
+         "linear-discriminant-analysis",
+         "hidden-markov-model",
+         "python",
+]
+license = {text = "GNU General Public License v3 (GPLv3)"}
+classifiers = [
+            "Development Status :: 4 - Beta",
+            "Intended Audience :: Science/Research",
+            "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+            "Operating System :: OS Independent",
+            "Programming Language :: Python :: 3",
+            "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+requires-python = ">3.6"
+dependencies = [
+             "numpy",
+             "matplotlib",
+             "scikit-learn",
+             "pomegranate",
+]
+
+[project.urls]
+Repository = "https://github.com/paulbrodersen/somnotate"
+
+[project.optional-dependencies]
+pipeline = [
+         "six",
+         "scipy",
+         "pandas",
+         "pyedflib",
+         "lspopt",
+]
+
+[tool.setuptools]
+packages = ["somnotate"]
+
+[tool.setuptools.dynamic]
+version = {attr = "somnotate.__version__"}
