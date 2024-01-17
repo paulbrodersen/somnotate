@@ -220,7 +220,7 @@ three signals at 256 Hz requires about 10 seconds per 24 hours.
    open a terminal (on Windows: Anaconda Prompt), and enter:
 
    ```shell
-   conda create --no-default-packages -n my_somnotate_virtual_environment_name "python>3.6"
+   conda create --no-default-packages -n my_somnotate_virtual_environment_name "python>3.6" conda-build
    ```
 
     Then activate the environment:
@@ -239,9 +239,8 @@ three signals at 256 Hz requires about 10 seconds per 24 hours.
     ```shell
     cd /path/to/somnotate
     conda install --file requirements.txt
-    conda install -c conda-forge pyedflib
     conda install --file example_pipeline/requirements.txt
-    conda develop somnotate
+    conda develop /path/to/somnotate
     ```
 
     Using pip:
@@ -258,9 +257,9 @@ three signals at 256 Hz requires about 10 seconds per 24 hours.
     the "Build tools for Visual Studio"; on MacOS, you will need to
     install the "Command Line Tools for Xcode". If you are using `pip`
     inside a conda environment, you can use conda to install a
-    pre-compiled version of `pyedflib` from conda-forge as outlined
-    above. In all cases, rerun the last command to ensure that all
-    pipeline dependencies are installed.
+    pre-compiled version of `pyedflib` from conda-forge `conda install
+    -c conda-forge pyedflib`. In all cases, rerun the last command to
+    ensure that all pipeline dependencies are installed.
 
     Note that `conda develop` is being deprecated and that conda is
     creating support for the `pyproject.toml`-based project
