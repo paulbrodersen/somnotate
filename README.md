@@ -220,7 +220,7 @@ three signals at 256 Hz requires about 10 seconds per 24 hours.
    open a terminal (on Windows: Anaconda Prompt), and enter:
 
    ```shell
-   conda create --no-default-packages -n my_somnotate_virtual_environment_name python
+   conda create --no-default-packages -n my_somnotate_virtual_environment_name "python>3.6"
    ```
 
     Then activate the environment:
