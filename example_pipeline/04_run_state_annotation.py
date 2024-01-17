@@ -136,7 +136,8 @@ if __name__ == '__main__':
                 ax                 = axes[0],
             )
 
-            plot_signals(state_probability, sampling_frequency=1./time_resolution, ax=axes[1])
+            time = np.arange(0, time_resolution * len(state_probability), time_resolution)
+            axes[1].plot(time, state_probability)
             axes[1].set_ylabel("Predicted state probability")
 
             # plot predicted states

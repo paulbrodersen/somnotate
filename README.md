@@ -531,6 +531,7 @@ year = {2023}
 
 ## Recent changes
 
+0.3.3 Fixed an issue in `04_run_state_annotation.py` that resulted in an incorrect rescaling of the state probability in the output figure.
 0.3.2 Fixed an issue with `MultivariateGaussianDistribution` that occurred due changes upstream in `pomegranate`.
 0.3.1 Removed occurrences of `np.int` and `np.float` (deprecated in recent numpy versions).
 0.3.0 Simplified installation.
