@@ -547,6 +547,14 @@ year = {2023}
 - 0.1.0 Improved README: added sections "Is this software the right choice for me?" and "What do I need?"
 
 
+## Contributing
+
+If you run into any problems, please raise an issue. Include any relevant code and data in a
+[minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
+Bug reports are, of course, always welcome. Please make sure to include the full error trace.
+If you submit a pull request that fixes a bug or implements a cool feature, I will probably worship the ground you walk on for the rest of the week. Probably.
+
+
 ## License
 
 Somnotate has a dual license. It is licensed under the GPLv3 license
