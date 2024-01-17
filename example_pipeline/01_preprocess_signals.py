@@ -142,7 +142,7 @@ if __name__ == '__main__':
                     ] + state_annotation_signals,
                     column_to_dtype = {
                         'file_path_raw_signals' : str,
-                        'sampling_frequency_in_hz' : (int, float, np.int, np.float, np.int64, np.float64),
+                        'sampling_frequency_in_hz' : (int, float),
                         'file_path_preprocessed_signals' : str,
                     }
     )

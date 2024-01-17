@@ -235,7 +235,7 @@ def _smooth(x, window_length, window='flat'):
 def _get_intervals(boolean_mask):
 
     # base case
-    d = np.diff(boolean_mask.astype(np.int8))
+    d = np.diff(boolean_mask.astype(int))
     starts = np.where(d == 1)[0] +1
     stops = np.where(d == -1)[0] +1
 
