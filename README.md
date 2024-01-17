@@ -256,9 +256,17 @@ three signals at 256 Hz requires about 10 seconds per 24 hours.
     installation may fail for `pyedflib`, which is used in the
     pipeline to load EDF files. On Windows, you will need to install
     the "Build tools for Visual Studio"; on MacOS, you will need to
-    install the "Command Line Tools for Xcode". Then rerun the last
-    command. If you are using `pip` inside a conda environment, you
-    can use conda to install pyedflib from conda-forge as above.
+    install the "Command Line Tools for Xcode". If you are using `pip`
+    inside a conda environment, you can use conda to install a
+    pre-compiled version of `pyedflib` from conda-forge as outlined
+    above. In all cases, rerun the last command to ensure that all
+    pipeline dependencies are installed.
+
+    Note that `conda develop` is being deprecated and that conda is
+    creating support for the `pyproject.toml`-based project
+    specification. Using `pip` is hence the more future-proof
+    installation option, and it is recommended to use `pip` even if
+    you are using a conda virtual environment.
 
 
 ## Quickstart Guide / Cheat Sheet
