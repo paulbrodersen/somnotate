@@ -1,4 +1,4 @@
 numpy
 matplotlib
 scikit-learn
-pomegranate
+pomegranate<1.0.0
