@@ -241,22 +241,24 @@ three signals at 256 Hz requires about 10 seconds per 24 hours.
     conda install --file requirements.txt
     conda install -c conda-forge pyedflib
     conda install --file example_pipeline/requirements.txt
+    conda develop somnotate
     ```
 
     Using pip:
 
     ```shell
     cd /path/to/somnotate
-    pip install -r requirements.txt
-    pip install -r example_pipeline/requirements.txt
+    pip install -e .
+    pip install -e .[pipeline]
     ```
 
     However, if you use `pip` and you don't have a C++ compiler, the
-    installation will fail for `pyedflib`, which is used in the
-    pipeline to load EDF files.  On Windows, you will need to install
+    installation may fail for `pyedflib`, which is used in the
+    pipeline to load EDF files. On Windows, you will need to install
     the "Build tools for Visual Studio"; on MacOS, you will need to
     install the "Command Line Tools for Xcode". Then rerun the last
-    command.
+    command. If you are using `pip` inside a conda environment, you
+    can use conda to install pyedflib from conda-forge as above.
 
 
 ## Quickstart Guide / Cheat Sheet
