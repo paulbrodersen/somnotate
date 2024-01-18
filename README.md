@@ -191,7 +191,7 @@ more than 1-2 seconds per 24 hours of recordings on any but the most
 ancient hardware. The time it takes to preprocess a data set is highly
 variable and depends on the file format, number of signals, and their
 sampling frequency. Preprocessing recordings in EDF file format with
-three signals at 256 Hz requires about 10 seconds per 24 hours.
+three signals at 256 Hz requires about 30 seconds per 24 hours.
 
 
 ## Installation instructions
