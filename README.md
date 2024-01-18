@@ -196,6 +196,11 @@ three signals at 256 Hz requires about 30 seconds per 24 hours.
 
 ## Installation instructions
 
+**18/1/2024: The installation with conda currently results in
+dependency version conflicts. Please use `pip` to install somnotate
+and its dependencies, even if you use a conda virtual environment.**
+
+
 1. Clone this repository. Git is available
    [here](https://git-scm.com/downloads).
 
