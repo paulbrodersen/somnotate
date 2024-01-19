@@ -17,9 +17,8 @@ human experts, while being remarkably robust to mislabelled training
 data, artefacts, and other outliers.
 
 A journal article thoroughly describing Somnotate and characterising
-its performance has been accepted for publication by PLoS
-Computationally Biology. A pre-print of the article is available at
-[bioRxiv](https://doi.org/10.1101/2021.10.06.463356). The data
+its performance is published PLoS Computationally Biology, available
+[here](https://doi.org/10.1371/journal.pcbi.1011793). The data
 underpinning the presented results is archived [at
 Zenodo](https://doi.org/10.5281/zenodo.10200481). While the article
 focuses on Somnotate's performance in polysomnography based on mouse
@@ -526,18 +525,23 @@ the github issue tracker. Pull requests are -- of course -- very welcome.
 
 If you use Somnotate in your scientific work, I would appreciate citations to the following paper:
 
-Brodersen PJN, Alfonsa H, Krone LB, Duque CB, Fisk AS, Flaherty SJ, et al. Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions. bioRxiv. 2023;2021.10.06.463356.
+Brodersen PJN, Alfonsa H, Krone LB, Blanco-Duque C, Fisk AS, Flaherty SJ, et al. (2024) Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions. PLoS Comput Biol 20(1): e1011793. https://doi.org/10.1371/journal.pcbi.1011793
 
 Bibtex entry:
 
 ```bibtex
-@article{Brodersen2023,
-author = {Brodersen, Paul J N and Alfonsa, Hannah and Krone, Lukas B and Duque, Cristina Blanco and Fisk, Angus S and Flaherty, Sarah J and Guillaumin, Mathilde C C and Huang, Yi-Ge and Kahn, Martin C and McKillop, Laura E and Milinski, Linus and Taylor, Lewis and Thomas, Christopher W and Yamagata, Tomoko and Foster, Russell G and Vyazovskiy, Vladyslav V and Akerman, Colin J},
-journal = {bioRxiv},
-pages = {2021.10.06.463356},
-title = {{Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions}},
-url = {http://biorxiv.org/content/early/2023/06/20/2021.10.06.463356.abstract},
-year = {2023}
+@article{10.1371/journal.pcbi.1011793,
+    doi = {10.1371/journal.pcbi.1011793},
+    author = {Brodersen, Paul J. N. AND Alfonsa, Hannah AND Krone, Lukas B. AND Blanco-Duque, Cristina AND Fisk, Angus S. AND Flaherty, Sarah J. AND Guillaumin, Mathilde C. C. AND Huang, Yi-Ge AND Kahn, Martin C. AND McKillop, Laura E. AND Milinski, Linus AND Taylor, Lewis AND Thomas, Christopher W. AND Yamagata, Tomoko AND Foster, Russell G. AND Vyazovskiy, Vladyslav V. AND Akerman, Colin J.},
+    journal = {PLOS Computational Biology},
+    publisher = {Public Library of Science},
+    title = {Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions},
+    year = {2024},
+    month = {01},
+    volume = {20},
+    pages = {1-26},
+    number = {1},
+    url = {https://doi.org/10.1371/journal.pcbi.1011793},
 }
 ```
 
