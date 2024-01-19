@@ -480,6 +480,11 @@ contain the required columns with entries in the required format, an
 error will be raised detailing the missing columns or misrepresented
 column entries.
 
+An example spreadsheet can be found in the `data` folder. The
+corresponding recordings have been archived at
+[Zenodo](https://doi.org/10.5281/zenodo.10200481), and can be found in
+the `test` folder there.
+
 
 ### Customization
 
