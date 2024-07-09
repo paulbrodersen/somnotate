@@ -33,6 +33,31 @@ repositories that are comprehensive enough for a proper evaluation (do
 be in touch if you have data and you would like to collaborate).
 
 
+## Citing Somnotate
+
+If you use Somnotate in your scientific work, I would appreciate citations to the following paper:
+
+Brodersen PJN, Alfonsa H, Krone LB, Blanco-Duque C, Fisk AS, Flaherty SJ, et al. (2024) Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions. PLoS Comput Biol 20(1): e1011793. https://doi.org/10.1371/journal.pcbi.1011793
+
+Bibtex entry:
+
+```bibtex
+@article{10.1371/journal.pcbi.1011793,
+    doi = {10.1371/journal.pcbi.1011793},
+    author = {Brodersen, Paul J. N. AND Alfonsa, Hannah AND Krone, Lukas B. AND Blanco-Duque, Cristina AND Fisk, Angus S. AND Flaherty, Sarah J. AND Guillaumin, Mathilde C. C. AND Huang, Yi-Ge AND Kahn, Martin C. AND McKillop, Laura E. AND Milinski, Linus AND Taylor, Lewis AND Thomas, Christopher W. AND Yamagata, Tomoko AND Foster, Russell G. AND Vyazovskiy, Vladyslav V. AND Akerman, Colin J.},
+    journal = {PLOS Computational Biology},
+    publisher = {Public Library of Science},
+    title = {Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions},
+    year = {2024},
+    month = {01},
+    volume = {20},
+    pages = {1-26},
+    number = {1},
+    url = {https://doi.org/10.1371/journal.pcbi.1011793},
+}
+```
+
+
 ## Is this software the right choice for me?
 
 Somnotate is designed to support animal experimental research, and
@@ -525,30 +550,6 @@ If you cannot change an important aspect of the pipeline by changing
 either `data_io.py` or `configuration.py`, please raise an issue on
 the github issue tracker. Pull requests are -- of course -- very welcome.
 
-
-## Citing Somnotate
-
-If you use Somnotate in your scientific work, I would appreciate citations to the following paper:
-
-Brodersen PJN, Alfonsa H, Krone LB, Blanco-Duque C, Fisk AS, Flaherty SJ, et al. (2024) Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions. PLoS Comput Biol 20(1): e1011793. https://doi.org/10.1371/journal.pcbi.1011793
-
-Bibtex entry:
-
-```bibtex
-@article{10.1371/journal.pcbi.1011793,
-    doi = {10.1371/journal.pcbi.1011793},
-    author = {Brodersen, Paul J. N. AND Alfonsa, Hannah AND Krone, Lukas B. AND Blanco-Duque, Cristina AND Fisk, Angus S. AND Flaherty, Sarah J. AND Guillaumin, Mathilde C. C. AND Huang, Yi-Ge AND Kahn, Martin C. AND McKillop, Laura E. AND Milinski, Linus AND Taylor, Lewis AND Thomas, Christopher W. AND Yamagata, Tomoko AND Foster, Russell G. AND Vyazovskiy, Vladyslav V. AND Akerman, Colin J.},
-    journal = {PLOS Computational Biology},
-    publisher = {Public Library of Science},
-    title = {Somnotate: A probabilistic sleep stage classifier for studying vigilance state transitions},
-    year = {2024},
-    month = {01},
-    volume = {20},
-    pages = {1-26},
-    number = {1},
-    url = {https://doi.org/10.1371/journal.pcbi.1011793},
-}
-```
 
 ## Recent changes
 
