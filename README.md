@@ -220,9 +220,10 @@ three signals at 256 Hz requires about 30 seconds per 24 hours.
 
 ## Installation instructions
 
-**18/1/2024: The installation with conda currently results in
-dependency version conflicts. Please use `pip` to install somnotate
-and its dependencies, even if you use a conda virtual environment.**
+> [!CAUTION]
+> Somnotate used to support installation via pip (and encouraged it in fact).
+> Currently, however, this results either in dependency conflicts or in broken builds for some of somnotate's dependencies, especially pomegranate.
+> For the time being, please follow the installation instructions for conda below.
 
 
 1. Clone this repository. Git is available
@@ -242,20 +243,18 @@ and its dependencies, even if you use a conda virtual environment.**
     git pull
     ```
 
-2. Optionally, create a clean virtual environment.
+2. Create a clean virtual environment using conda (available [here](https://www.anaconda.com)).
 
-   For example, to create a clean virtual environment using conda
-   (available [here](https://www.anaconda.com)),
-   open a terminal (on Windows: Anaconda Prompt), and enter:
+   Open a terminal (on Windows: Anaconda Prompt), and enter:
 
    ```shell
-   conda create --no-default-packages -n my_somnotate_virtual_environment_name "python>3.6" conda-build
+   conda create --no-default-packages --name somnotate_env
    ```
 
     Then activate the environment:
 
    ```shell
-   conda activate my_somnotate_virtual_environment_name
+   conda activate somnotate_env
    ```
 
    You will need to re-activate the environment each time you want to
@@ -263,39 +262,16 @@ and its dependencies, even if you use a conda virtual environment.**
 
 3. Install all required dependencies.
 
-    Using conda:
-
     ```shell
-    cd /path/to/somnotate
-    conda install --file requirements.txt
-    conda install --file example_pipeline/requirements.txt
-    conda develop /path/to/somnotate
+    conda install -c conda-forge pomegranate=0.14.4 numpy scipy matplotlib scikit-learn six pandas pyedflib lspopt
     ```
 
-    Using pip:
+4. Add somnotate/somnotate to the environment's PYTHONPATH:
 
     ```shell
     cd /path/to/somnotate
     pip install -e .
-    pip install -e .[pipeline]
     ```
-
-    However, if you use `pip` and you don't have a C++ compiler, the
-    installation may fail for `pyedflib`, which is used in the
-    pipeline to load EDF files. On Windows, you will need to install
-    the "Build tools for Visual Studio"; on MacOS, you will need to
-    install the "Command Line Tools for Xcode". If you are using `pip`
-    inside a conda environment, you can use conda to install a
-    pre-compiled version of `pyedflib` from conda-forge `conda install
-    -c conda-forge pyedflib`. In all cases, rerun the last command to
-    ensure that all pipeline dependencies are installed.
-
-    Note that `conda develop` is being deprecated and that conda is
-    creating support for the `pyproject.toml`-based project
-    specification. Using `pip` is hence the more future-proof
-    installation option, and it is recommended to use `pip` even if
-    you are using a conda virtual environment.
-
 
 ## Quickstart Guide / Cheat Sheet
 
