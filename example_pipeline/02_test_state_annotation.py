@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     accuracy = np.zeros((total_datasets))
 
-    unique_states = np.unique(np.abs(state_vectors))
+    unique_states = np.unique(np.abs(np.concatenate(state_vectors)))
     confusion = np.zeros((total_datasets, np.max(unique_states)+1, np.max(unique_states)+1))
 
     for ii, (idx, dataset) in enumerate(datasets.iterrows()):
