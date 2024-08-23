@@ -529,6 +529,9 @@ the github issue tracker. Pull requests are -- of course -- very welcome.
 
 ## Recent changes
 
+- 0.3.6 Fixed an issue in `02_test_state_annotation.py` that occurred when none of the test data sets had `undefined` states (issue #13).
+- 0.3.5 Fixed an issue in `05_manual_refinement.py` that occurred due to a change in the Matplotlib API (issue #16).
+- 0.3.4 Fixed an issue in `02_test_state_annotation.py` that occurred when testing with datasets of different lengths (issue #12).
 - 0.3.3 Fixed an issue in `04_run_state_annotation.py` that resulted in an incorrect rescaling of the state probability in the output figure.
 - 0.3.2 Fixed an issue with `MultivariateGaussianDistribution` that occurred due changes upstream in `pomegranate`.
 - 0.3.1 Removed occurrences of `np.int` and `np.float` (deprecated in recent numpy versions).
