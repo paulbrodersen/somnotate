@@ -224,11 +224,6 @@ class TimeSeriesStateViewer(object):
         ---------------
         Enter valid float and press enter; backspace to clear memory.
 
-        Contact:
-        ========
-        Please raise any issues you encounter at:
-        www.github.com/paulbrodersen/time_series_annotator/issues
-
         """
         print(help_string)
 
