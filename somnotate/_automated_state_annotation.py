@@ -128,14 +128,39 @@ class StateAnnotator(object):
 
         Returns:
         --------
-        p    -- dict state : (total samples, ) vector
-            A mapping of each state to a vector of probabilities.
+        probability -- (total samples, ) ndarray
+            The probability of the predicted state at each time point.
 
         """
 
+        probability_dict = self.predict_all_probabilities(signal_array)
+
+        # for each sample, extract the probability corresponding to the predicted state
+        predicted_state_vector = self.predict(signal_array)
+        probability_vector = np.array([probability_dict[state][ii] for ii, state in enumerate(predicted_state_vector)])
+
+        return probability_vector
+
+
+    def predict_all_probabilities(self, signal_array):
+        """
+        Predict the probability of each state for each sample in
+        the signal array given all possible paths through the state
+        space.
+
+        Arguments:
+        ----------
+        signal_array -- (total samples, data dimensions) ndarray
+            The multidimensional time series signal.
+
+        Returns:
+        --------
+        probability_dict -- dict state : (total samples, ) vector
+            A mapping of each state to a vector of probabilities.
+
+        """
         self._check_signal_array(signal_array)
         transformed_array = self.transform(signal_array)
-
         probability_array = self.hmm.predict_proba([sample for sample in transformed_array])
 
         # convert array to dictionary
@@ -145,11 +170,7 @@ class StateAnnotator(object):
                 state_label = int(state.name)
                 probability_dict[state_label] = probability_array[:, ii]
 
-        # for each sample, extract the probability corresponding to the predicted state
-        predicted_state_vector = self.predict(signal_array)
-        probability_vector = np.array([probability_dict[state][ii] for ii, state in enumerate(predicted_state_vector)])
-
-        return probability_vector
+        return probability_dict
 
 
     def score(self, signal_array, state_vector):

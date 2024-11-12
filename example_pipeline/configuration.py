@@ -160,7 +160,7 @@ state_to_int = dict([
     ('undefined'          ,  0),
 ])
 
-# Construct the inverse mapping to convert back from state predictions to human readabe labels.
+# Construct the inverse mapping to convert back from state predictions to human readable labels.
 int_to_state = {ii : state for state, ii in state_to_int.items() if state != 'sleep movement'}
 
 # define the keymap used for the manual annotation

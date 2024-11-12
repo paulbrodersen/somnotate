@@ -369,6 +369,12 @@ Currently available scripts are:
    Press the key "?" to read the documentation for all
    available commands.
 
+7. `07_compute_state_probabilities.py`
+
+   Use a previously trained model to compute the probability of each
+   state for each sample in a given set of preprocessed data sets.
+
+
 Apart from these scripts, there are two additional files in `example_pipeline`:
 
 - `data_io.py`
@@ -462,6 +468,8 @@ details all parameters, i.e. contains all columns. These are:
   the (desired) path to the file containing the automated state annotion (hypnogram) that has subsequently been manually refined
 - `file_path_review_intervals`:
   the (desired) path for the file containing the time intervals highlighted by the automated annotation for manual review
+- `file_path_state_probabilities`:
+  the (desired) path for the file containing the state probabilities for each state and sample
 - `sampling_frequency_in_hz`:
   the sampling frequency of the raw signal(s)
 
