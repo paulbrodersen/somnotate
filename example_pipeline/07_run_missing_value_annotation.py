@@ -71,8 +71,8 @@ def _is_missing(vec, missing_value_identifier):
 if __name__ == '__main__':
 
     from configuration import (
-        # state_annotation_signals,
-        artefact_annotation_signals,
+        # artefact_annotation_signals,
+        state_annotation_signals as artefact_annotation_signals,
     )
 
     # --------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     # the same value to mark the entries in the interval as missing.
     # Thus we ensure consistency between the results when the missing
     # value identifier is given and when it is not.
-    missing_value_interval_minimum_length = 3
+    missing_value_interval_minimum_length = 100
 
     # --------------------------------------------------------------------------------
     print("Finding missing values in...")
@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
         # padding may introduce overlaps between consecutive intervals;
         # we want to merge the intervals in these cases
-        missing_value_vector = np.zeros((len(raw_signals)), dtype=np.bool)
+        missing_value_vector = np.zeros((len(raw_signals)), dtype=bool)
         for start, stop in missing_value_intervals:
             missing_value_vector[start:stop] |= True
         missing_value_intervals = _get_intervals(missing_value_vector)
