@@ -47,7 +47,7 @@ pipeline = [
 ]
 
 [tool.setuptools]
-packages = ["somnotate"]
+packages = ["somnotate", "example_pipeline", "extensions"]
 
 [tool.setuptools.dynamic]
 version = {attr = "somnotate.__version__"}

@@ -7,7 +7,7 @@ Utilities to convert sleepsign output files.
 import numpy as np
 from somnotate._utils import convert_state_vector_to_state_intervals
 
-from data_io import (
+from example_pipeline.data_io import (
     ArgumentParser,
     load_dataframe,
     check_dataframe,

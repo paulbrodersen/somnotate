@@ -7,7 +7,7 @@ Convert hypnograms to matlab array.
 import numpy as np
 from scipy.io import savemat
 
-from data_io import (
+from example_pipeline.data_io import (
     ArgumentParser,
     load_dataframe,
     check_dataframe,
@@ -25,7 +25,7 @@ def convert_hypnogram_to_mat(file_path_hyp, file_path_mat, mapping, time_resolut
 
 if __name__ == '__main__':
 
-    from configuration import state_to_int
+    from example_pipeline.configuration import state_to_int
 
     # --------------------------------------------------------------------------------
     # parse and check inputs
