@@ -537,6 +537,7 @@ the github issue tracker. Pull requests are -- of course -- very welcome.
 
 ## Recent changes
 
+- 0.5.0 Added the ability to import hypnograms in epoch format, i.e. one-column CSVs with one row per epoch.
 - 0.4.0 Added support to export state probabilities (issue #15, issue #19).
 - 0.3.6 Fixed an issue in `02_test_state_annotation.py` that occurred when none of the test data sets had `undefined` states (issue #13).
 - 0.3.5 Fixed an issue in `05_manual_refinement.py` that occurred due to a change in the Matplotlib API (issue #16).
