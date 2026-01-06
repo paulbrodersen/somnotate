@@ -87,7 +87,7 @@ def check_dataframe(df, columns, column_to_dtype=None):
 
 def _handle_file_path(func):
     def func_wrapper(file_path, *args, **kwargs):
-        pathlib_object = _get_pathlib_object(file_path)
+        pathlib_object = _sanitize_file_path(file_path)
         output = func(pathlib_object, *args, **kwargs)
         return output
     func_wrapper.__name__ = func.__name__
@@ -95,7 +95,26 @@ def _handle_file_path(func):
     return func_wrapper
 
 
-def _get_pathlib_object(file_path):
+def _sanitize_file_path(file_path):
+    """"
+    Converts given filepath to correct os-dependent file path.
+    Checks to see if filepath exists, if not, checks that parent exists for
+    writing
+    """
+    # convert to filepath
+    pathlib_filepath = pathlib.Path(file_path)
+    
+    # check file exists
+    if pathlib_filepath.isfile():
+        pass
+    elif pathlib_filepath.parent.isdir():
+        pass
+    else:
+        raise Exception("Filepath is incorrect")
+    
+    # convert to os-dependent string
+    file_path = str(pathlib_filepath)
+    
     return file_path
 
 
